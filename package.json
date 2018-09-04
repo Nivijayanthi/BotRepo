@@ -1,0 +1,19 @@
+{
+  "name": "genebot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "dependencies": {
+    "apiai": "^2.0.5",
+    "body-parser": "^1.15.1",
+    "events": "1.1.1",
+    "socket.io": "2.0.4",
+    "express": "4.16.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "start": "node app.js"
+  },
+  "author": "Nivetha",
+  "license": "ISC"
+}

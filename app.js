@@ -20,7 +20,7 @@ app.use(express.static(__dirname));
 app.post('/fulfillment',function(req,res){
     debugger
     var response;
-    console.log("request from dialogflow",JSON.stringify(req.body.fulfillment));
+    console.log("request from dialogflow",JSON.stringify(req.body.result));
     
     if(req.body.result.metadata.intentName == 'CHANGE-RISK-PROFILE'){
     //   var currentProfile = req.queryResult.parameters.CurrentProfile;

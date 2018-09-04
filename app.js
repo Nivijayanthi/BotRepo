@@ -35,10 +35,7 @@ app.post('/fulfillment',function(req,res){
             val=data;
          });
          query.giveFundDetails(
-             {
-                 ClientID : clientId,
-                 RiskType : currentProfile
-            }).then(function (data){
+             {clientId,currentProfile}).then(function (data){
                 console.log("The responae from DB join..............",JSON.stringify(data));
                 listOfFunds = data;
             });

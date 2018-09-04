@@ -23,17 +23,17 @@ app.post('/fulfillment',function(req,res){
     console.log("request from dialogflow",JSON.stringify(req.body.result));
     
     if(req.body.result.metadata.intentName == 'CHANGE-RISK-PROFILE'){
-    //   var currentProfile = req.queryResult.parameters.CurrentProfile;
-    //   var targetProfie =  req.queryResult.parameters.TargetProfile;
-    //   var clientId = req.queryResult.parameters.ClientId;
+      var currentProfile = req.body.result.parameters.CurrentProfile;
+      var targetProfie =  req.queryResult.parameters.TargetProfile;
+      var clientId = req.queryResult.parameters.ClientId;
 
-    //   if(clientId){        
-    //          console.log("currentProfile",currentProfile);
-    //       console.log("targetProfie",targetProfie);
-    //       console.log("clientId",clientId);
-    //       response = 'Please find the fund details';
-    //   }
-    response = 'Hey there';
+      if(clientId){        
+             console.log("currentProfile",currentProfile);
+          console.log("targetProfie",targetProfie);
+          console.log("clientId",clientId);
+          response = 'Please find the fund details';
+      }
+    
 
     }   
 

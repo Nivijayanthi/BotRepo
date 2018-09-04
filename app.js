@@ -24,7 +24,7 @@ app.post('/fulfillment', function (req, res) {
         var targetProfie = req.body.result.parameters.TargetProfile;
         var clientId = req.body.result.parameters.ClientId;
         var val;
-        let listOfFunds;
+        let listOfFunds = [];
 
         if (clientId) {
             console.log("currentProfile", currentProfile);
@@ -39,15 +39,16 @@ app.post('/fulfillment', function (req, res) {
                 data.forEach(function (arrayItem) {
                     console.log("%%%%%%%%%%", JSON.stringify(arrayItem));
                     if (arrayItem.ProductIDStatus == false) {
-                        listOfFunds = arrayItem;
+                        listOfFunds.push(arrayItem.Name);
                     }
                     console.log("&&&&&&&&&&", JSON.stringify(listOfFunds));
-
                 });
 
             });
-            if (val) {
+            if (listOfFunds) {
                 response = 'Please find the fund details';
+            }else{
+                response = 'Sorry!!There are no funds available under your new risk category'
             }
         }
 

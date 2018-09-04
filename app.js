@@ -24,15 +24,24 @@ app.post('/fulfillment',function(req,res){
       var targetProfie =  req.body.result.parameters.TargetProfile;
       var clientId = req.body.result.parameters.ClientId;
       var val;
+      let listOfFunds;
 
       if(clientId){        
              console.log("currentProfile",currentProfile);
           console.log("targetProfie",targetProfie);
           console.log("clientId",clientId);
-         query.ClientRiskProfileGet({ClientID : clientId }).then(function (data){
+         query.ClientRiskProfileGet({ClientID : clientId, Active : 'Y' }).then(function (data){
             console.log("The responae from DB..............",JSON.stringify(data));
             val=data;
          });
+         query.giveFundDetails(
+             {
+                 ClientID : clientId,
+                 RiskType : currentProfile
+            }).then(function (data){
+                console.log("The responae from DB join..............",JSON.stringify(data));
+                listOfFunds = data;
+            });
           if(val){
           response = 'Please find the fund details';
           }

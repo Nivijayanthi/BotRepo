@@ -29,10 +29,11 @@ app.post('/fulfillment',function(req,res){
           console.log("targetProfie",targetProfie);
           console.log("clientId",clientId);
          query.ClientRiskProfileGet({CustomerID : clientId }).then(function (data){
-            console.log("The responae from DB..............",data);
+            console.log("The responae from DB..............",typeof data);
          });
-          
+          if(data){
           response = 'Please find the fund details';
+          }
       }
     
 

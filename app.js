@@ -39,29 +39,30 @@ app.post('/fulfillment', function (req, res) {
                 await data.forEach(async function (arrayItem) {
                     console.log("%%%%%%%%%%", JSON.stringify(arrayItem));
                     if (arrayItem.ProductIDStatus == true) {
-                       await listOfFunds.push(arrayItem.Name);
+                        await listOfFunds.push(arrayItem.Name);
                     }
                     console.log("&&&&&&&&&&", JSON.stringify(listOfFunds));
                 });
-                console.log("Out...........",listOfFunds);
+                console.log("Out...........", listOfFunds);
                 if (listOfFunds.length > 0) {
                     console.log("I am inside if loop");
                     response = 'Please find the fund details';
                 } else {
                     response = 'Sorry!!There are no funds available under your new risk category';
                 }
+                return res.json({
+                    speech: response,
+                    displayText: response,
+                    source: 'portal',
+                });
             });
 
         }
 
 
     }
-    console.log("Response,,,,,,,,,,,,,",response);
-    return res.json({
-        speech: response,
-        displayText: response,
-        source: 'portal',
-    });
+
+
 });
 
 console.log("Server Running at Port : " + port);

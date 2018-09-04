@@ -21,20 +21,20 @@ app.post('/fulfillment', function (req, res) {
 
     if (req.body.result.metadata.intentName == 'CHANGE-RISK-PROFILE') {
         var currentProfile = req.body.result.parameters.CurrentProfile;
-        var targetProfie = req.body.result.parameters.TargetProfile;
+        var targetProfile = req.body.result.parameters.TargetProfile;
         var clientId = req.body.result.parameters.ClientId;
         var val;
         let listOfFunds = [];
 
         if (clientId) {
             console.log("currentProfile", currentProfile);
-            console.log("targetProfie", targetProfie);
+            console.log("targetProfile", targetProfile);
             console.log("clientId", clientId);
             query.ClientRiskProfileGet({ ClientID: clientId, Active: 'Y' }).then(function (data) {
                 console.log("The responae from DB..............", JSON.stringify(data));
                 val = data;
             });
-            query.giveFundDetails(clientId, currentProfile).then(function (data) {
+            query.giveFundDetails(clientId, targetProfile).then(function (data) {
                 console.log("The responae from DB join..............", JSON.stringify(data));
                 data.forEach(function (arrayItem) {
                     console.log("%%%%%%%%%%", JSON.stringify(arrayItem));

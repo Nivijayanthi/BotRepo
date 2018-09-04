@@ -45,7 +45,7 @@ app.post('/fulfillment', function (req, res) {
                 });
 
             });
-            if (listOfFunds) {
+            if (listOfFunds.length >0) {
                 response = 'Please find the fund details';
             }else{
                 response = 'Sorry!!There are no funds available under your new risk category'

@@ -23,15 +23,17 @@ app.post('/fulfillment',function(req,res){
       var currentProfile = req.body.result.parameters.CurrentProfile;
       var targetProfie =  req.body.result.parameters.TargetProfile;
       var clientId = req.body.result.parameters.ClientId;
+      var val;
 
       if(clientId){        
              console.log("currentProfile",currentProfile);
           console.log("targetProfie",targetProfie);
           console.log("clientId",clientId);
          query.ClientRiskProfileGet({CustomerID : clientId }).then(function (data){
-            console.log("The responae from DB..............",typeof data);
+            console.log("The responae from DB..............",JSON.stringify(data));
+            val=data;
          });
-          if(data){
+          if(val){
           response = 'Please find the fund details';
           }
       }

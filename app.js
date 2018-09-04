@@ -38,18 +38,18 @@ app.post('/fulfillment', function (req, res) {
                 console.log("The responae from DB join..............", JSON.stringify(data));
                 data.forEach(function (arrayItem) {
                     console.log("%%%%%%%%%%", JSON.stringify(arrayItem));
-                    if (arrayItem.ProductIDStatus == true && arrayItem.CustomerID==clientId) {
+                    if (arrayItem.ProductIDStatus == true) {
                         listOfFunds.push(arrayItem.Name);
                     }
-                    console.log("&&&&&&&&&&", JSON.stringify(listOfFunds.length));
+                    console.log("&&&&&&&&&&", JSON.stringify(listOfFunds));
                 });
-
+                if (listOfFunds.length > 0) {
+                    response = 'Please find the fund details';
+                } else {
+                    response = 'Sorry!!There are no funds available under your new risk category'
+                }
             });
-            if (listOfFunds.length > 0) {
-                response = 'Please find the fund details';
-            }else{
-                response = 'Sorry!!There are no funds available under your new risk category'
-            }
+
         }
 
 
@@ -62,7 +62,7 @@ app.post('/fulfillment', function (req, res) {
     });
 });
 
-console.log("Server Running at Port : "  +  port);
+console.log("Server Running at Port : " + port);
 
 app.listen(port);
 

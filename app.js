@@ -38,14 +38,14 @@ app.post('/fulfillment', function (req, res) {
                 console.log("The responae from DB join..............", JSON.stringify(data));
                 data.forEach(function (arrayItem) {
                     console.log("%%%%%%%%%%", JSON.stringify(arrayItem));
-                    if (arrayItem.ProductIDStatus == true) {
+                    if (arrayItem.ProductIDStatus == true && arrayItem.CustomerID==clientId) {
                         listOfFunds.push(arrayItem.Name);
                     }
-                    console.log("&&&&&&&&&&", JSON.stringify(listOfFunds));
+                    console.log("&&&&&&&&&&", JSON.stringify(listOfFunds.length));
                 });
 
             });
-            if (listOfFunds.length >0) {
+            if (listOfFunds.length > 0) {
                 response = 'Please find the fund details';
             }else{
                 response = 'Sorry!!There are no funds available under your new risk category'

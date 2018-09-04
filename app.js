@@ -48,7 +48,7 @@ app.post('/fulfillment', function (req, res) {
                     console.log("I am inside if loop");
                     response = 'Please find the fund details';
                 } else {
-                    response = 'Sorry!!There are no funds available under your new risk category'
+                    response = 'Sorry!!There are no funds available under your new risk category';
                 }
             });
 
@@ -56,7 +56,7 @@ app.post('/fulfillment', function (req, res) {
 
 
     }
-
+    console.log("Response,,,,,,,,,,,,,",response);
     return res.json({
         speech: response,
         displayText: response,

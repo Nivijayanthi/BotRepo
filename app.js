@@ -13,6 +13,21 @@ app.use(express.static(__dirname));
 //imports
 const query = require('./query');
 
+function showListOfFunds(clientId, riskProfile) {
+    let funds = [];
+    query.giveFundDetails(clientId, riskProfile).then(async function (data) {
+        console.log("The responae from DB join..............", JSON.stringify(data));
+        await data.forEach(async function (arrayItem) {
+            console.log("%%%%%%%%%%", JSON.stringify(arrayItem));
+            if (arrayItem.ProductIDStatus == true) {
+                await funds.push(arrayItem.Name);
+            }
+            console.log("&&&&&&&&&&", JSON.stringify(funds));
+        });
+    });
+        return funds;
+}
+
 
 app.post('/fulfillment', function (req, res) {
     debugger
@@ -66,30 +81,15 @@ app.post('/fulfillment', function (req, res) {
     }
 
 
-});
+})
 
-
-function showListOfFunds(clientId, riskProfile) {
-    let funds = [];
-    query.giveFundDetails(clientId, riskProfile).then(async function (data) {
-        console.log("The responae from DB join..............", JSON.stringify(data));
-        await data.forEach(async function (arrayItem) {
-            console.log("%%%%%%%%%%", JSON.stringify(arrayItem));
-            if (arrayItem.ProductIDStatus == true) {
-                await funds.push(arrayItem.Name);
-            }
-            console.log("&&&&&&&&&&", JSON.stringify(funds));
-        });
-
-        return funds;
-    });
 
     console.log("Server Running at Port : " + port);
 
-    app.listen(port);
+app.listen(port, function(){
+    console.log('Listening my app on  PORT: ' + port);
+});
 
 
 
-// app.listen(portC, function(){
-//     console.log('Listening my app on  PORT: ' + portC);
-// });
+

@@ -59,6 +59,7 @@ app.post('/fulfillment', function (req, res) {
         });
     }
     if (req.body.result.metadata.intentName == 'ADD-FUND') {
+        console.log("i am inside Add fund");
         var clientId = req.body.result.parameters.ClientId;
         var val;
         query.ClientRiskProfileGet({ ClientID: clientId, Active: 'Y' }).then(function (data) {

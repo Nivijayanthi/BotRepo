@@ -28,8 +28,10 @@ app.post('/fulfillment',function(req,res){
              console.log("currentProfile",currentProfile);
           console.log("targetProfie",targetProfie);
           console.log("clientId",clientId);
-          let val= query.ClientRiskProfileGet(clientId);
-          console.log("The responae from DB..............",JSON.stringify(val));
+         query.ClientRiskProfileGet({CustomerID : clientId }).then(function (data){
+            console.log("The responae from DB..............",data);
+         });
+          
           response = 'Please find the fund details';
       }
     

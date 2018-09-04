@@ -29,7 +29,7 @@ app.post('/fulfillment',function(req,res){
              console.log("currentProfile",currentProfile);
           console.log("targetProfie",targetProfie);
           console.log("clientId",clientId);
-         query.ClientRiskProfileGet({CustomerID : clientId }).then(function (data){
+         query.ClientRiskProfileGet({ClientID : clientId }).then(function (data){
             console.log("The responae from DB..............",JSON.stringify(data));
             val=data;
          });

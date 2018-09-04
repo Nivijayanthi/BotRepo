@@ -38,7 +38,7 @@ app.post('/fulfillment', function (req, res) {
                 console.log("The responae from DB join..............", JSON.stringify(data));
                 data.forEach(function (arrayItem) {
                     console.log("%%%%%%%%%%", JSON.stringify(arrayItem));
-                    if (arrayItem.ProductIDStatus == false) {
+                    if (arrayItem.ProductIDStatus == true) {
                         listOfFunds.push(arrayItem.Name);
                     }
                     console.log("&&&&&&&&&&", JSON.stringify(listOfFunds));

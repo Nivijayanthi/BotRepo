@@ -9,13 +9,10 @@ var app = express();
 var port = process.env.PORT || 4000;
 app.use(bodyParser.urlencoded({extended:true}));
 app.use(bodyParser.json());
-
-
-//Assign port
 app.use(express.static(__dirname));
-
-//Configuring express app behaviour
 //imports
+const query = require('./query');
+
 
 app.post('/fulfillment',function(req,res){
     debugger
@@ -31,6 +28,8 @@ app.post('/fulfillment',function(req,res){
              console.log("currentProfile",currentProfile);
           console.log("targetProfie",targetProfie);
           console.log("clientId",clientId);
+          let val= query.ClientRiskProfileGet(clientId);
+          console.log("The responae from DB..............",JSON.stringify(val));
           response = 'Please find the fund details';
       }
     

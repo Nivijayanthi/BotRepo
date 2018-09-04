@@ -24,8 +24,8 @@ app.post('/fulfillment',function(req,res){
     
     if(req.body.result.metadata.intentName == 'CHANGE-RISK-PROFILE'){
       var currentProfile = req.body.result.parameters.CurrentProfile;
-      var targetProfie =  req.queryResult.parameters.TargetProfile;
-      var clientId = req.queryResult.parameters.ClientId;
+      var targetProfie =  req.body.result.parameters.TargetProfile;
+      var clientId = req.body.result.parameters.ClientId;
 
       if(clientId){        
              console.log("currentProfile",currentProfile);

@@ -43,7 +43,7 @@ let giveFundDetails=function(clientID,RiskType){
         Name : 1 ,
         RiskType : 1,
         Type:1
-    }},{ $match : { RiskType : RiskType } },{$lookup:{
+    }},{ $match : { RiskType : RiskType, Type : "ETF" } },{$lookup:{
         from:"holdings",
         localField:"ProductID",
         foreignField:"ProductID",

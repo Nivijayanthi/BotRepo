@@ -17,57 +17,76 @@ const query = require('./query');
 app.post('/fulfillment', function (req, res) {
     debugger
     var response;
+    let listOfFunds = [];
     console.log("request from dialogflow", JSON.stringify(req.body.result));
 
     if (req.body.result.metadata.intentName == 'CHANGE-RISK-PROFILE') {
         var currentProfile = req.body.result.parameters.CurrentProfile;
         var targetProfile = req.body.result.parameters.TargetProfile;
         var clientId = req.body.result.parameters.ClientId;
-        var val;
-        let listOfFunds = [];
 
-        if (clientId) {
-            console.log("currentProfile", currentProfile);
-            console.log("targetProfile", targetProfile);
-            console.log("clientId", clientId);
-            query.ClientRiskProfileGet({ ClientID: clientId, Active: 'Y' }).then(function (data) {
-                console.log("The responae from DB..............", JSON.stringify(data));
-                val = data;
-            });
-            query.giveFundDetails(clientId, targetProfile).then(async function (data) {
-                console.log("The responae from DB join..............", JSON.stringify(data));
-                await data.forEach(async function (arrayItem) {
-                    console.log("%%%%%%%%%%", JSON.stringify(arrayItem));
-                    if (arrayItem.ProductIDStatus == true) {
-                        await listOfFunds.push(arrayItem.Name);
-                    }
-                    console.log("&&&&&&&&&&", JSON.stringify(listOfFunds));
-                });
-                console.log("Out...........", listOfFunds);
-                if (listOfFunds.length > 0) {
-                    console.log("I am inside if loop");
-                    response = 'Please find the fund details';
-                } else {
-                    response = 'Sorry!!There are no funds available under your new risk category';
-                }
-                return res.json({
-                    speech: response,
-                    displayText: response,
-                    source: 'portal',
-                });
-            });
+        console.log("currentProfile", currentProfile);
+        console.log("targetProfile", targetProfile);
+        console.log("clientId", clientId);
 
+        listOfFunds = showListOfFunds(clientId, targetProfile);
+        console.log("Out...........", listOfFunds);
+        if (listOfFunds.length > 0) {
+            console.log("I am inside if loop");
+            response = 'Please find the fund details';
+        } else {
+            response = 'Sorry!!There are no funds available under your new risk category';
         }
-
+        return res.json({
+            speech: response,
+            displayText: response,
+            source: 'portal',
+        });
+    }
+    if (req.body.result.metadata.intentName == 'ADD-FUND') {
+        var clientId = req.body.result.parameters.ClientId;
+        var val;
+        query.ClientRiskProfileGet({ ClientID: clientId, Active: 'Y' }).then(function (data) {
+            console.log("The responae from DB..............", JSON.stringify(data));
+            val = data.RiskCategory;
+        });
+        listOfFunds = showListOfFunds(clientId, val);
+        console.log("List of fund........", listOfFunds);
+        if (listOfFunds.length > 0) {
+            response = "Please find the funds prescribed for your risk profile and their performance over 3 years.";
+        } else {
+            response = "Sorry!!There are no funds available under your risk category ";
+        }
+        return res.json({
+            speech: response,
+            displayText: response,
+            source: 'portal',
+        });
 
     }
 
 
 });
 
-console.log("Server Running at Port : " + port);
 
-app.listen(port);
+function showListOfFunds(clientId, riskProfile) {
+    let funds = [];
+    query.giveFundDetails(clientId, riskProfile).then(async function (data) {
+        console.log("The responae from DB join..............", JSON.stringify(data));
+        await data.forEach(async function (arrayItem) {
+            console.log("%%%%%%%%%%", JSON.stringify(arrayItem));
+            if (arrayItem.ProductIDStatus == true) {
+                await funds.push(arrayItem.Name);
+            }
+            console.log("&&&&&&&&&&", JSON.stringify(funds));
+        });
+
+        return funds;
+    });
+
+    console.log("Server Running at Port : " + port);
+
+    app.listen(port);
 
 
 

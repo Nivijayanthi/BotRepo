@@ -34,8 +34,7 @@ app.post('/fulfillment',function(req,res){
             console.log("The responae from DB..............",JSON.stringify(data));
             val=data;
          });
-         query.giveFundDetails(
-             {clientId,currentProfile}).then(function (data){
+         query.giveFundDetails(clientId,currentProfile).then(function (data){
                 console.log("The responae from DB join..............",JSON.stringify(data));
                 listOfFunds = data;
             });

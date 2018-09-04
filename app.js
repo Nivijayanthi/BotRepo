@@ -20,19 +20,20 @@ app.use(express.static(__dirname));
 app.post('/fulfillment',function(req,res){
     debugger
     var response;
-    console.log("request from dialogflow",req);
+    console.log("request from dialogflow",JSON.stringify(req.body.fulfillment));
     
-    if(req.queryResult.intent.displayName == 'CHANGE-RISK-PROFILE'){
-      var currentProfile = req.queryResult.parameters.CurrentProfile;
-      var targetProfie =  req.queryResult.parameters.TargetProfile;
-      var clientId = req.queryResult.parameters.ClientId;
+    if(req.body.result.metadata.intentName == 'CHANGE-RISK-PROFILE'){
+    //   var currentProfile = req.queryResult.parameters.CurrentProfile;
+    //   var targetProfie =  req.queryResult.parameters.TargetProfile;
+    //   var clientId = req.queryResult.parameters.ClientId;
 
-      if(clientId){        
-             console.log("currentProfile",currentProfile);
-          console.log("targetProfie",targetProfie);
-          console.log("clientId",clientId);
-          response = 'Please find the fund details';
-      }
+    //   if(clientId){        
+    //          console.log("currentProfile",currentProfile);
+    //       console.log("targetProfie",targetProfie);
+    //       console.log("clientId",clientId);
+    //       response = 'Please find the fund details';
+    //   }
+    response = 'Hey there';
 
     }   
 

@@ -32,7 +32,7 @@ function showListOfFunds(clientId, riskProfile) {
 function buildCarouselResponse(list){
     let result = [];
     var objList = new template.CustomListTemplate();
-        if (lisi.length > 0) {
+        if (list.length > 0) {
             list.forEach(async function (value) {
                 objList.speech = "Please find the list of funds avaialable for your risk category";
                 objList.title = values;

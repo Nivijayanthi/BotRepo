@@ -98,6 +98,7 @@ app.post('/fulfillment', async function (req, res) {
                 objList.speech = "Please find the list of funds avaialable for your risk category";
                 objList.title = value;
                 await msg.push(JSON.parse(JSON.stringify(objList)));
+                console.log("The final response##################", JSON.stringify(msg));
             });
         console.log("The final response##################", JSON.stringify(msg));
         return res.json(msg);   

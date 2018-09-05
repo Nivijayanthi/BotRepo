@@ -36,8 +36,9 @@ function buildCarouselResponse(list){
             list.forEach(async function (value) {
                 objList.speech = "Please find the list of funds avaialable for your risk category";
                 objList.title = values;
+                await result.push(JSON.parse(JSON.stringify(objList)));
             });
-            await result.push(JSON.parse(JSON.stringify(objList)));
+            
         } else {
             objList.speech = "Sorry!!There are no funds available under your new risk category";
             result.push(JSON.parse(JSON.stringify(objList)));

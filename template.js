@@ -3,8 +3,6 @@
 module.exports.CustomListTemplate = function () {
 
     var objectList = {
-   "speech": null,
-   "displayText" : null,
   "messages" : [{
         "type": 1,
         "platform": "Facebook",

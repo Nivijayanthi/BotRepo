@@ -39,7 +39,10 @@ async function showListOfFunds(clientId, riskProfile) {
 
 
 app.post('/fulfillment', async function (req, res) {
-     var msg = [];
+     var msg = {
+         speech : null,
+         displayText : null
+     };
     debugger
     var response;
     let listOfFunds = [];

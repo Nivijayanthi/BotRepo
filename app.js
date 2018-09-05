@@ -94,7 +94,8 @@ app.post('/fulfillment', async function (req, res) {
         console.log("List of fund........", listOfFunds);
          var objList = new template.CustomListTemplate();
         if (listOfFunds.length > 0) {
-            listOfFunds.forEach(async function (value) {
+            await listOfFunds.forEach(async function (value) {
+                console.log("valllllllllllllllllllllllllll",value)
                 objList.speech = "Please find the list of funds avaialable for your risk category";
                 objList.title = value;
                 await msg.push(JSON.parse(JSON.stringify(objList)));

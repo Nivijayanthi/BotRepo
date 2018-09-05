@@ -78,6 +78,7 @@ app.post('/fulfillment', async function (req, res) {
     if (req.body.result.metadata.intentName == 'ADD-FUND') {       
         console.log("i am inside Add fund");
         var clientId = req.body.result.parameters.ClientId;
+        console.log(req.body.result.parameters);
         var val;
         console.log(clientId);
         await query.ClientRiskProfileGet({ ClientID: clientId, Active: 'Y' }).then(function (data) {

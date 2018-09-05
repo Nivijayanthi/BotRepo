@@ -60,12 +60,12 @@ app.post('/fulfillment', function (req, res) {
             listOfFunds.forEach(async function (value) {
                 objList.speech = "Please find the list of funds avaialable for your risk category";
                 objList.title = value;
-                await result.push(JSON.parse(JSON.stringify(objList)));
+                await msg.push(JSON.parse(JSON.stringify(objList)));
             });
             
         } else {
             objList.speech = "Sorry!!There are no funds available under your new risk category";
-            result.push(JSON.parse(JSON.stringify(objList)));
+            msg.push(JSON.parse(JSON.stringify(objList)));
         }
         // return res.json({
         //     speech: response,
@@ -78,8 +78,8 @@ app.post('/fulfillment', function (req, res) {
         console.log("i am inside Add fund");
         var clientId = req.body.result.parameters.ClientId;
         var val;
-        query.ClientRiskProfileGet({ ClientID: clientId, Active: 'Y' }).then( async function (data) {
-           await  console.log("The response from DB risk profile..............", JSON.stringify(data.RiskCategory));
+        query.ClientRiskProfileGet({ ClientID: clientId, Active: 'Y' }).then(function (data) {
+           console.log("The response from DB risk profile..............", JSON.stringify(data));
             val = data.RiskCategory;
         });
         listOfFunds = showListOfFunds(clientId, val);
@@ -89,12 +89,12 @@ app.post('/fulfillment', function (req, res) {
             listOfFunds.forEach(async function (value) {
                 objList.speech = "Please find the list of funds avaialable for your risk category";
                 objList.title = value;
-                await result.push(JSON.parse(JSON.stringify(objList)));
+                await msg.push(JSON.parse(JSON.stringify(objList)));
             });
             
         } else {
             objList.speech = "Sorry!!There are no funds available under your new risk category";
-            result.push(JSON.parse(JSON.stringify(objList)));
+            msg.push(JSON.parse(JSON.stringify(objList)));
         }   
         // return res.json({
         //     speech: response,

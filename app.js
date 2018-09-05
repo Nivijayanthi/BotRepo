@@ -79,7 +79,11 @@ app.post('/fulfillment', function (req, res) {
         var clientId = req.body.result.parameters.ClientId;
         var val;
         query.ClientRiskProfileGet({ ClientID: clientId, Active: 'Y' }).then(function (data) {
+            if(data){
             console.log("The response from DB risk profile..............", JSON.stringify(data));
+            }else{
+                console.log("data is null", data);
+            }
             val = data.RiskCategory;
         });
         listOfFunds = showListOfFunds(clientId, val);

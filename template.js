@@ -1,14 +1,18 @@
-var CustomListTemplate = function () {
 
-    var speech = null;
 
-    var displayText = null;
+module.exports.CustomListTemplate = function () {
 
-    var title = null;
+    var objectList = {
 
-    var subtitle = null;
+    "speech" : null,
 
-  var messages = [{
+   "displayText" : null,
+
+   "title" : null,
+
+    "subtitle" : null,
+
+  "messages" : [{
 
         "type": 1,
 
@@ -22,8 +26,8 @@ var CustomListTemplate = function () {
 
     }]
 
-    }];
-    
+}]
+    }
 
+return objectList;
 }
-module.exports.CustomListTemplate = CustomListTemplate;

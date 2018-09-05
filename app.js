@@ -83,9 +83,7 @@ app.post('/fulfillment', function (req, res) {
 
 
 })
-
-
-    console.log("Server Running at Port : " + port);
+console.log("Server Running at Port : " + port);
 
 app.listen(port, function(){
     console.log('Listening my app on  PORT: ' + port);

@@ -3,7 +3,6 @@
 module.exports.CustomListTemplate = function () {
 
     var objectList = {
-  "messages" : [{
         "type": 1,
         "platform": "Facebook",
         "title" : null,
@@ -14,8 +13,7 @@ module.exports.CustomListTemplate = function () {
 
     }]
 
-}]
-    }
+}
 
 return objectList;
 }

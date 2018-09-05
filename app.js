@@ -46,6 +46,7 @@ app.post('/fulfillment', async function (req, res) {
     var msg = [{
         speech: null,
         displayText: null,
+        messages : []
     }];
     debugger
     var response;
@@ -68,7 +69,7 @@ app.post('/fulfillment', async function (req, res) {
             listOfFunds.forEach(async function (value) {
                 objList.speech = "Please find the list of funds avaialable for your risk category";
                 objList.title = value;
-                await msg.push(JSON.parse(JSON.stringify(objList)));
+                await msg.messages.push(JSON.parse(JSON.stringify(objList)));
             });
             return res.json(msg);
         } else {

@@ -105,7 +105,7 @@ app.post('/fulfillment', async function (req, res) {
         } else {
             response = "Sorry!!There are no funds available under your new risk category";
              return res.json({
-            speech: response,
+            speech: response,   
             displayText: response,
             source: 'portal',
         });

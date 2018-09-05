@@ -47,7 +47,7 @@ app.post('/fulfillment', async function (req, res) {
     if (req.body.result.metadata.intentName == 'CHANGE-RISK-PROFILE') {
         var currentProfile = req.body.result.parameters.CurrentProfile;
         var targetProfile = req.body.result.parameters.TargetProfile;
-        var clientId = req.body.result.parameters.ClientId;
+        var clientId = req.body.result.parameters.clientId;
 
         console.log("currentProfile", currentProfile);
         console.log("targetProfile", targetProfile);
@@ -77,7 +77,7 @@ app.post('/fulfillment', async function (req, res) {
     }
     if (req.body.result.metadata.intentName == 'ADD-FUND') {       
         console.log("i am inside Add fund");
-        var clientId = req.body.result.parameters.ClientId;
+        var clientId = req.body.result.parameters.clientId;
         console.log(req.body.result.parameters);
         var val;
         console.log(clientId);

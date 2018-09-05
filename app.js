@@ -71,13 +71,51 @@ app.post('/fulfillment', function (req, res) {
         if (listOfFunds.length > 0) {
             response = "Please find the funds prescribed for your risk profile and their performance over 3 years.";
         } else {
-            response = "Sorry!!There are no funds available under your risk category ";
+        msg={
+  "speech": "Please find the funds prescribed for your risk profile and their performance over 3 years.",
+  "displayText": "",
+  "messages": [
+    {
+      "type": 1,
+      "platform": "facebook",
+      "title": "Apple",      
+      "buttons": [
+        {
+          "text": "Buy",
+          "postback": "Add new fund"
         }
-        return res.json({
-            speech: response,
-            displayText: response,
-            source: 'portal',
-        });
+      ]
+    },
+{
+      "type": 1,
+      "platform": "facebook",
+      "title": "Apple2",      
+      "buttons": [
+        {
+          "text": "Buy",
+          "postback": "Add new fund"
+        }
+      ]
+    }   
+  ],
+  contextOut: [
+    {
+      "name": "GetFeedback",
+      "lifespan": 1,
+      "parameters": {
+        
+      }
+    }
+  ]
+}
+            //response = "Sorry!!There are no funds available under your risk category ";
+        }
+        // return res.json({
+        //     speech: response,
+        //     displayText: response,
+        //     source: 'portal',
+        // });
+        return res.json(msg);
 
     }
 

@@ -30,22 +30,11 @@ function showListOfFunds(clientId, riskProfile) {
     return funds;
 }
 
-function buildCarouselResponse(list){
-    let result = [];
-    var objList = new template.CustomListTemplate();
-        if (list.length > 0) {
-            list.forEach(async function (value) {
-                objList.speech = "Please find the list of funds avaialable for your risk category";
-                objList.title = values;
-                await result.push(JSON.parse(JSON.stringify(objList)));
-            });
-            
-        } else {
-            objList.speech = "Sorry!!There are no funds available under your new risk category";
-            result.push(JSON.parse(JSON.stringify(objList)));
-        }
-    return result;
-}
+// function buildCarouselResponse(list){
+//     let result = [];
+    
+//     return result;
+// }
 
 
 app.post('/fulfillment', function (req, res) {
@@ -66,7 +55,18 @@ app.post('/fulfillment', function (req, res) {
 
         listOfFunds = showListOfFunds(clientId, targetProfile);
         console.log("Out...........", listOfFunds);
-        msg = buildCarouselResponse(listOfFunds);
+        var objList = new template.CustomListTemplate();
+        if (listOfFunds.length > 0) {
+            listOfFunds.forEach(async function (value) {
+                objList.speech = "Please find the list of funds avaialable for your risk category";
+                objList.title = value;
+                await result.push(JSON.parse(JSON.stringify(objList)));
+            });
+            
+        } else {
+            objList.speech = "Sorry!!There are no funds available under your new risk category";
+            result.push(JSON.parse(JSON.stringify(objList)));
+        }
         // return res.json({
         //     speech: response,
         //     displayText: response,
@@ -84,7 +84,18 @@ app.post('/fulfillment', function (req, res) {
         });
         listOfFunds = showListOfFunds(clientId, val);
         console.log("List of fund........", listOfFunds);
-        msg = buildCarouselResponse(listOfFunds);     
+         var objList = new template.CustomListTemplate();
+        if (listOfFunds.length > 0) {
+            listOfFunds.forEach(async function (value) {
+                objList.speech = "Please find the list of funds avaialable for your risk category";
+                objList.title = value;
+                await result.push(JSON.parse(JSON.stringify(objList)));
+            });
+            
+        } else {
+            objList.speech = "Sorry!!There are no funds available under your new risk category";
+            result.push(JSON.parse(JSON.stringify(objList)));
+        }   
         // return res.json({
         //     speech: response,
         //     displayText: response,

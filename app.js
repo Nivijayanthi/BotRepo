@@ -39,15 +39,12 @@ async function showListOfFunds(clientId, riskProfile) {
 
 
 app.post('/fulfillment', async function (req, res) {
-    richmsg = [{
-        "type": 0,
-        "speech": "Cancelled Trains"
-    }]
-    var msg = [{
+   
+    var msg = {
         speech: null,
         displayText: null,
         messages : []
-    }];
+    };
     debugger
     var response;
     let listOfFunds = [];
@@ -69,7 +66,7 @@ app.post('/fulfillment', async function (req, res) {
             listOfFunds.forEach(async function (value) {
                 objList.speech = "Please find the list of funds avaialable for your risk category";
                 objList.title = value;
-                await msg.messages.push(JSON.parse(JSON.stringify(objList)));
+                 msg.messages= await objList;
             });
             return res.json(msg);
         } else {

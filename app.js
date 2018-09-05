@@ -27,22 +27,26 @@ async function showListOfFunds(clientId, riskProfile) {
             console.log("&&&&&&&&&&", JSON.stringify(funds));
         });
     });
-    console.log("return..........",funds)
+    console.log("return..........", funds)
     return funds;
 }
 
 // function buildCarouselResponse(list){
 //     let result = [];
-    
+
 //     return result;
 // }
 
 
 app.post('/fulfillment', async function (req, res) {
-     var msg = {
-         speech : null,
-         displayText : null
-     };
+    richmsg = [{
+        "type": 0,
+        "speech": "Cancelled Trains"
+    }]
+    var msg = [{
+        speech: null,
+        displayText: null,
+    }];
     debugger
     var response;
     let listOfFunds = [];
@@ -68,57 +72,57 @@ app.post('/fulfillment', async function (req, res) {
             });
             return res.json(msg);
         } else {
-           response = "Sorry!!There are no funds available under your new risk category";
-           return res.json({
-            speech: response,
-            displayText: response,
-            source: 'portal',
-        });
-            
+            response = "Sorry!!There are no funds available under your new risk category";
+            return res.json({
+                speech: response,
+                displayText: response,
+                source: 'portal',
+            });
+
         }
-        
-        
+
+
     }
-    if (req.body.result.metadata.intentName == 'ADD-FUND') {       
+    if (req.body.result.metadata.intentName == 'ADD-FUND') {
         console.log("i am inside Add fund");
         var clientId = req.body.result.parameters.clientId;
         console.log(req.body.result.parameters);
         var val;
         console.log(clientId);
         await query.ClientRiskProfileGet({ ClientID: clientId, Active: 'Y' }).then(function (data) {
-           console.log("The response from DB risk profile..............", JSON.stringify(data));
+            console.log("The response from DB risk profile..............", JSON.stringify(data));
             val = data.RiskCategory;
         });
-        if(val){
+        if (val) {
             listOfFunds = await showListOfFunds(clientId, val);
-        }else{
-            listOfFunds = await showListOfFunds(clientId,'Growth');
+        } else {
+            listOfFunds = await showListOfFunds(clientId, 'Growth');
         }
-        
+
         console.log("List of fund........", listOfFunds);
-         var objList = new template.CustomListTemplate();
-         objList.displayText = "Please find the list of funds avaialable for your risk category";
+        var objList = new template.CustomListTemplate();
+        objList.displayText = "Please find the list of funds avaialable for your risk category";
         if (listOfFunds.length > 0) {
             await listOfFunds.forEach(async function (value) {
-                console.log("valllllllllllllllllllllllllll",value)                
+                console.log("valllllllllllllllllllllllllll", value)
                 objList.title = value;
                 await msg.push(JSON.parse(JSON.stringify(objList)));
                 console.log("The final response##################", JSON.stringify(msg));
             });
-        console.log("The final response##################", JSON.stringify(msg));
-        return res.json(msg);   
+            console.log("The final response##################", JSON.stringify(msg));
+            return res.json(msg);
         } else {
             response = "Sorry!!There are no funds available under your new risk category";
-             return res.json({
-            speech: response,   
-            displayText: response,
-            source: 'portal',
-        });
-        }   
-       
-        
+            return res.json({
+                speech: response,
+                displayText: response,
+                source: 'portal',
+            });
+        }
+
+
     }
-    if(req.body.result.metadata.intentName == 'CHANGE-RISK-PROFILE-SEND-EMAIL'){
+    if (req.body.result.metadata.intentName == 'CHANGE-RISK-PROFILE-SEND-EMAIL') {
         console.log("i am inside exit fund");
         var clientId = req.body.result.parameters.ClientID;
 

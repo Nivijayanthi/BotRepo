@@ -47,6 +47,7 @@ app.post('/fulfillment', async function (req, res) {
     };
     debugger
     var response;
+    let msgList = [];
     let listOfFunds = [];
     console.log("request from dialogflow", JSON.stringify(req.body.result));
 
@@ -66,8 +67,9 @@ app.post('/fulfillment', async function (req, res) {
             listOfFunds.forEach(async function (value) {
                 objList.speech = "Please find the list of funds avaialable for your risk category";
                 objList.title = value;
-                 msg.messages= await objList;
+                 await msgList.push(JSON.parse(JSON.stringify(objList)));
             });
+            msg.messages = msgList;
             return res.json(msg);
         } else {
             response = "Sorry!!There are no funds available under your new risk category";
@@ -104,10 +106,11 @@ app.post('/fulfillment', async function (req, res) {
             await listOfFunds.forEach(async function (value) {
                 console.log("valllllllllllllllllllllllllll", value)
                 objList.title = value;
-                msg.messages= await objList;
-                console.log("The final response##################", JSON.stringify(msg));
+                await msgList.push(JSON.parse(JSON.stringify(objList)));
+                console.log("The final response ", JSON.stringify(msg));
             });
             console.log("The final response##################", JSON.stringify(msg));
+            msg.messages = msgList;
             return res.json(msg);
         } else {
             response = "Sorry!!There are no funds available under your new risk category";

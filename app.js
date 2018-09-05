@@ -83,7 +83,12 @@ app.post('/fulfillment', async function (req, res) {
            console.log("The response from DB risk profile..............", JSON.stringify(data));
             val = data.RiskCategory;
         });
-        listOfFunds = showListOfFunds(clientId, val);
+        if(val){
+            listOfFunds = showListOfFunds(clientId, val);
+        }else{
+            listOfFunds = showListOfFunds(clientId,'Growth');
+        }
+        
         console.log("List of fund........", listOfFunds);
          var objList = new template.CustomListTemplate();
         if (listOfFunds.length > 0) {

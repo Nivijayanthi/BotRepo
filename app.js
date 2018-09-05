@@ -62,17 +62,18 @@ app.post('/fulfillment', async function (req, res) {
                 objList.title = value;
                 await msg.push(JSON.parse(JSON.stringify(objList)));
             });
-            
+            return res.json(msg);
         } else {
-            objList.speech = "Sorry!!There are no funds available under your new risk category";
-            msg.push(JSON.parse(JSON.stringify(objList)));
+           response = "Sorry!!There are no funds available under your new risk category";
+           return res.json({
+            speech: response,
+            displayText: response,
+            source: 'portal',
+        });
+            
         }
-        // return res.json({
-        //     speech: response,
-        //     displayText: response,
-        //     source: 'portal',
-        // });
-        return res.json(msg);
+        
+        
     }
     if (req.body.result.metadata.intentName == 'ADD-FUND') {       
         console.log("i am inside Add fund");

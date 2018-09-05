@@ -18,7 +18,7 @@ function showListOfFunds(clientId, riskProfile) {
     console.log("I am inside show method");
     let funds = [];
     query.giveFundDetails(clientId, riskProfile).then(async function (data) {
-        console.log("The responae from DB join..............", JSON.stringify(data));
+        console.log("The response from DB join..............", JSON.stringify(data));
         await data.forEach(async function (arrayItem) {
             console.log("%%%%%%%%%%", JSON.stringify(arrayItem));
             if (arrayItem.ProductIDStatus == true) {
@@ -79,7 +79,7 @@ app.post('/fulfillment', function (req, res) {
         var clientId = req.body.result.parameters.ClientId;
         var val;
         query.ClientRiskProfileGet({ ClientID: clientId, Active: 'Y' }).then(function (data) {
-            console.log("The responae from DB..............", JSON.stringify(data));
+            console.log("The response from DB risk profile..............", JSON.stringify(data));
             val = data.RiskCategory;
         });
         listOfFunds = showListOfFunds(clientId, val);

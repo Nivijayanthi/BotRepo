@@ -26,3 +26,4 @@ var CustomListTemplate = function () {
     
 
 }
+module.exports.CustomListTemplate = CustomListTemplate;

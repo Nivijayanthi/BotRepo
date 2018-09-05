@@ -15,6 +15,7 @@ const query = require('./query');
 const template = require('./template');
 
 function showListOfFunds(clientId, riskProfile) {
+    console.log("I am inside show method");
     let funds = [];
     query.giveFundDetails(clientId, riskProfile).then(async function (data) {
         console.log("The responae from DB join..............", JSON.stringify(data));

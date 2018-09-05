@@ -53,7 +53,7 @@ app.post('/fulfillment', async function (req, res) {
         console.log("targetProfile", targetProfile);
         console.log("clientId", clientId);
 
-        listOfFunds = showListOfFunds(clientId, targetProfile);
+        listOfFunds = await showListOfFunds(clientId, targetProfile);
         console.log("Out...........", listOfFunds);
         var objList = new template.CustomListTemplate();
         if (listOfFunds.length > 0) {
@@ -86,9 +86,9 @@ app.post('/fulfillment', async function (req, res) {
             val = data.RiskCategory;
         });
         if(val){
-            listOfFunds = showListOfFunds(clientId, val);
+            listOfFunds = await showListOfFunds(clientId, val);
         }else{
-            listOfFunds = showListOfFunds(clientId,'Growth');
+            listOfFunds = await showListOfFunds(clientId,'Growth');
         }
         
         console.log("List of fund........", listOfFunds);

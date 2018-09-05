@@ -97,6 +97,7 @@ app.post('/fulfillment', async function (req, res) {
                 objList.title = value;
                 await msg.push(JSON.parse(JSON.stringify(objList)));
             });
+        console.log("The final response##################", JSON.stringify(msg));
         return res.json(msg);   
         } else {
             response = "Sorry!!There are no funds available under your new risk category";

@@ -37,7 +37,7 @@ function showListOfFunds(clientId, riskProfile) {
 // }
 
 
-app.post('/fulfillment', function (req, res) {
+app.post('/fulfillment', async function (req, res) {
      var msg = [];
     debugger
     var response;
@@ -78,7 +78,7 @@ app.post('/fulfillment', function (req, res) {
         console.log("i am inside Add fund");
         var clientId = req.body.result.parameters.ClientId;
         var val;
-        query.ClientRiskProfileGet({ ClientID: clientId, Active: 'Y' }).then(function (data) {
+        await query.ClientRiskProfileGet({ ClientID: clientId, Active: 'Y' }).then(function (data) {
            console.log("The response from DB risk profile..............", JSON.stringify(data));
             val = data.RiskCategory;
         });

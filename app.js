@@ -104,7 +104,7 @@ app.post('/fulfillment', async function (req, res) {
             await listOfFunds.forEach(async function (value) {
                 console.log("valllllllllllllllllllllllllll", value)
                 objList.title = value;
-                await msg.push(JSON.parse(JSON.stringify(objList)));
+                msg.messages= await objList;
                 console.log("The final response##################", JSON.stringify(msg));
             });
             console.log("The final response##################", JSON.stringify(msg));

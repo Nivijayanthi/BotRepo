@@ -1,6 +1,7 @@
 //Mongoose Connection
 const mongoose = require('mongoose');
 // var mongoXlsx = require('mongo-xlsx');
+// xlsxj = require("xlsx-to-json");
 
 mongoose.connect('mongodb://admin:admin123@ds141902.mlab.com:41902/charlesbot');
 var db=mongoose.connection;
@@ -12,7 +13,7 @@ db.once("open",function(callback){
 // Client Risk Profile
 var Schema=mongoose.Schema;
 var clientRiskSchema=new Schema({
-    ClientId:String,
+    ClientID:String,
     RiskCategory:String,
     From:String,
     To:String,
@@ -28,14 +29,37 @@ var productSchema=new Schema({
     SectorName:String,
     RiskType:String
 })
+var clientSchema=new Schema({
+    ClientId:String,
+    Name:String,
+    ClientType:String,
+    Age:String
+})
+var holdingSchema=new Schema({
+    CustomerID:String,
+    ProductID:String,
+    Quantity:String,
+    CurrentPrice:String,
+    MarketValue:String
+})
+var holdings =mongoose.model("holdings",holdingSchema);
+var clientProfile =mongoose.model("clientProfile",clientSchema);
 var product =mongoose.model("product",productSchema);
-var clientriskprofile =mongoose.model("clientriskprofile",clientRiskSchema);
+var clientriskprofile =mongoose.model("clientriskprofiles",clientRiskSchema);
 let ClientRiskProfileGet=function(obje){
     return clientriskprofile.find(obje);
+}
+let ClientProfileGet=function(obje){
+    return clientProfile.find(obje);
+}
+let holdingsProfileGet=function(obje){
+    return holdings.find(obje);
 }
 let clientRiskProfileUpdate=function(clientID,obje){
     clientriskprofile.where({ ClientID: clientID }).update({ $set: obje})
 }
+
+
 let giveFundDetails=function(clientID,RiskType){
    return product.aggregate([ { $project : {
         ProductIDStatus:{ $ne: [ "$ProductID", clientID] },
@@ -43,7 +67,7 @@ let giveFundDetails=function(clientID,RiskType){
         Name : 1 ,
         RiskType : 1,
         Type:1
-    }},{ $match : { RiskType : RiskType, Type : "ETF" } },{$lookup:{
+    }},{ $match : { RiskType : RiskType, Type : "ETF"  } },{$lookup:{
         from:"holdings",
         localField:"ProductID",
         foreignField:"ProductID",
@@ -52,15 +76,25 @@ let giveFundDetails=function(clientID,RiskType){
     { $unwind: { path: "$productHoldings", preserveNullAndEmptyArrays: true }}
 ]);
 }
-giveFundDetails("P1123","NA").then(function(data){
-console.log(data);
-})
+
+// let getLowPerformingFund=function(clientID){
+//    return holdings.aggregate([ { $holdings : {
+//         // ProductIDStatus:{ $ne: [ "$ProductID", clientID] },
+//         ProductID : 1,
+//     }},{ $match : { RiskType : RiskType, Type : "ETF"  } },{$lookup:{
+//         from:"holdings",
+//         localField:"ProductID",
+//         foreignField:"ProductID",
+//         as: "productHoldings"
+//         }},
+//     { $unwind: { path: "$productHoldings", preserveNullAndEmptyArrays: true }}
+// ]);
+// }
+module.exports.holdingsProfileGet=holdingsProfileGet;
 module.exports.giveFundDetails=giveFundDetails;
 module.exports.ClientRiskProfileGet=ClientRiskProfileGet;
 module.exports.clientRiskProfileUpdate=clientRiskProfileUpdate;
-
-
-
+module.exports.ClientProfileGet=ClientProfileGet;
 
 
 
@@ -157,7 +191,14 @@ module.exports.clientRiskProfileUpdate=clientRiskProfileUpdate;
 //     RiskType:String
 // })
 // var product =mongoose.model("product",clientSchema);
-// mongoXlsx.xlsx2MongoData("./Book1.xlsx", clientSchema, function(err, mongoData) {
+
+// xlsxj({
+//     input: "./Book1.xlsx", 
+//     output: "./output.json"
+//   }, function(err, mongoData) {
+//     if(err) {
+//       console.error(err);
+//     }else {
 //     // console.log(mongoData[0].From.toString());
 //     mongoData.forEach(element => {
         
@@ -178,11 +219,13 @@ module.exports.clientRiskProfileUpdate=clientRiskProfileUpdate;
 //             }
         
 //         })
-//     });
+  
+    
 // });
 
-
-// Product
+//     }
+// });
+// holdings
 // var Schema=mongoose.Schema;
 // var holdingSchema=new Schema({
 //     CustomerID:String,
@@ -226,23 +269,71 @@ module.exports.clientRiskProfileUpdate=clientRiskProfileUpdate;
 //     Date:String
 // })
 // var transactions =mongoose.model("transactions",transactionSchema);
-// mongoXlsx.xlsx2MongoData("./Book1.xlsx", transactionSchema, function(err, mongoData) {
-//     // console.log(mongoData[0].From.toString());
-//     mongoData.forEach(element => {
-//         var transactionDetails=new transactions({
-//             CustomerID:element.CustomerID,
-//             ProductID:element.ProductID,
-//             Quantity:element.Quantity,
-//             Price:element.Price,
-//             Action:element.Action,
-//             Date:element.Date
-//         })
-//         transactionDetails.save(function(error){
-//             console.log("Your transactionDetails has been saved!!!");
-//             if(error){
-//                 console.log(error)
-//             }
-        
-//         })
-//     });
-// });
+// xlsxj({
+//     input: "./Book1.xlsx", 
+//     output: "./output.json"
+//   }, function(err, mongoData) {
+//     if(err) {
+//       console.error(err);
+//     }else {
+    
+//         mongoData.forEach(element => {
+//             var transactionDetails=new transactions({
+//                 CustomerID:element.CustomerID,
+//                 ProductID:element.ProductID,
+//                 Quantity:element.Quantity,
+//                 Price:element.Price,
+//                 Action:element.Action,
+//                 Date:element.Date
+//             })
+//             transactionDetails.save(function(error){
+//                 console.log("Your transactionDetails has been saved!!!");
+//                 if(error){
+//                     console.log(error)
+//                 }
+            
+//             })
+//         });
+//     }
+//   });
+
+
+//Product Performance
+
+// var Schema=mongoose.Schema;
+// var productperformSchema=new Schema({
+//     ProductID:String,
+//     Currentprice:String,
+//     Previousday:String,
+//     Daychange:String,
+//     PercentageChange:String,
+//     Performance:String
+// })
+// var productperformance =mongoose.model("productperformance",productperformSchema);
+// xlsxj({
+//     input: "./Book1.xlsx", 
+//     output: "./output.json"
+//   }, function(err, mongoData) {
+//     if(err) {
+//       console.error(err);
+//     }else {
+    
+//         mongoData.forEach(element => {
+//             var transactionDetails=new productperformance({
+//                 ProductID:element.ProductID,
+//                 Currentprice:element.Currentprice,
+//                 Previousday:element.Previousday,
+//                 Daychange:element.Daychange,
+//                 PercentageChange:element.PercentageChange,
+//                 Performance:element.Performance
+//             })
+//             transactionDetails.save(function(error){
+//                 console.log("Your Product Performance has been saved!!!");
+//                 if(error){
+//                     console.log(error)
+//                 }
+            
+//             })
+//         });
+//     }
+//   });

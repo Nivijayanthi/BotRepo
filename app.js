@@ -12,6 +12,7 @@ app.use(bodyParser.json());
 app.use(express.static(__dirname));
 //imports
 const query = require('./query');
+const template = require('./template');
 
 function showListOfFunds(clientId, riskProfile) {
     let funds = [];
@@ -25,11 +26,28 @@ function showListOfFunds(clientId, riskProfile) {
             console.log("&&&&&&&&&&", JSON.stringify(funds));
         });
     });
-        return funds;
+    return funds;
+}
+
+function buildCarouselResponse(list){
+    let result = [];
+    var objList = new template.CustomListTemplate();
+        if (lisi.length > 0) {
+            list.forEach(async function (value) {
+                objList.speech = "Please find the list of funds avaialable for your risk category";
+                objList.title = values;
+            });
+            await result.push(JSON.parse(JSON.stringify(objList)));
+        } else {
+            objList.speech = "Sorry!!There are no funds available under your new risk category";
+            result.push(JSON.parse(JSON.stringify(objList)));
+        }
+    return result;
 }
 
 
 app.post('/fulfillment', function (req, res) {
+     var msg = [];
     debugger
     var response;
     let listOfFunds = [];
@@ -46,19 +64,15 @@ app.post('/fulfillment', function (req, res) {
 
         listOfFunds = showListOfFunds(clientId, targetProfile);
         console.log("Out...........", listOfFunds);
-        if (listOfFunds.length > 0) {
-            console.log("I am inside if loop");
-            response = 'Please find the fund details';
-        } else {
-            response = 'Sorry!!There are no funds available under your new risk category';
-        }
-        return res.json({
-            speech: response,
-            displayText: response,
-            source: 'portal',
-        });
+        msg = buildCarouselResponse(listOfFunds);
+        // return res.json({
+        //     speech: response,
+        //     displayText: response,
+        //     source: 'portal',
+        // });
+        return res.json(msg);
     }
-    if (req.body.result.metadata.intentName == 'ADD-FUND') {
+    if (req.body.result.metadata.intentName == 'ADD-FUND') {       
         console.log("i am inside Add fund");
         var clientId = req.body.result.parameters.ClientId;
         var val;
@@ -68,62 +82,23 @@ app.post('/fulfillment', function (req, res) {
         });
         listOfFunds = showListOfFunds(clientId, val);
         console.log("List of fund........", listOfFunds);
-        if (listOfFunds.length > 0) {
-            response = "Please find the funds prescribed for your risk profile and their performance over 3 years.";
-        } else {
-        msg={
-  "speech": "Please find the funds prescribed for your risk profile and their performance over 3 years.",
-  "displayText": "",
-  "messages": [
-    {
-      "type": 1,
-      "platform": "facebook",
-      "title": "Apple",      
-      "buttons": [
-        {
-          "text": "Buy",
-          "postback": "Add new fund"
-        }
-      ]
-    },
-{
-      "type": 1,
-      "platform": "facebook",
-      "title": "Apple2",      
-      "buttons": [
-        {
-          "text": "Buy",
-          "postback": "Add new fund"
-        }
-      ]
-    }   
-  ],
-  contextOut: [
-    {
-      "name": "GetFeedback",
-      "lifespan": 1,
-      "parameters": {
-        
-      }
-    }
-  ]
-}
-            //response = "Sorry!!There are no funds available under your risk category ";
-        }
+        msg = buildCarouselResponse(listOfFunds);     
         // return res.json({
         //     speech: response,
         //     displayText: response,
         //     source: 'portal',
         // });
         return res.json(msg);
+    }
+    if(req.body.result.metadata.intentName == 'CHANGE-RISK-PROFILE-SEND-EMAIL'){
+        console.log("i am inside exit fund");
+        var clientId = req.body.result.parameters.ClientID;
 
     }
-
-
 })
 console.log("Server Running at Port : " + port);
 
-app.listen(port, function(){
+app.listen(port, function () {
     console.log('Listening my app on  PORT: ' + port);
 });
 

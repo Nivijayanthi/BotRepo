@@ -14,10 +14,10 @@ app.use(express.static(__dirname));
 const query = require('./query');
 const template = require('./template');
 
-function showListOfFunds(clientId, riskProfile) {
+async function showListOfFunds(clientId, riskProfile) {
     console.log("I am inside show method");
     let funds = [];
-    query.giveFundDetails(clientId, riskProfile).then(async function (data) {
+    await query.giveFundDetails(clientId, riskProfile).then(async function (data) {
         console.log("The response from DB join..............", JSON.stringify(data));
         await data.forEach(async function (arrayItem) {
             console.log("%%%%%%%%%%", JSON.stringify(arrayItem));
@@ -27,6 +27,7 @@ function showListOfFunds(clientId, riskProfile) {
             console.log("&&&&&&&&&&", JSON.stringify(funds));
         });
     });
+    console.log("return..........",funds)
     return funds;
 }
 

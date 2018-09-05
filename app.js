@@ -79,6 +79,7 @@ app.post('/fulfillment', async function (req, res) {
         console.log("i am inside Add fund");
         var clientId = req.body.result.parameters.ClientId;
         var val;
+        console.log(clientId);
         await query.ClientRiskProfileGet({ ClientID: clientId, Active: 'Y' }).then(function (data) {
            console.log("The response from DB risk profile..............", JSON.stringify(data));
             val = data.RiskCategory;

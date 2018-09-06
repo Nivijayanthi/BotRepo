@@ -4,7 +4,7 @@ module.exports.CustomListTemplate = function () {
 
     var objectList = {
         "type": 1,
-        "platform": "Facebook",
+        "platform": "facebook",
         "title" : null,
         "subtitle" : null,
         "buttons" : [{

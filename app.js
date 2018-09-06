@@ -180,7 +180,7 @@ app.post('/fulfillment', async function (req, res) {
     }
     if (req.body.result.metadata.intentName == 'EXIT-FUND') {
         var clientId = req.body.result.parameters.clientid;
-        await query.getLowPerformingFund(clientid).then(function(data){
+        await query.getLowPerformingFund(clientId).then(function(data){
             console.log(data);
         })
 

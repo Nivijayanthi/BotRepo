@@ -139,6 +139,7 @@ app.post('/fulfillment', async function (req, res) {
         console.log("i am inside exit fund" , JSON.stringify(req.body.result));     
         var clientId = req.body.result.contexts[0].parameters.clientId;
         var resType = req.body.result.contexts.name;
+        console.log("Hellllllllllllllllllo", resType);
         if(resType == 'change-risk-profile-followup'){
             console.log("Inside change");
              var currentProfile =req.body.result.contexts.parameters.CurrentProfile;

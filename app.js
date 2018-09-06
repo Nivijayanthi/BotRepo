@@ -13,6 +13,7 @@ app.use(express.static(__dirname));
 //imports
 const query = require('./query');
 const template = require('./template');
+var authHelper = require('./authHelper');   
 
 async function showListOfFunds(clientId, riskProfile) {
     console.log("I am inside show method");
@@ -163,6 +164,7 @@ app.post('/fulfillment', async function (req, res) {
 
     }
     if(req.body.result.metadata.intentName == 'CURRENT-RISK-PROFILE'){
+        console.log("Authentication..................",authHelper.getAuthUrl() );
         var clientId = req.body.result.parameters.clientId;
         var val;
         await query.ClientRiskProfileGet({ ClientID: clientId, Active: 'Y' }).then(function (data) {

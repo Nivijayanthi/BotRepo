@@ -55,17 +55,17 @@ app.post('/fulfillment', async function (req, res) {
           "quick_replies": [
             {
               "content_type": "text",
-              "title": "FULLGOAL INTERNATIONAL UCITS ETF",
+              "title": "FULL",
               "payload": "Add new fund"
             },
             {
               "content_type": "text",
-              "title": "FRANKLIN LIBERTYSHARES ICAV",
+              "title": "FRANK",
               "payload": "Add new fund"
             },
             {
               "content_type": "text",
-              "title": "FIRST TRUST GLOBAL FUNDS PUBLIC LIMITED COMPANY",
+              "title": "FIRST",
               "payload": "Add new fund"
             },
             {

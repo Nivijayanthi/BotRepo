@@ -144,7 +144,7 @@ app.post('/fulfillment', async function (req, res) {
             console.log("Inside change");
              var currentProfile =req.body.result.contexts[0].parameters.CurrentProfile;
              var targetProfile = req.body.result.contexts[0].parameters.TargetProfile;
-            response = `Your change request for risk category has been sent to the Trading desk. You will be receiving a detailed  email shortly.`;
+            response = `Your change request for risk category from ${currentProfile} to ${targetProfile} has been sent to the Trading desk. You will be receiving a detailed  email shortly.`;
         }if(resType == 'add-fund-folowup'){
             console.log("Inside add");
            response = `Your request to add new fund has been sent to the Trading desk. You will be receiving a detailed  email shortly.`;

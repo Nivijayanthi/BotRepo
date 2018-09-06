@@ -39,10 +39,46 @@ async function showListOfFunds(clientId, riskProfile) {
 
 
 app.post('/fulfillment', async function (req, res) {
-    var dialogFlowResponse ={        
-                speech : "hello",
-                messages : []
+    // var dialogFlowResponse ={        
+    //             speech : "hello",
+    //             messages : []
+    // }
+    var dialogFlowResponse = {
+  "speech": "hello",
+  "messages": [
+    {
+      "type": 4,
+      "platform": "Facebook",
+      "payload": {
+        "facebook": {
+          "text": "Please find the list of funds avaialable for your risk category",
+          "quick_replies": [
+            {
+              "content_type": "text",
+              "title": "FULLGOAL INTERNATIONAL UCITS ETF",
+              "payload": "Add new fund"
+            },
+            {
+              "content_type": "text",
+              "title": "FRANKLIN LIBERTYSHARES ICAV",
+              "payload": "Add new fund"
+            },
+            {
+              "content_type": "text",
+              "title": "FIRST TRUST GLOBAL FUNDS PUBLIC LIMITED COMPANY",
+              "payload": "Add new fund"
+            },
+            {
+              "content_type": "text",
+              "title": "GF INTERNATIONAL",
+              "payload": "Add new fund"
+            }
+          ]
+        }
+      }
     }
+  ]
+};
    
     var msg = {
         type: 4,
@@ -114,15 +150,15 @@ app.post('/fulfillment', async function (req, res) {
         console.log("List of fund........", listOfFunds);
          var objList = new template.QuickReplyTemplate;
         if (listOfFunds.length > 0) {                       
-            listOfFunds.forEach(async function (value) {                
-                objList.title = value;
-                 await msgList.push(JSON.parse(JSON.stringify(objList)));
-            });
-            console.log("masssssssssssssss",JSON.stringify(msgList));
-            msg.payload.facebook.text = "Please find the list of funds avaialable for your risk category";
-            msg.payload.facebook.quick_replies = msgList;
-            await dialogFlowResponse.messages.push(msg);
-            console.log("Final msgggggggggggggggggg", JSON.stringify(dialogFlowResponse));
+            // listOfFunds.forEach(async function (value) {                
+            //     objList.title = value;
+            //      await msgList.push(JSON.parse(JSON.stringify(objList)));
+            // });
+            // console.log("masssssssssssssss",JSON.stringify(msgList));
+            // msg.payload.facebook.text = "Please find the list of funds avaialable for your risk category";
+            // msg.payload.facebook.quick_replies = msgList;
+            // await dialogFlowResponse.messages.push(msg);
+            // console.log("Final msgggggggggggggggggg", JSON.stringify(dialogFlowResponse));
             return res.json(dialogFlowResponse);
         } else {
             response = "Sorry!!There are no funds available under your new risk category";

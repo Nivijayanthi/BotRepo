@@ -6,6 +6,7 @@
   "dependencies": {
     "apiai": "^2.0.5",
     "mongoose": "^5.1.6",
+    "simple-oauth2": "^1.4.0",
     "body-parser": "^1.15.1",
     "events": "1.1.1",
     "socket.io": "2.0.4",

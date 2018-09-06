@@ -135,9 +135,16 @@ app.post('/fulfillment', async function (req, res) {
 
 
     }
-    if (req.body.result.metadata.intentName == 'CHANGE-RISK-PROFILE-SEND-EMAIL') {
-        console.log("i am inside exit fund");
+    if (req.body.result.metadata.intentName == 'SEND-EMAIL') {
+        console.log("i am inside exit fund" , JSON.stringify(req.body.result));
+
         var clientId = req.body.result.parameters.ClientID;
+        response = "Your request has been sent to the Trading desk. You will be receiving a detailed  email shortly.";
+         return res.json({
+                speech: response,
+                displayText: response,
+                source: 'portal',
+            });
 
     }
 })

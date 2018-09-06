@@ -113,6 +113,7 @@ app.post('/fulfillment', async function (req, res) {
                 objList.payload = value;
                  await msgList.push(JSON.parse(JSON.stringify(objList)));
             });
+            console.log("masssssssssssssss",JSON.stringify(msgList));
             msg.payload.facebook.text = "Please find the list of funds avaialable for your risk category";
             msg.payload.facebook.quick_replies = msgList;
             return res.json(msg);

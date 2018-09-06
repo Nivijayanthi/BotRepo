@@ -10,7 +10,7 @@ var credentials = {
     }
   };
   var oauth2 = require('simple-oauth2').create(credentials);
-  
+  console.log("valllllllllllllllll", oauth2);
  //var redirectUri = 'https://portal.azure.com';
  // var redirectUri = window.location.href;
   var redirectUri = "https://login.live.com/oauth20_desktop.srf";

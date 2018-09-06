@@ -192,17 +192,28 @@ app.post('/fulfillment', async function (req, res) {
                 },
                 "saveToSentItems": "true"
             };
-
-
-
-
         graphHelper.sendEmail('39132@hexaware.com', mailBody, function (err) {
+            console.log("inside send mail app.js")
             if (err) {
                 renderError(res, err);
                 return;
             };
             console.log("Sent an email");
         });
+
+        var credentials = {
+    client: {
+      id: '8a6b25b5-7148-45ac-a716-98faf826d2fe',
+      secret: 'dqvntQRX930|=%msRYKD10(',
+    },
+    auth: {
+      tokenHost: 'https://login.microsoftonline.com',
+      authorizePath: 'common/oauth2/v2.0/authorize',
+      tokenPath: 'common/oauth2/v2.0/token'
+    }
+  };
+  var oauth2 = require('simple-oauth2').create(credentials);
+  console.log("valllllllllllllllll", oauth2);
             var clientId = req.body.result.parameters.clientId;
             var val;
             await query.ClientRiskProfileGet({ ClientID: clientId, Active: 'Y' }).then(function (data) {

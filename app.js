@@ -75,7 +75,7 @@ app.post('/fulfillment', async function (req, res) {
         if (listOfFunds.length > 0) {  
             msg.payload.facebook.text = "Please find the list of funds avaialable for your risk category";          
             listOfFunds.forEach(async function (value) {                
-                objList.title = value;
+                objList.text = value;
                  await msgList.push(JSON.parse(JSON.stringify(objList)));
             });
             //console.log("masssssssssssssss",JSON.stringify(msgList));

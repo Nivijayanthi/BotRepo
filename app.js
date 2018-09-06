@@ -46,7 +46,7 @@ app.post('/fulfillment', async function (req, res) {
 
     var msg = {
         type: 4,
-        platform: "Facebook",
+        platform: "facebook",
         payload :{
             facebook : {
                 text : null,

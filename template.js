@@ -23,7 +23,7 @@ module.exports.QuickReplyTemplate = function () {
     var objectList ={
                     "content_type": "text",
                     "title": null,
-                    "payload": "Add new fund"
+                    "payload": "SEND-EMAIL"
                     // "text": null,
                     // "postback": "Add new fund"
                 }

@@ -72,7 +72,7 @@ app.post('/fulfillment', async function (req, res) {
         console.log("Out...........", listOfFunds);
         var objList = new template.QuickReplyTemplate;
         if (listOfFunds.length > 0) {  
-            msg.payload.facebook.text = "Please find the list of funds avaialable for your risk category";          
+            msg.payload.facebook.text = "Please find the list of funds available for your risk category";          
             listOfFunds.forEach(async function (value) {                
                 objList.title = value;
                  await msgList.push(JSON.parse(JSON.stringify(objList)));

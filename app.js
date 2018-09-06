@@ -40,8 +40,8 @@ async function showListOfFunds(clientId, riskProfile) {
 
 app.post('/fulfillment', async function (req, res) {
     var dialogFlowResponse ={        
-                speech : "",
-                displayText: "",
+                speech : "hello",
+                displayText: "hello",
                 messages : []
     }
    
@@ -78,8 +78,12 @@ app.post('/fulfillment', async function (req, res) {
                 objList.title = value;
                  await msgList.push(JSON.parse(JSON.stringify(objList)));
             });
+            //console.log("masssssssssssssss",JSON.stringify(msgList));
+            msg.payload.facebook.text = "Please find the list of funds avaialable for your risk category";
             msg.payload.facebook.quick_replies = msgList;
-            return res.json(msg);
+            await dialogFlowResponse.messages.push(msg);
+            console.log("Final msgggggggggggggggggg", JSON.stringify(dialogFlowResponse));
+            return res.json(dialogFlowResponse);
         } else {
             response = "Sorry!!There are no funds available under your new risk category";
             return res.json({

@@ -87,7 +87,7 @@ messages: [{
 "platform": "facebook",
 "payload": {
 "facebook": {
-"text": "Your alternate contact number and alternate communication channel will be updated on or before " + myDate + ". The ticket# is " + data.result.u_number + ". Is there anything else I may help you with?",
+"text": "Your alternate contact number and alternate communication channel will be updated on or before " ,
 "quick_replies": [{
 "content_type": "text",
 "title": "Yes",

@@ -27,8 +27,10 @@ async function showListOfFunds(clientId, riskProfile) {
             console.log("&&&&&&&&&&", JSON.stringify(funds));
         });
     });
-    console.log("return..........", funds)
+    console.log("return..........", funds)  
     return funds;
+
+    
 }
 
 // function buildCarouselResponse(list){
@@ -82,7 +84,11 @@ app.post('/fulfillment', async function (req, res) {
             msg.payload.facebook.quick_replies = msgList;
             await dialogFlowResponse.messages.push(msg);
             console.log("Final msgggggggggggggggggg", JSON.stringify(dialogFlowResponse));
+              query.clientRiskProfileUpdate(clientId, {To : '06-Sep-2018'}).then(function(data){
+            console.log("updated successfully" , JSON.stringify(data));
+        });
             return res.json(dialogFlowResponse);
+           
         } else {
             response = "Sorry!!There are no funds available under your new risk category";
             return res.json({
@@ -91,8 +97,7 @@ app.post('/fulfillment', async function (req, res) {
                 source: 'portal',
             });
 
-        }
-
+        }      
 
     }
     if (req.body.result.metadata.intentName == 'ADD-FUND') {

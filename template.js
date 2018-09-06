@@ -17,3 +17,17 @@ module.exports.CustomListTemplate = function () {
 
 return objectList;
 }
+
+module.exports.QuickReplyTemplate = function () {
+
+    var objectList ={
+                "quick_replies" : [{
+                    "content_type": "text",
+                    "title": null,
+                    "payload": null
+                }]
+
+            }
+
+return objectList;
+}

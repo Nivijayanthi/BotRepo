@@ -41,9 +41,14 @@ async function showListOfFunds(clientId, riskProfile) {
 app.post('/fulfillment', async function (req, res) {
    
     var msg = {
-        speech: null,
-        displayText: null,
-        messages : []
+        type: 4,
+        platform: "Facebook",
+        payload :{
+            facebook : {
+                text : null,
+                quick_replies : []
+            }
+        }
     };
     debugger
     var response;
@@ -63,13 +68,14 @@ app.post('/fulfillment', async function (req, res) {
         listOfFunds = await showListOfFunds(clientId, targetProfile);
         console.log("Out...........", listOfFunds);
         var objList = new template.CustomListTemplate();
-        if (listOfFunds.length > 0) {
-            listOfFunds.forEach(async function (value) {
-                objList.speech = "Please find the list of funds avaialable for your risk category";
+        if (listOfFunds.length > 0) {  
+            msg.payload.facebook.text = "Please find the list of funds avaialable for your risk category";          
+            listOfFunds.forEach(async function (value) {                
                 objList.title = value;
+                objList.payload = value;
                  await msgList.push(JSON.parse(JSON.stringify(objList)));
             });
-            msg.messages = msgList;
+            msg.payload.facebook.quick_replies = msgList;
             return res.json(msg);
         } else {
             response = "Sorry!!There are no funds available under your new risk category";
@@ -100,7 +106,7 @@ app.post('/fulfillment', async function (req, res) {
         }
 
         console.log("List of fund........", listOfFunds);
-        var objList = new template.CustomListTemplate();
+        var objList = new template.QuickReplyTemplate;
         objList.displayText = "Please find the list of funds avaialable for your risk category";
         if (listOfFunds.length > 0) {
             await listOfFunds.forEach(async function (value) {

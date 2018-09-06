@@ -79,6 +79,30 @@ app.post('/fulfillment', async function (req, res) {
     }
   ]
 };
+
+var content ={
+speech: '',
+messages: [{
+"type": 4,
+"platform": "facebook",
+"payload": {
+"facebook": {
+"text": "Your alternate contact number and alternate communication channel will be updated on or before " + myDate + ". The ticket# is " + data.result.u_number + ". Is there anything else I may help you with?",
+"quick_replies": [{
+"content_type": "text",
+"title": "Yes",
+"payload": "another_query"
+},
+{
+"content_type": "text",
+"title": "No thanks",
+"payload": "no_thanks"
+}
+]
+}
+}
+}]
+};
    
     var msg = {
         type: 4,
@@ -158,8 +182,8 @@ app.post('/fulfillment', async function (req, res) {
             // msg.payload.facebook.text = "Please find the list of funds avaialable for your risk category";
             // msg.payload.facebook.quick_replies = msgList;
             // await dialogFlowResponse.messages.push(msg);
-            console.log("Final msgggggggggggggggggg", JSON.stringify(dialogFlowResponse));
-            return res.json(dialogFlowResponse);
+            console.log("Final msgggggggggggggggggg", JSON.stringify(content));
+            return res.json(content);
         } else {
             response = "Sorry!!There are no funds available under your new risk category";
             return res.json({

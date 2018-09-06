@@ -13,7 +13,7 @@ app.use(express.static(__dirname));
 //imports
 const query = require('./query');
 const template = require('./template');
-var authHelper = require('./authHelper');   
+var authHelper = require('./auth');   
 
 async function showListOfFunds(clientId, riskProfile) {
     console.log("I am inside show method");

@@ -21,11 +21,11 @@ return objectList;
 module.exports.QuickReplyTemplate = function () {
 
     var objectList ={
-                    // "content_type": "text",
-                    // "title": null,
-                    // "payload": "Add new fund"
-                    "text": null,
-                    "postback": "Add new fund"
+                    "content_type": "text",
+                    "title": null,
+                    "payload": "Add new fund"
+                    // "text": null,
+                    // "postback": "Add new fund"
                 }
 
 return objectList;

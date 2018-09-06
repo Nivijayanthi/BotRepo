@@ -158,7 +158,7 @@ app.post('/fulfillment', async function (req, res) {
             // msg.payload.facebook.text = "Please find the list of funds avaialable for your risk category";
             // msg.payload.facebook.quick_replies = msgList;
             // await dialogFlowResponse.messages.push(msg);
-            // console.log("Final msgggggggggggggggggg", JSON.stringify(dialogFlowResponse));
+            console.log("Final msgggggggggggggggggg", JSON.stringify(dialogFlowResponse));
             return res.json(dialogFlowResponse);
         } else {
             response = "Sorry!!There are no funds available under your new risk category";

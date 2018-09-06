@@ -146,7 +146,7 @@ app.post('/fulfillment', async function (req, res) {
             response = "Your change request for risk category has been sent to the Trading desk. You will be receiving a detailed  email shortly. \n Current Profile : "
             + {currentProfile} + "\n Target profile : "+ {targetProfile} + " Customer Id : " + {clientId};
         }if(resType == 'add-fund-folowup'){
-           response = "Your request to add new fund has been sent to the Trading desk. You will be receiving a detailed  email shortly. \n Customer Id : " + {clientId};
+           response = "Your request to add new fund has been sent to the Trading desk. You will be receiving a detailed  email shortly. \n Customer Id";
         }
         }        
          return res.json({

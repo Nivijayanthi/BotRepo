@@ -67,7 +67,7 @@ app.post('/fulfillment', async function (req, res) {
 
         listOfFunds = await showListOfFunds(clientId, targetProfile);
         console.log("Out...........", listOfFunds);
-        var objList = new template.CustomListTemplate();
+        var objList = new template.QuickReplyTemplate;
         if (listOfFunds.length > 0) {  
             msg.payload.facebook.text = "Please find the list of funds avaialable for your risk category";          
             listOfFunds.forEach(async function (value) {                
@@ -106,7 +106,7 @@ app.post('/fulfillment', async function (req, res) {
         }
 
         console.log("List of fund........", listOfFunds);
-         var objList = new template.CustomListTemplate();
+         var objList = new template.QuickReplyTemplate;
         if (listOfFunds.length > 0) {                       
             listOfFunds.forEach(async function (value) {                
                 objList.title = value;

@@ -201,6 +201,7 @@ app.post('/fulfillment', async function (req, res) {
                 return;
             };
             console.log("Sent an email");
+        });
             var clientId = req.body.result.parameters.clientId;
             var val;
             await query.ClientRiskProfileGet({ ClientID: clientId, Active: 'Y' }).then(function (data) {
@@ -213,7 +214,14 @@ app.post('/fulfillment', async function (req, res) {
                 displayText: response,
                 source: 'portal',
             });
-        }
+    }
+    if (req.body.result.metadata.intentName == 'EXIT-FUND') {
+        var clientId = req.body.result.parameters.clientid;
+        await query.getLowPerformingFund(clientId).then(function(data){
+            console.log(data);
+        })
+
+    }
 })
 console.log("Server Running at Port : " + port);
 

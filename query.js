@@ -76,7 +76,23 @@ let giveFundDetails=function(clientID,RiskType){
     { $unwind: { path: "$productHoldings", preserveNullAndEmptyArrays: true }}
 ]);
 }
-
+let getLowPerformingFund=function(clientID){
+    return holdings.aggregate([ {$lookup:{
+        from:"productperformances",
+        localField:"ProductID",
+        foreignField:"ProductID",
+        as: "productHoldings"
+        }},
+        { $unwind: { path: "$productHoldings", preserveNullAndEmptyArrays: true }},{ $project : {
+        ProductID : 1,
+        CustomerID: 1,
+        Quantity : 1 ,
+        CurrentPrice : 1,
+        MarketValue:1,
+        productHoldings:1
+    }},{ $match : { CustomerID : clientID,'productHoldings.Performance':'LOW' } }
+])
+}
 // let getLowPerformingFund=function(clientID){
 //    return holdings.aggregate([ { $holdings : {
 //         // ProductIDStatus:{ $ne: [ "$ProductID", clientID] },
@@ -95,6 +111,7 @@ module.exports.giveFundDetails=giveFundDetails;
 module.exports.ClientRiskProfileGet=ClientRiskProfileGet;
 module.exports.clientRiskProfileUpdate=clientRiskProfileUpdate;
 module.exports.ClientProfileGet=ClientProfileGet;
+module.exports.getLowPerformingFund=getLowPerformingFund;
 
 
 

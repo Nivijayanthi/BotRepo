@@ -176,6 +176,13 @@ app.post('/fulfillment', async function (req, res) {
                 source: 'portal',
             });
     }
+    if (req.body.result.metadata.intentName == 'EXIT-FUND') {
+        var clientId = req.body.result.parameters.clientid;
+        await query.getLowPerformingFund(clientid).then(function(data){
+            console.log(data);
+        })
+
+    }
 })
 console.log("Server Running at Port : " + port);
 

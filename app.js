@@ -48,7 +48,7 @@ app.post('/fulfillment', async function (req, res) {
   messages: [
     {
       "type": 4,
-      "platform": "Facebook",
+      "platform": "facebook",
       "payload": {
         "facebook": {
           "text": "Please find the list of funds avaialable for your risk category",

@@ -136,18 +136,18 @@ app.post('/fulfillment', async function (req, res) {
 
     }
     if (req.body.result.metadata.intentName == 'SEND-EMAIL') {
-        console.log("i am inside exit fund" , JSON.stringify(req.body.result));    
-        if(req.body.result){   
+        console.log("i am inside exit fund" , JSON.stringify(req.body.result));     
         var clientId = req.body.result.contexts[0].parameters.clientId;
         var resType = req.body.result.contexts.name;
         if(resType == 'change-risk-profile-followup'){
+            console.log("Inside change");
              var currentProfile =req.body.result.contexts.parameters.CurrentProfile;
              var targetProfile = req.body.result.contexts.parameters.TargetProfile;
-            response = "Your change request for risk category has been sent to the Trading desk. You will be receiving a detailed  email shortly. \n Current Profile ";
+            response = "Your change request for risk category has been sent to the Trading desk. You will be receiving a detailed  email shortly.";
         }if(resType == 'add-fund-folowup'){
-           response = "Your request to add new fund has been sent to the Trading desk. You will be receiving a detailed  email shortly. \n Customer Id";
-        }
-        }        
+            console.log("Inside add");
+           response = "Your request to add new fund has been sent to the Trading desk. You will be receiving a detailed  email shortly.";
+        }      
          return res.json({
                 speech: response,
                 displayText: response,

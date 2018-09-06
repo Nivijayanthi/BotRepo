@@ -143,8 +143,7 @@ app.post('/fulfillment', async function (req, res) {
         if(resType == 'change-risk-profile-followup'){
              var currentProfile =req.body.result.contexts.parameters.CurrentProfile;
              var targetProfile = req.body.result.contexts.parameters.TargetProfile;
-            response = "Your change request for risk category has been sent to the Trading desk. You will be receiving a detailed  email shortly. \n Current Profile : "
-            + {currentProfile} + "\n Target profile : "+ {targetProfile} + " Customer Id : " + {clientId};
+            response = "Your change request for risk category has been sent to the Trading desk. You will be receiving a detailed  email shortly. \n Current Profile ";
         }if(resType == 'add-fund-folowup'){
            response = "Your request to add new fund has been sent to the Trading desk. You will be receiving a detailed  email shortly. \n Customer Id";
         }

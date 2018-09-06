@@ -13,7 +13,8 @@ app.use(express.static(__dirname));
 //imports
 const query = require('./query');
 const template = require('./template');
-var authHelper = require('./auth');   
+var authHelper = require('./auth');
+const graphHelper = require('./try');
 
 async function showListOfFunds(clientId, riskProfile) {
     console.log("I am inside show method");
@@ -28,10 +29,10 @@ async function showListOfFunds(clientId, riskProfile) {
             console.log("&&&&&&&&&&", JSON.stringify(funds));
         });
     });
-    console.log("return..........", funds)  
+    console.log("return..........", funds)
     return funds;
 
-    
+
 }
 
 // function buildCarouselResponse(list){
@@ -42,18 +43,18 @@ async function showListOfFunds(clientId, riskProfile) {
 
 
 app.post('/fulfillment', async function (req, res) {
-    var dialogFlowResponse ={        
-                speech : "hello",
-                messages : []
+    var dialogFlowResponse = {
+        speech: "hello",
+        messages: []
     }
 
     var msg = {
         type: 4,
         platform: "facebook",
-        payload :{
-            facebook : {
-                text : null,
-                quick_replies : []
+        payload: {
+            facebook: {
+                text: null,
+                quick_replies: []
             }
         }
     };
@@ -74,22 +75,22 @@ app.post('/fulfillment', async function (req, res) {
         listOfFunds = await showListOfFunds(clientId, targetProfile);
         console.log("Out...........", listOfFunds);
         var objList = new template.QuickReplyTemplate;
-        if (listOfFunds.length > 0) {  
-            msg.payload.facebook.text = "Please find the list of funds available for your risk category";          
-            listOfFunds.forEach(async function (value) {                
+        if (listOfFunds.length > 0) {
+            msg.payload.facebook.text = "Please find the list of funds available for your risk category";
+            listOfFunds.forEach(async function (value) {
                 objList.title = value;
-                 await msgList.push(JSON.parse(JSON.stringify(objList)));
+                await msgList.push(JSON.parse(JSON.stringify(objList)));
             });
             //console.log("masssssssssssssss",JSON.stringify(msgList));
             msg.payload.facebook.text = "Please find the list of funds avaialable for your risk category";
             msg.payload.facebook.quick_replies = msgList;
             await dialogFlowResponse.messages.push(msg);
             console.log("Final msgggggggggggggggggg", JSON.stringify(dialogFlowResponse));
-        //       query.clientRiskProfileUpdate(clientId, {To : '06-Sep-2018'}).then(function(data){
-        //     console.log("updated successfully" , JSON.stringify(data));
-        // });
+            //       query.clientRiskProfileUpdate(clientId, {To : '06-Sep-2018'}).then(function(data){
+            //     console.log("updated successfully" , JSON.stringify(data));
+            // });
             return res.json(dialogFlowResponse);
-           
+
         } else {
             response = "Sorry!!There are no funds available under your new risk category";
             return res.json({
@@ -98,7 +99,7 @@ app.post('/fulfillment', async function (req, res) {
                 source: 'portal',
             });
 
-        }      
+        }
 
     }
     if (req.body.result.metadata.intentName == 'ADD-FUND') {
@@ -118,13 +119,13 @@ app.post('/fulfillment', async function (req, res) {
         }
 
         console.log("List of fund........", listOfFunds);
-         var objList = new template.QuickReplyTemplate;
-        if (listOfFunds.length > 0) {                       
-            listOfFunds.forEach(async function (value) {                
+        var objList = new template.QuickReplyTemplate;
+        if (listOfFunds.length > 0) {
+            listOfFunds.forEach(async function (value) {
                 objList.title = value;
-                 await msgList.push(JSON.parse(JSON.stringify(objList)));
+                await msgList.push(JSON.parse(JSON.stringify(objList)));
             });
-            console.log("masssssssssssssss",JSON.stringify(msgList));
+            console.log("masssssssssssssss", JSON.stringify(msgList));
             msg.payload.facebook.text = "Please find the list of funds avaialable for your risk category";
             msg.payload.facebook.quick_replies = msgList;
             await dialogFlowResponse.messages.push(msg);
@@ -142,42 +143,77 @@ app.post('/fulfillment', async function (req, res) {
 
     }
     if (req.body.result.metadata.intentName == 'SEND-EMAIL') {
-        console.log("i am inside exit fund" , JSON.stringify(req.body.result));     
+        console.log("i am inside exit fund", JSON.stringify(req.body.result));
         var clientId = req.body.result.contexts[0].parameters.clientId;
         var resType = req.body.result.contexts[0].name;
         console.log("Hellllllllllllllllllo", resType);
-        if(resType == 'change-risk-profile-followup'){
+        if (resType == 'change-risk-profile-followup') {
             console.log("Inside change");
-             var currentProfile =req.body.result.contexts[0].parameters.CurrentProfile;
-             var targetProfile = req.body.result.contexts[0].parameters.TargetProfile;
+            var currentProfile = req.body.result.contexts[0].parameters.CurrentProfile;
+            var targetProfile = req.body.result.contexts[0].parameters.TargetProfile;
             response = `Your change request for risk category from ${currentProfile} to ${targetProfile} has been sent to the Trading desk. You will be receiving a detailed  email shortly.`;
-        }if(resType == 'add-fund-folowup'){
+        } if (resType == 'add-fund-folowup') {
             console.log("Inside add");
-           response = `Your request to add new fund has been sent to the Trading desk. You will be receiving a detailed  email shortly.`;
-           
-        }      
-         return res.json({
-                speech: response,
-                displayText: response,
-                source: 'portal',
-            });
+            response = `Your request to add new fund has been sent to the Trading desk. You will be receiving a detailed  email shortly.`;
+
+        }
+        return res.json({
+            speech: response,
+            displayText: response,
+            source: 'portal',
+        });
 
     }
-    if(req.body.result.metadata.intentName == 'CURRENT-RISK-PROFILE'){
-        console.log("Authentication..................",authHelper.getAuthUrl() );
-        var clientId = req.body.result.parameters.clientId;
-        var val;
-        await query.ClientRiskProfileGet({ ClientID: clientId, Active: 'Y' }).then(function (data) {
-            console.log("The response from DB risk profile..............", JSON.stringify(data));
-            val = data.RiskCategory;
-        });
-        response = `Your current risk profile is ${val}`;
-         return res.json({
+    if (req.body.result.metadata.intentName == 'CURRENT-RISK-PROFILE') {
+        console.log("Authentication..................", authHelper.getAuthUrl());
+        const mailBody =
+            {
+                "message": {
+                    "subject": "Meet for lunch?",
+                    "body": {
+                        "contentType": "Text",
+                        "content": "The new cafeteria is open."
+                    },
+                    "toRecipients": [
+                        {
+                            "emailAddress": {
+                                "address": "39416@hexaware.com"
+                            }
+                        }
+                    ],
+                    "ccRecipients": [
+                        {
+                            "emailAddress": {
+                                "address": "37351@hexaware.com"
+                            }
+                        }
+                    ]
+                },
+                "saveToSentItems": "true"
+            };
+
+
+
+
+        graphHelper.sendEmail('39132@hexaware.com', mailBody, function (err) {
+            if (err) {
+                renderError(res, err);
+                return;
+            };
+            console.log("Sent an email");
+            var clientId = req.body.result.parameters.clientId;
+            var val;
+            await query.ClientRiskProfileGet({ ClientID: clientId, Active: 'Y' }).then(function (data) {
+                console.log("The response from DB risk profile..............", JSON.stringify(data));
+                val = data.RiskCategory;
+            });
+            response = `Your current risk profile is ${val}`;
+            return res.json({
                 speech: response,
                 displayText: response,
                 source: 'portal',
             });
-    }
+        }
 })
 console.log("Server Running at Port : " + port);
 

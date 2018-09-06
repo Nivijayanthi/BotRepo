@@ -116,7 +116,7 @@ app.post('/fulfillment', async function (req, res) {
          var objList = new template.QuickReplyTemplate;
         if (listOfFunds.length > 0) {                       
             listOfFunds.forEach(async function (value) {                
-                objList.title = value;
+                objList.text = value;
                  await msgList.push(JSON.parse(JSON.stringify(objList)));
             });
             console.log("masssssssssssssss",JSON.stringify(msgList));

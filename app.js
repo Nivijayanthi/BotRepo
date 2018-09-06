@@ -84,9 +84,9 @@ app.post('/fulfillment', async function (req, res) {
             msg.payload.facebook.quick_replies = msgList;
             await dialogFlowResponse.messages.push(msg);
             console.log("Final msgggggggggggggggggg", JSON.stringify(dialogFlowResponse));
-              query.clientRiskProfileUpdate(clientId, {To : '06-Sep-2018'}).then(function(data){
-            console.log("updated successfully" , JSON.stringify(data));
-        });
+        //       query.clientRiskProfileUpdate(clientId, {To : '06-Sep-2018'}).then(function(data){
+        //     console.log("updated successfully" , JSON.stringify(data));
+        // });
             return res.json(dialogFlowResponse);
            
         } else {

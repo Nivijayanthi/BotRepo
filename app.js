@@ -228,7 +228,7 @@ app.post('/fulfillment', async function (req, res) {
          if(product.length>0 && holdingsd.length>0){
              let currentPrice=product[0].Currentprice;
              let quantity=holdingsd[0].Quantity;
-             let marketvalue=quantity * marketvalue;
+             let marketvalue=quantity * currentPrice;
              response=`Your ${fundname} is exited. Details of the funds will be emailed to you shortly.`;
              response+="Current Price: "+currentPrice + "\n\n";
              response+="Quantity: "+quantity + "\n\n";

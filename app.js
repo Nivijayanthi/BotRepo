@@ -222,7 +222,7 @@ app.post('/fulfillment', async function (req, res) {
         await query.ProductGet({Name:fundname}).then(async function(funddetails){
          let productID=funddetails[0].ProductID;
          let productName=funddetails[0].Name;
-         await query.productperformanceGet({ProductID:productID}).then(function(product){
+         await query.productperformanceGet({ProductID:productID}).then(async function(product){
             await query.holdingsProfileGet({ProductID:productID,CustomerID:clientId}).then(function(holdingsd){
          if(product.length>0 && holdingsd.length>0){
              let currentPrice=product[0].Currentprice;

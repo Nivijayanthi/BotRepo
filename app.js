@@ -62,7 +62,7 @@ app.post('/fulfillment', async function (req, res) {
     var response;
     let msgList = [];
     let listOfFunds = [];
-    console.log("request from dialogflow", JSON.stringify(req.body.result));
+    console.log("request from dialogflow", JSON.stringify(req.body));
 
     if (req.body.result.metadata.intentName == 'CHANGE-RISK-PROFILE') {
         var currentProfile = req.body.result.parameters.CurrentProfile;
@@ -167,7 +167,7 @@ app.post('/fulfillment', async function (req, res) {
     }
     if (req.body.result.metadata.intentName == 'CURRENT-RISK-PROFILE') {
         //console.log("Authentication..................", authHelper.getAuthUrl());
-        console.log("The session id req",JSON.stringify(req));
+        //console.log("The session id req",JSON.stringify(req));
         const mailBody =
             {
                 "message": {

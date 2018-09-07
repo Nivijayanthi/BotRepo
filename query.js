@@ -78,19 +78,26 @@ let giveFundDetails=function(clientID,RiskType){
 }
 let getLowPerformingFund=function(clientID){
     return holdings.aggregate([ {$lookup:{
+        from:"products",
+        localField:"ProductID",
+        foreignField:"ProductID",
+        as: "product"
+        }},
+        { $unwind: { path: "$product", preserveNullAndEmptyArrays: true }},{$lookup:{
         from:"productperformances",
         localField:"ProductID",
         foreignField:"ProductID",
         as: "productHoldings"
         }},
         { $unwind: { path: "$productHoldings", preserveNullAndEmptyArrays: true }},{ $project : {
+        product:1,
         ProductID : 1,
         CustomerID: 1,
         Quantity : 1 ,
         CurrentPrice : 1,
         MarketValue:1,
         productHoldings:1
-    }},{ $match : { CustomerID : clientID,'productHoldings.Performance':'LOW' } }
+    }},{ $match : { CustomerID : "C10116",'productHoldings.Performance':'LOW' } }
 ])
 }
 // let getLowPerformingFund=function(clientID){

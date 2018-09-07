@@ -180,8 +180,32 @@ app.post('/fulfillment', async function (req, res) {
     }
     if (req.body.result.metadata.intentName == 'EXIT-FUND') {
         var clientId = req.body.result.parameters.clientid;
-        await query.getLowPerformingFund(clientId).then(function(data){
-            console.log(data);
+        await query.getLowPerformingFund(clientId).then(async function(data){
+            quickreplies=[];
+            await data.forEach(function(value){
+                quickreplies.push({
+                    "content_type": "text",
+                    "title": value.product.Name,
+                    "payload": value.product.Name
+                  })
+            })
+            console.log(quickreplies)
+              
+            msg = {
+                "speech": "",
+                "displayText": "",
+                "messages": [{
+                  "type": 4,
+                  "platform": "facebook",
+                  "payload": {
+                    "facebook": {
+                      "text": `Please Select the low peforming fund to exit`,
+                      "quick_replies": quickreplies
+                    }
+                  }
+                }]
+              };
+            return res.json(msg);
         })
 
     }

@@ -218,17 +218,18 @@ app.post('/fulfillment', async function (req, res) {
     }
     if(req.body.result.metadata.intentName == 'EXIT-FUND-OPTION-YES'){
         var fundname = req.body.result.contexts[0].parameters.fund_name?req.body.result.contexts[0].parameters.fund_name:req.body.result.parameters.fund_name;
+        var clientId = req.body.result.contexts[0].parameters.clientid?req.body.result.contexts[0].parameters.clientid:req.body.result.parameters.clientid;
         await query.ProductGet({Name:fundname}).then(async function(funddetails){
          let productID=funddetails[0].ProductID;
          let productName=funddetails[0].Name;
          await query.productperformanceGet({ProductID:productID}).then(function(product){
-         if(product.length>0){
+            await query.holdingsProfileGet({ProductID:productID,CustomerID:clientId}).then(function(holdingsd){
+         if(product.length>0 && holdingsd.length>0){
              let currentPrice=product[0].Currentprice;
-             let previousday=product[0].Previousday;
-             let daychange=product[0].Daychange;
-             let PercentageChange=product[0].PercentageChange;
-             let Performance=product[0].Performance;
+             let quantity=holdingsd[0].Quantity;
+             let marketvalue=quantity * marketvalue;
              response=`Your ${fundname} is exited. Details of the funds will be emailed to you shortly.`;
+             console.log(marketvalue);
              return res.json({
                 speech: response,
                 displayText: response,
@@ -236,11 +237,13 @@ app.post('/fulfillment', async function (req, res) {
             });
          }
          })    
+        })   
         });
     }
     if (req.body.result.metadata.intentName == 'EXIT-FUND-OPTION') {
         var fundname = req.body.result.parameters.fund_name;
         await query.ProductGet({Name:fundname}).then(function(funddetails){
+
         if(funddetails.length>0){
             msg = {
                 "speech": "",

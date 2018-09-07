@@ -216,6 +216,44 @@ app.post('/fulfillment', async function (req, res) {
                 source: 'portal',
             });
     }
+    if (req.body.result.metadata.intentName == 'EXIT-FUND-OPTION') {
+        var fundname = req.body.result.parameters.fund_name;
+        console.log("Fund name"+fundname);
+        await query.ProductGet({Name:fundname}).then(function(funddetails){
+        if(funddetails.length>0){
+            msg = {
+                "speech": "",
+                "displayText": "",
+                "messages": [{
+                  "type": 4,
+                  "platform": "facebook",
+                  "payload": {
+                    "facebook": {
+                      "text": `Do you want to exit the fund`+fundname,
+                      "quick_replies": [{
+                        "content_type": "text",
+                        "title": "Yes",
+                        "payload": "Yes"
+                      },{
+                        "content_type": "text",
+                        "title": "No",
+                        "payload": "No"
+                      }]
+                    }
+                  }
+                }]
+              };
+            return res.json(msg);
+        }
+        else{
+            return res.json({
+                speech: "Sorry! The selected funds is Not Available",
+                displayText: response,
+                source: 'portal',
+            });
+        }
+        })
+    }
     if (req.body.result.metadata.intentName == 'EXIT-FUND') {
         var clientId = req.body.result.parameters.clientid;
         await query.getLowPerformingFund(clientId).then(async function(data){

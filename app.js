@@ -250,6 +250,7 @@ app.post('/fulfillment', async function (req, res) {
                   }
                 }]
               };
+              return res.json(msg);
          }
          })    
         });

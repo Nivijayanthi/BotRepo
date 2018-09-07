@@ -36,7 +36,7 @@ async function showListOfFunds(clientId, riskProfile) {
 
 }
 async function sendEmail(user, message, done){
-    var client = graph.Client.init({
+    var client = MicrosoftGraph.Client.init({
       defaultVersion: 'v1.0',
       debugLogging: true,
       authProvider: function(authDone) {

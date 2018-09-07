@@ -14,7 +14,8 @@ app.use(express.static(__dirname));
 const query = require('./query');
 const template = require('./template');
 var authHelper = require('./auth');
-const graphHelper = require('./try');
+const graphHelper = require('./auth');
+const config = require('./lib/config.js');
 
 async function showListOfFunds(clientId, riskProfile) {
     console.log("I am inside show method");
@@ -62,7 +63,7 @@ app.post('/fulfillment', async function (req, res) {
     var response;
     let msgList = [];
     let listOfFunds = [];
-    console.log("request from dialogflow", JSON.stringify(req.body.result));
+    console.log("request from dialogflow", JSON.stringify(req.body));
 
     if (req.body.result.metadata.intentName == 'CHANGE-RISK-PROFILE') {
         var currentProfile = req.body.result.parameters.CurrentProfile;
@@ -166,7 +167,8 @@ app.post('/fulfillment', async function (req, res) {
 
     }
     if (req.body.result.metadata.intentName == 'CURRENT-RISK-PROFILE') {
-        console.log("Authentication..................", authHelper.getAuthUrl());
+        //console.log("Authentication..................", authHelper.getAuthUrl());
+        //console.log("The session id req",JSON.stringify(req));
         const mailBody =
             {
                 "message": {
@@ -194,28 +196,53 @@ app.post('/fulfillment', async function (req, res) {
                 "saveToSentItems": "true"
             };
 
-
-
-
-        graphHelper.sendEmail('39132@hexaware.com', mailBody, function (err) {
+            user = {
+    profile : {
+        oid : "1b02070e-606c-42df-b83d-1af09b29bb1f",
+         displayName : "Nivetha K",
+         accessToken : "eyJ0eXAiOiJKV1QiLCJub25jZSI6IkFRQUJBQUFBQUFEWHpaM2lmci1HUmJEVDQ1ek5TRUZFN1ZpOXpGTlV1b21Lb0hYeWNwRk1fdjRoTGloWGVzWnBJQVo5WU9IRGVCd3pmRFB5d1BFa2VjeVEzdEc4V1MwSDFyYXRSNkxBQ3hhX21FMzk1ZnhuMXlBQSIsImFsZyI6IlJTMjU2IiwieDV0IjoiN19adWYxdHZrd0x4WWFIUzNxNmxValVZSUd3Iiwia2lkIjoiN19adWYxdHZrd0x4WWFIUzNxNmxValVZSUd3In0.eyJhdWQiOiJodHRwczovL2dyYXBoLm1pY3Jvc29mdC5jb20iLCJpc3MiOiJodHRwczovL3N0cy53aW5kb3dzLm5ldC83YzBjMzZmNS1hZjgzLTRjMjQtODg0NC05OTYyZTAxNjM3MTkvIiwiaWF0IjoxNTM2MzEzNTk5LCJuYmYiOjE1MzYzMTM1OTksImV4cCI6MTUzNjMxNzQ5OSwiYWNjdCI6MCwiYWNyIjoiMSIsImFpbyI6IjQyQmdZSmlwOUxWNzc1K0loVWtWNXFkNzl2enE1UXFSdTY4cS9VMWtmV09PN2t1VlNRd0EiLCJhbXIiOlsid2lhIl0sImFwcF9kaXNwbGF5bmFtZSI6IkFsaWNlIiwiYXBwaWQiOiI0OGY0MDRiMS0yYjYyLTRlN2EtOGU2Ny05OGE1ZDcyZjM2MWMiLCJhcHBpZGFjciI6IjEiLCJmYW1pbHlfbmFtZSI6IksiLCJnaXZlbl9uYW1lIjoiTml2ZXRoYSIsImlwYWRkciI6IjE2NS4yMjUuMTA0Ljk2IiwibmFtZSI6Ik5pdmV0aGEgSyIsIm9pZCI6IjFiMDIwNzBlLTYwNmMtNDJkZi1iODNkLTFhZjA5YjI5YmIxZiIsIm9ucHJlbV9zaWQiOiJTLTEtNS0yMS0xNjQ0NDkxOTM3LTgxMzQ5NzcwMy02ODIwMDMzMzAtMTUzODg0IiwicGxhdGYiOiIzIiwicHVpZCI6IjEwMDNCRkZEQTVBQzQzQTQiLCJzY3AiOiJNYWlsLlNlbmQgb3BlbmlkIHByb2ZpbGUgVXNlci5SZWFkIGVtYWlsIiwic3ViIjoiSUNUMFdnaG9CZXFUS0NQb0FHTjYxRHBtbWZNUmYtRlhHUXB3S1hibTJLayIsInRpZCI6IjdjMGMzNmY1LWFmODMtNGMyNC04ODQ0LTk5NjJlMDE2MzcxOSIsInVuaXF1ZV9uYW1lIjoiMzkxMzJASGV4YXdhcmUuY29tIiwidXBuIjoiMzkxMzJASGV4YXdhcmUuY29tIiwidXRpIjoiN1BLZXFYU19RVVdHNS1YZE5Xa1RBQSIsInZlciI6IjEuMCIsInhtc19zdCI6eyJzdWIiOiJfV1ZWbjdFbnRCS0xkTU9aOGk0bGJ6QmVrWFVkaElobFFwU0JudGFKX2Q0In19.pevfs5H-YU4xOMgzu_HqbFiYqow41WdJ3RGIOZMHkW-sJ6K6Dgq6osbpyUXRW7H8gwkTgj0AePunQE2Dnlr4_P657BWZ26MjBnSsz47uii5w3-UGlElV91IYK1nM5m2af0a43-DuWgSdH9_3d1x2jiA_48JHzeCJc-g0FVJ8TKULNZmfvil_KxvsdDdxhaWNADspzpwg-w6qFhMUSLBxUPgBeHkiueQ6gO8LP4GMTCZfH8-Q_QBuSNjV2KfMD44gZvClg1SH_1_F7KSHCyycypDgylLLc6Eg4EHUmL3TCo421Y01BZJBqtRpHIPSthC4huaf_xSiv4q-7t3OpSj3Qg"
+    }
+};
+        authHelper.sendEmail(user, mailBody, function (err) {
+            console.log("inside send mail app.js")
             if (err) {
                 renderError(res, err);
                 return;
             };
             console.log("Sent an email");
-        });
-            var clientId = req.body.result.parameters.clientId;
-            var val;
-            await query.ClientRiskProfileGet({ ClientID: clientId, Active: 'Y' }).then(function (data) {
-                console.log("The response from DB risk profile..............", JSON.stringify(data));
-                val = data.RiskCategory;
-            });
-            response = `Your current risk profile is ${val}`;
-            return res.json({
+            response = 'Email has been sent';
+       return res.json({
                 speech: response,
                 displayText: response,
                 source: 'portal',
             });
+        });
+
+//         var credentials = {
+//     client: {
+//       id: '8a6b25b5-7148-45ac-a716-98faf826d2fe',
+//       secret: 'dqvntQRX930|=%msRYKD10(',
+//     },
+//     auth: {
+//       tokenHost: 'https://login.microsoftonline.com',
+//       authorizePath: 'common/oauth2/v2.0/authorize',
+//       tokenPath: 'common/oauth2/v2.0/token'
+//     }
+//   };
+//   var oauth2 = require('simple-oauth2').create(credentials);
+//   console.log("valllllllllllllllll", oauth2);
+//             var clientId = req.body.result.parameters.clientId;
+//             var val;
+//             await query.ClientRiskProfileGet({ ClientID: clientId, Active: 'Y' }).then(function (data) {
+//                 console.log("The response from DB risk profile..............", JSON.stringify(data));
+//                 val = data.RiskCategory;
+//             });
+//             response = `Your current risk profile is ${val}`;
+//             return res.json({
+//                 speech: response,
+//                 displayText: response,
+//                 source: 'portal',
+//             });
     }
     if(req.body.result.metadata.intentName == 'EXIT-FUND-OPTION-YES'){
         var fundname = req.body.result.contexts[1].parameters.fund_name?req.body.result.contexts[1].parameters.fund_name:req.body.result.parameters.fund_name;

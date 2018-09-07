@@ -223,7 +223,8 @@ app.post('/fulfillment', async function (req, res) {
          let productID=funddetails[0].ProductID;
          let productName=funddetails[0].Name;
          await query.productperformanceGet({ProductID:productID}).then(async function(product){
-            await query.holdingsProfileGet({ProductID:productID,CustomerID:clientId}).then(function(holdingsd){
+             console.log(productID + "=>" +clientId)
+        await query.holdingsProfileGet({ProductID:productID,CustomerID:clientId}).then(function(holdingsd){
          if(product.length>0 && holdingsd.length>0){
              let currentPrice=product[0].Currentprice;
              let quantity=holdingsd[0].Quantity;

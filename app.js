@@ -216,9 +216,46 @@ app.post('/fulfillment', async function (req, res) {
                 source: 'portal',
             });
     }
+    if(req.body.result.metadata.intentName == 'EXIT-FUND-OPTION-YES'){
+        var fundname = req.body.result.contexts[0].parameters.fund_name?req.body.result.contexts[0].parameters.fund_name:req.body.result.parameters.fund_name;
+        await query.ProductGet({Name:fundname}).then(async function(funddetails){
+         let productID=funddetails[0].ProductID;
+         let productName=funddetails[0].Name;
+         await query.productperformanceGet({ProductID:productID}).then(function(product){
+         if(product.length>0){
+             let currentPrice=product[0].Currentprice;
+             let previousday=product[0].Previousday;
+             let daychange=product[0].Daychange;
+             let PercentageChange=product[0].PercentageChange;
+             let Performance=product[0].Performance;
+             msg = {
+                "speech": "",
+                "displayText": "",
+                "messages": [{
+                  "type": 4,
+                  "platform": "facebook",
+                  "payload": {
+                    "facebook": {
+                      "text": `Your ${fundname} is exited. Details of the funds will be emailed to you shortly. Anything else?`,
+                      "quick_replies": [{
+                        "content_type": "text",
+                        "title": "Yes",
+                        "payload": "Yes"
+                      },{
+                        "content_type": "text",
+                        "title": "No",
+                        "payload": "No"
+                      }]
+                    }
+                  }
+                }]
+              };
+         }
+         })    
+        });
+    }
     if (req.body.result.metadata.intentName == 'EXIT-FUND-OPTION') {
         var fundname = req.body.result.parameters.fund_name;
-        console.log("Fund name"+fundname);
         await query.ProductGet({Name:fundname}).then(function(funddetails){
         if(funddetails.length>0){
             msg = {
@@ -229,7 +266,7 @@ app.post('/fulfillment', async function (req, res) {
                   "platform": "facebook",
                   "payload": {
                     "facebook": {
-                      "text": `Do you want to exit the fund`+fundname,
+                      "text": `Do you want to exit the fund `+fundname,
                       "quick_replies": [{
                         "content_type": "text",
                         "title": "Yes",

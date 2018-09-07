@@ -42,7 +42,15 @@ var holdingSchema=new Schema({
     CurrentPrice:String,
     MarketValue:String
 })
-
+var productperformSchema=new Schema({
+    ProductID:String,
+    Currentprice:String,
+    Previousday:String,
+    Daychange:String,
+    PercentageChange:String,
+    Performance:String
+})
+var productperformance =mongoose.model("productperformance",productperformSchema);
 var holdings =mongoose.model("holdings",holdingSchema);
 var clientProfile =mongoose.model("clientProfile",clientSchema);
 var product =mongoose.model("product",productSchema);
@@ -58,6 +66,9 @@ let ClientProfileGet=function(obje){
 }
 let holdingsProfileGet=function(obje){
     return holdings.find(obje);
+}
+let productperformanceGet=function(obje){
+    return productperformance.find(obje);
 }
 let clientRiskProfileUpdate=function(clientID,obje){
     clientriskprofile.where({ ClientID: clientID }).update({ $set: obje})
@@ -124,6 +135,7 @@ module.exports.clientRiskProfileUpdate=clientRiskProfileUpdate;
 module.exports.ClientProfileGet=ClientProfileGet;
 module.exports.getLowPerformingFund=getLowPerformingFund;
 module.exports.ProductGet=ProductGet;
+module.exports.productperformanceGet=productperformanceGet;
 
 
 

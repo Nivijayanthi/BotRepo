@@ -228,29 +228,12 @@ app.post('/fulfillment', async function (req, res) {
              let daychange=product[0].Daychange;
              let PercentageChange=product[0].PercentageChange;
              let Performance=product[0].Performance;
-             msg = {
-                "speech": "",
-                "displayText": "",
-                "messages": [{
-                  "type": 4,
-                  "platform": "facebook",
-                  "payload": {
-                    "facebook": {
-                      "text": `Your ${fundname} is exited. Details of the funds will be emailed to you shortly. Anything else?`,
-                      "quick_replies": [{
-                        "content_type": "text",
-                        "title": "Yes",
-                        "payload": "Yes"
-                      },{
-                        "content_type": "text",
-                        "title": "No",
-                        "payload": "No"
-                      }]
-                    }
-                  }
-                }]
-              };
-              return res.json(msg);
+             response=`Your ${fundname} is exited. Details of the funds will be emailed to you shortly.`;
+             return res.json({
+                speech: response,
+                displayText: response,
+                source: 'portal',
+            });
          }
          })    
         });

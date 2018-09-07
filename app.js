@@ -242,10 +242,100 @@ app.post('/fulfillment', async function (req, res) {
 //                 source: 'portal',
 //             });
     }
+    if(req.body.result.metadata.intentName == 'EXIT-FUND-OPTION-YES'){
+        var fundname = req.body.result.contexts[1].parameters.fund_name?req.body.result.contexts[1].parameters.fund_name:req.body.result.parameters.fund_name;
+        var clientId = req.body.result.contexts[1].parameters.clientid?req.body.result.contexts[1].parameters.clientid:req.body.result.parameters.clientid;
+        await query.ProductGet({Name:fundname}).then(async function(funddetails){
+         let productID=funddetails[0].ProductID;
+         let productName=funddetails[0].Name;
+         await query.productperformanceGet({ProductID:productID}).then(async function(product){
+             console.log(productID + "=>" +clientId)
+        await query.holdingsProfileGet({ProductID:productID,CustomerID:clientId}).then(function(holdingsd){
+         if(product.length>0 && holdingsd.length>0){
+             let currentPrice=product[0].Currentprice;
+             let quantity=holdingsd[0].Quantity;
+             let marketvalue=parseInt(quantity.split(',').join('')) * parseInt(currentPrice);
+             response=`Your ${fundname} is exited. Details of the funds will be emailed to you shortly.`;
+             response+="<br/>Current Price: "+currentPrice + "<br/>";
+             response+="Quantity: "+quantity + "<br/>";
+             response+="Market Value: "+marketvalue + "<br/>";
+             console.log(marketvalue);
+             return res.json({
+                speech: response,
+                displayText: response,
+                source: 'portal',
+            });
+         }
+         })    
+        })   
+        });
+    }
+    if (req.body.result.metadata.intentName == 'EXIT-FUND-OPTION') {
+        var fundname = req.body.result.parameters.fund_name;
+        await query.ProductGet({Name:fundname}).then(function(funddetails){
+
+        if(funddetails.length>0){
+            msg = {
+                "speech": "",
+                "displayText": "",
+                "messages": [{
+                  "type": 4,
+                  "platform": "facebook",
+                  "payload": {
+                    "facebook": {
+                      "text": `Do you want to exit the fund `+fundname,
+                      "quick_replies": [{
+                        "content_type": "text",
+                        "title": "Yes",
+                        "payload": "Yes"
+                      },{
+                        "content_type": "text",
+                        "title": "No",
+                        "payload": "No"
+                      }]
+                    }
+                  }
+                }]
+              };
+            return res.json(msg);
+        }
+        else{
+            return res.json({
+                speech: "Sorry! The selected funds is Not Available",
+                displayText: response,
+                source: 'portal',
+            });
+        }
+        })
+    }
     if (req.body.result.metadata.intentName == 'EXIT-FUND') {
         var clientId = req.body.result.parameters.clientid;
-        await query.getLowPerformingFund(clientId).then(function(data){
-            console.log(data);
+        await query.getLowPerformingFund(clientId).then(async function(data){
+            quickreplies=[];
+            await data.forEach(function(value){
+                quickreplies.push({
+                    "content_type": "text",
+                    "title": value.product.Name,
+                    "payload": value.product.Name
+                  })
+            })
+            console.log(quickreplies)
+              
+            msg = {
+                "speech": "",
+                "displayText": "",
+                "messages": [{
+                  "type": 4,
+                  "platform": "facebook",
+                  "payload": {
+                    "facebook": {
+                      "text": `Please Select the low peforming fund to exit`,
+                      "quick_replies": quickreplies
+                    }
+                  }
+                }]
+              };
+            return res.json(msg);
         })
 
     }

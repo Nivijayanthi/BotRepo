@@ -42,6 +42,15 @@ var holdingSchema=new Schema({
     CurrentPrice:String,
     MarketValue:String
 })
+var productperformSchema=new Schema({
+    ProductID:String,
+    Currentprice:String,
+    Previousday:String,
+    Daychange:String,
+    PercentageChange:String,
+    Performance:String
+})
+var productperformance =mongoose.model("productperformance",productperformSchema);
 var holdings =mongoose.model("holdings",holdingSchema);
 var clientProfile =mongoose.model("clientProfile",clientSchema);
 var product =mongoose.model("product",productSchema);
@@ -49,11 +58,17 @@ var clientriskprofile =mongoose.model("clientriskprofiles",clientRiskSchema);
 let ClientRiskProfileGet=function(obje){
     return clientriskprofile.find(obje);
 }
+let ProductGet=function(obje){
+    return product.find(obje);
+}
 let ClientProfileGet=function(obje){
     return clientProfile.find(obje);
 }
 let holdingsProfileGet=function(obje){
     return holdings.find(obje);
+}
+let productperformanceGet=function(obje){
+    return productperformance.find(obje);
 }
 let clientRiskProfileUpdate=function(clientID,obje){
     clientriskprofile.where({ ClientID: clientID }).update({ $set: obje})
@@ -78,19 +93,26 @@ let giveFundDetails=function(clientID,RiskType){
 }
 let getLowPerformingFund=function(clientID){
     return holdings.aggregate([ {$lookup:{
+        from:"products",
+        localField:"ProductID",
+        foreignField:"ProductID",
+        as: "product"
+        }},
+        { $unwind: { path: "$product", preserveNullAndEmptyArrays: true }},{$lookup:{
         from:"productperformances",
         localField:"ProductID",
         foreignField:"ProductID",
         as: "productHoldings"
         }},
         { $unwind: { path: "$productHoldings", preserveNullAndEmptyArrays: true }},{ $project : {
+        product:1,
         ProductID : 1,
         CustomerID: 1,
         Quantity : 1 ,
         CurrentPrice : 1,
         MarketValue:1,
         productHoldings:1
-    }},{ $match : { CustomerID : clientID,'productHoldings.Performance':'LOW' } }
+    }},{ $match : { CustomerID : "C10116",'productHoldings.Performance':'LOW' } }
 ])
 }
 // let getLowPerformingFund=function(clientID){
@@ -112,6 +134,8 @@ module.exports.ClientRiskProfileGet=ClientRiskProfileGet;
 module.exports.clientRiskProfileUpdate=clientRiskProfileUpdate;
 module.exports.ClientProfileGet=ClientProfileGet;
 module.exports.getLowPerformingFund=getLowPerformingFund;
+module.exports.ProductGet=ProductGet;
+module.exports.productperformanceGet=productperformanceGet;
 
 
 

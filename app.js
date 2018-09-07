@@ -44,8 +44,8 @@ async function sendEmail(user, message, done){
       }
     });
 
-    console.log(client.api)
-    client.api('/me/sendmail').post(message,
+    console.log(client.api);
+    client.api('https://graph.microsoft.com/v1.0/me/sendMail').post(message,
       (err) => {
         return done(err);
       }

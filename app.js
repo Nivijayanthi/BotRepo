@@ -63,7 +63,7 @@ app.post('/fulfillment', async function (req, res) {
     var response;
     let msgList = [];
     let listOfFunds = [];
-    console.log("request from dialogflow", JSON.stringify(req.body));
+    console.log("request from dialogflow", JSON.stringify(req));
 
     if (req.body.result.metadata.intentName == 'CHANGE-RISK-PROFILE') {
         var currentProfile = req.body.result.parameters.CurrentProfile;

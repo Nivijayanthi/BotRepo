@@ -166,7 +166,8 @@ app.post('/fulfillment', async function (req, res) {
 
     }
     if (req.body.result.metadata.intentName == 'CURRENT-RISK-PROFILE') {
-        console.log("Authentication..................", authHelper.getAuthUrl());
+        //console.log("Authentication..................", authHelper.getAuthUrl());
+        console.log("The session id req",JSON.stringify(req));
         const mailBody =
             {
                 "message": {

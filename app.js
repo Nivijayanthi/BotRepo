@@ -44,7 +44,7 @@ async function sendEmail(user, message, done){
       }
     });
 
-    console.log(client.api);
+    console.log("hello..........",client.api);
     client.api('https://graph.microsoft.com/v1.0/me/sendMail').post(message,
       (err) => {
         return done(err);
@@ -220,6 +220,8 @@ app.post('/fulfillment', async function (req, res) {
             }
         };  
        sendEmail(user, mailBody, function (response,err) {
+           console("user1,,,,,,,,",JSON.stringify(user));
+           console.log("mailbody...............",JSON.stringify(mailBody));
             console.log("inside send mail app.js")
             if (err) {
                 renderError(res, err);
@@ -366,7 +368,3 @@ console.log("Server Running at Port : " + port);
 app.listen(port, function () {
     console.log('Listening my app on  PORT: ' + port);
 });
-
-
-
-

@@ -220,7 +220,7 @@ app.post('/fulfillment', async function (req, res) {
             }
         };  
        sendEmail(user, mailBody, function (response,err) {
-           console("user1,,,,,,,,",JSON.stringify(user));
+           console.log("user1,,,,,,,,",JSON.stringify(user));
            console.log("mailbody...............",JSON.stringify(mailBody));
             console.log("inside send mail app.js")
             if (err) {

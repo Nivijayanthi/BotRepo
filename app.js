@@ -60,6 +60,8 @@ async function sendEmail(user, message, done){
 
 
 app.post('/fulfillment', async function (req, res) {
+
+    var clientId =  req.body.sessionId.slice(-6);
     
     var dialogFlowResponse = {
         speech: "hello",

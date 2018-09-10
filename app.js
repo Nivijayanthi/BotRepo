@@ -282,7 +282,53 @@ app.post('/fulfillment', async function (req, res) {
                         response += "<br/>Current Price: " + currentPrice + "<br/>";
                         response += "Quantity: " + quantity + "<br/>";
                         response += "Market Value: " + marketvalue + "<br/>";
-                        query.saveTransactionDetails({CustomerID:clientId,ProductID:productID,Quantity:quantity,Price:currentPrice,Action:"Sell",Date:moment().format("DD-MMM-YY")});
+                        await query.saveTransactionDetails({CustomerID:clientId,ProductID:productID,Quantity:quantity,Price:currentPrice,Action:"Sell",Date:moment().format("DD-MMM-YY")});
+                        const mailBody =
+                        {
+                            "message": {
+                                "subject": "Your Fund "+fundname+" is Exited",
+                                "body": {
+                                    "contentType": "Text",
+                                    "content": response
+                                },
+                                "toRecipients": [
+                                    {
+                                        "emailAddress": {
+                                            "address": "40140@hexaware.com"
+                                        }
+                                    }
+                                ],
+                                "ccRecipients": [
+                                    {
+                                        "emailAddress": {
+                                            "address": "40140@hexaware.com"
+                                        }
+                                    }
+                                ]
+                            },
+                            "saveToSentItems": "true"
+                        };
+            
+                    user = {
+                        profile: {
+                            oid: "1b02070e-606c-42df-b83d-1af09b29bb1f",
+                            displayName: "Nivetha K",
+                            accessToken: "eyJ0eXAiOiJKV1QiLCJub25jZSI6IkFRQUJBQUFBQUFEWHpaM2lmci1HUmJEVDQ1ek5TRUZFU1hNMlpmLVd0ZnhuZ0JYSlRUSmYzY0VzMnM4VmUtUGVWSUNYb1pWRURTLTVrU0ZUZ0tKMmN1bF93bTFPemN1c0xUSC1aX0lSRDhiNU9tN1paRmdOaFNBQSIsImFsZyI6IlJTMjU2IiwieDV0IjoiN19adWYxdHZrd0x4WWFIUzNxNmxValVZSUd3Iiwia2lkIjoiN19adWYxdHZrd0x4WWFIUzNxNmxValVZSUd3In0.eyJhdWQiOiJodHRwczovL2dyYXBoLm1pY3Jvc29mdC5jb20iLCJpc3MiOiJodHRwczovL3N0cy53aW5kb3dzLm5ldC83YzBjMzZmNS1hZjgzLTRjMjQtODg0NC05OTYyZTAxNjM3MTkvIiwiaWF0IjoxNTM2MzE5MTQ0LCJuYmYiOjE1MzYzMTkxNDQsImV4cCI6MTUzNjMyMzA0NCwiYWNjdCI6MCwiYWNyIjoiMSIsImFpbyI6IkFTUUEyLzhJQUFBQWtCVTVJdnNvN3Z3OXRSclhlZTBFYWFGUE1FeVd0ODlsYlZYRnpmTFJ2VTQ9IiwiYW1yIjpbIndpYSJdLCJhcHBfZGlzcGxheW5hbWUiOiJBbGljZSIsImFwcGlkIjoiNDhmNDA0YjEtMmI2Mi00ZTdhLThlNjctOThhNWQ3MmYzNjFjIiwiYXBwaWRhY3IiOiIxIiwiZmFtaWx5X25hbWUiOiJLIiwiZ2l2ZW5fbmFtZSI6Ik5pdmV0aGEiLCJpcGFkZHIiOiIxNjUuMjI1LjEwNC45NiIsIm5hbWUiOiJOaXZldGhhIEsiLCJvaWQiOiIxYjAyMDcwZS02MDZjLTQyZGYtYjgzZC0xYWYwOWIyOWJiMWYiLCJvbnByZW1fc2lkIjoiUy0xLTUtMjEtMTY0NDQ5MTkzNy04MTM0OTc3MDMtNjgyMDAzMzMwLTE1Mzg4NCIsInBsYXRmIjoiMyIsInB1aWQiOiIxMDAzQkZGREE1QUM0M0E0Iiwic2NwIjoiTWFpbC5TZW5kIG9wZW5pZCBwcm9maWxlIFVzZXIuUmVhZCBlbWFpbCIsInN1YiI6IklDVDBXZ2hvQmVxVEtDUG9BR042MURwbW1mTVJmLUZYR1Fwd0tYYm0yS2siLCJ0aWQiOiI3YzBjMzZmNS1hZjgzLTRjMjQtODg0NC05OTYyZTAxNjM3MTkiLCJ1bmlxdWVfbmFtZSI6IjM5MTMyQEhleGF3YXJlLmNvbSIsInVwbiI6IjM5MTMyQEhleGF3YXJlLmNvbSIsInV0aSI6Il9TVEpnX2FuUVVpWG1ZSTllTklmQUEiLCJ2ZXIiOiIxLjAiLCJ4bXNfc3QiOnsic3ViIjoiX1dWVm43RW50QktMZE1PWjhpNGxiekJla1hVZGhJaGxRcFNCbnRhSl9kNCJ9fQ.S99MgHgOX18-lr3tCtnxtLpeh28mysfSQ68gz0n2I7qwt470Wyr-fv5TCPpL3UMiVLLGCQZWR2LeTaHHHiTLMG6FkHfoitaXHx4zSDoI7g32ZEvvTKu_eaFOAZ3nxH3eEaT-6W4gK6e95lVfS-qz1rpZdScvXreJiWAgbK657aBVJvKQkhfn5HIMMTzvwao4wIwwMrWa5epn4rsjE5zVdP7vjfRyn8CeYNIb0fWsEpJBwkc0i75ZuNunzpNUhyqVjnG3wJA963yLMFt3AnP1VHEO6SbxIhocWCrXr6Cv05NEYYmerE-RslhbdhGL8QjM0ENo1WzHwR9Di-9YlqKxrA"
+                        }
+                    };  
+                   sendEmail(user, mailBody, function (response,err) {
+                       console.log("user1,,,,,,,,",JSON.stringify(user));
+                       console.log("mailbody...............",JSON.stringify(mailBody));
+                        console.log("inside send mail app.js")
+                        if (err) {
+                            renderError(res, err);
+                            return;
+                        }
+                        if(res){
+                            console.log("response from outlook",res);
+                        }
+                        console.log("Sent an email");
+                    });
                         return res.json({
                             speech: response,
                             displayText: response,

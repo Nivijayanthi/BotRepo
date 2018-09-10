@@ -50,6 +50,17 @@ var productperformSchema=new Schema({
     PercentageChange:String,
     Performance:String
 })
+// Transactions
+var Schema=mongoose.Schema;
+var transactionSchema=new Schema({
+    CustomerID:String,
+    ProductID:String,
+    Quantity:String,
+    Price:String,
+    Action:String,
+    Date:String
+})
+var transactions =mongoose.model("transactions",transactionSchema);
 var productperformance =mongoose.model("productperformance",productperformSchema);
 var holdings =mongoose.model("holdings",holdingSchema);
 var clientProfile =mongoose.model("clientProfile",clientSchema);
@@ -70,6 +81,19 @@ let holdingsProfileGet=function(obje){
 let productperformanceGet=function(obje){
     return productperformance.find(obje);
 }
+let saveTransactionDetails=function(element){
+    var transactionDetails=new transactions({
+                        CustomerID:element.CustomerID,
+                        ProductID:element.ProductID,
+                        Quantity:element.Quantity,
+                        Price:element.Price,
+                        Action:element.Action,
+                        Date:element.Date
+    })
+transactionDetails.save(function(error){
+});
+}
+
 let clientRiskProfileUpdate=function(clientID,obje){
     clientriskprofile.where({ ClientID: clientID }).update({ $set: obje})
 }
@@ -129,6 +153,7 @@ let getLowPerformingFund=function(clientID){
 // ]);
 // }
 module.exports.holdingsProfileGet=holdingsProfileGet;
+module.exports.saveTransactionDetails=saveTransactionDetails;
 module.exports.giveFundDetails=giveFundDetails;
 module.exports.ClientRiskProfileGet=ClientRiskProfileGet;
 module.exports.clientRiskProfileUpdate=clientRiskProfileUpdate;

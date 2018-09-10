@@ -2,7 +2,7 @@ var apiai = require('apiai');
 
 var appai = apiai("ee3683b183ec498ea5a1f277a85974fd");
 const util = require('util');
-
+var moment=require('moment');
 var express = require('express');
 var bodyParser = require('body-parser');
 var app = express();
@@ -282,7 +282,7 @@ app.post('/fulfillment', async function (req, res) {
                         response += "<br/>Current Price: " + currentPrice + "<br/>";
                         response += "Quantity: " + quantity + "<br/>";
                         response += "Market Value: " + marketvalue + "<br/>";
-                        console.log(marketvalue);
+                        query.saveTransactionDetails({CustomerID:clientId,ProductID:productID,Quantity:quantity,Price:currentPrice,Action:"Sell",Date:moment().format("DD-MMM-YY")});
                         return res.json({
                             speech: response,
                             displayText: response,

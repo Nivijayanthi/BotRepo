@@ -268,7 +268,7 @@ app.post('/fulfillment', async function (req, res) {
     if (req.body.result.metadata.intentName == 'EXIT-FUND-OPTION-YES') {
         var fundname = req.body.result.contexts[1].parameters.fund_name ? req.body.result.contexts[1].parameters.fund_name : req.body.result.parameters.fund_name;
         var clientId =  req.body.sessionId.slice(-6);
-        await query.ProductGet({ Name: fundname }).then(async function (funddetails) {
+        await query.ProductGet({ Name: fundname,Type:'ETF' }).then(async function (funddetails) {
             let productID = funddetails[0].ProductID;
             let productName = funddetails[0].Name;
             await query.productperformanceGet({ ProductID: productID }).then(async function (product) {

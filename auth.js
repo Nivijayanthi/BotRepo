@@ -1,5 +1,5 @@
 const graph = require('@microsoft/microsoft-graph-client');
-
+require('dotenv').config();
 module.exports = {
   getUserEmail: (user, done) => {
     var client = graph.Client.init({

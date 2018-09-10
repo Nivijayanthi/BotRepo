@@ -2,7 +2,7 @@ const config = require('./lib/config.js');
 const graph = require('@microsoft/microsoft-graph-client');
 const passport = require('passport');
 const OIDCStrategy = require('passport-azure-ad').OIDCStrategy;
-
+require('dotenv').config();
 
 //authentication---------------------------
 

@@ -1,5 +1,5 @@
 var apiai = require('apiai');
-
+require('dotenv').config();
 var appai = apiai("ee3683b183ec498ea5a1f277a85974fd");
 const util = require('util');
 var moment=require('moment');

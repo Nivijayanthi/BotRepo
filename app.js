@@ -282,6 +282,7 @@ app.post('/fulfillment', async function (req, res) {
                         response += "<br/>Current Price: " + currentPrice + "<br/>";
                         response += "Quantity: " + quantity + "<br/>";
                         response += "Market Value: " + marketvalue + "<br/>";
+                        responses = response.replace("<br/>","\n");
                         await query.saveTransactionDetails({CustomerID:clientId,ProductID:productID,Quantity:quantity,Price:currentPrice,Action:"Sell",Date:moment().format("DD-MMM-YY")});
                         const mailBody =
                         {
@@ -289,7 +290,7 @@ app.post('/fulfillment', async function (req, res) {
                                 "subject": "Your Fund "+fundname+" is Exited",
                                 "body": {
                                     "contentType": "Text",
-                                    "content": response.replace("<br/>","\n")
+                                    "content": responses
                                 },
                                 "toRecipients": [
                                     {

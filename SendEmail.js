@@ -1,344 +1,83 @@
-// var server = require('./server');
-// var router = require('./router');
-var authHelper = require('./authHelper');
-var url = require('url');
-var microsoftGraph = require("@microsoft/microsoft-graph-client");
+const config = require('./lib/config.js');
+const graph = require('@microsoft/microsoft-graph-client');
+const passport = require('passport');
+const OIDCStrategy = require('passport-azure-ad').OIDCStrategy;
 
-// var handle = {};
-// handle['/'] = home;
-// handle['/authorize'] = authorize;
-// handle['/mail'] = mail;
-// handle['/calendar'] = calendar;
-// handle['/scheduleMeeting'] = scheduleMeeting;
-// handle['/contacts'] = contacts;
 
-// server.start(router.route, handle);
+//authentication---------------------------
 
-function home(response, request) {
-  console.log('Request handler \'home\' was called.');
-  response.writeHead(200, {'Content-Type': 'text/html'});
-  response.write('<p>Please <a href="' + authHelper.getAuthUrl() + '">sign in</a> with your Office 365 or Outlook.com account.</p>');
-  response.end();
-}
-
-function authorize(response, request) {
-    console.log('Request handler \'authorize\' was called.');
-  
-    // The authorization code is passed as a query parameter
-    var url_parts = url.parse(request.url, true);
-    var code = url_parts.query.code;
-    console.log('Code: ' + code);
-    authHelper.getTokenFromCode(code, tokenReceived, response);
+var callback = (iss, sub, profile, accessToken, refreshToken, done) => {
+  if (!profile.oid) {
+    return done(new Error("No oid found"), null);
   }
 
-function getUserEmail(token, callback) {
+  findByOid(profile.oid, function(err, user){
+    if (err) {
+      return done(err);
+    }
 
-    // Create a Graph client
-    var client = microsoftGraph.Client.init({
-      authProvider: (done) => {
-        // Just return the token
-        done(null, token);
-      }
-    });
+    if (!user) {
+      users.push({profile, accessToken, refreshToken});
+      return done(null, profile);
+    }
 
+    return done(null, user);
+  });
+};
 
-    // Get the Graph /Me endpoint to get user email address
-    console.log('Client is '+JSON.stringify(client));
-    
-    client
-        .api('/me')
-        .get((err, res) => {
-            if (err) {
-                callback(err, null);
-            } else {
-                callback(null, res.mail);
-            }
-        });
-  }
+passport.use(new OIDCStrategy(config.creds, callback));
 
-  function tokenReceived(response, error, token) {
-    if (error) {
-      console.log('Access token error: ', error.message);
-      response.writeHead(200, {'Content-Type': 'text/html'});
-      response.write('<p>ERROR: ' + error + '</p>');
-      response.end();
-    } else {
-      getUserEmail(token.token.access_token, function(error, email){
-        if (error) {
-          console.log('getUserEmail returned an error: ' + error);
-          response.write('<p>ERROR: ' + error + '</p>');
-          response.end();
-        } else if (email) {
-          var cookies = ['node-tutorial-token=' + token.token.access_token + ';Max-Age=4000',
-                         'node-tutorial-refresh-token=' + token.token.refresh_token + ';Max-Age=4000',
-                         'node-tutorial-token-expires=' + token.token.expires_at.getTime() + ';Max-Age=4000',
-                         'node-tutorial-email=' + email + ';Max-Age=4000'];
-          response.setHeader('Set-Cookie', cookies);
-          response.writeHead(302, {'Location': 'http://localhost:8000/mail'});
-          response.end();
-        }
-      }); 
+const users = [];
+
+passport.serializeUser((user, done) => {
+  done(null, user.oid);
+});
+
+passport.deserializeUser((id, done) => {
+  findByOid(id, function (err, user) {
+    done(err, user);
+  });
+});
+
+var findByOid = function(oid, fn) {
+  for (var i = 0, len = users.length; i < len; i++) {
+    var user = users[i];
+    if (user.profile.oid === oid) {
+      return fn(null, user);
     }
   }
+  return fn(null, null);
+};
 
-  function getValueFromCookie(valueName, cookie) {
-    if (cookie.indexOf(valueName) !== -1) {
-      var start = cookie.indexOf(valueName) + valueName.length + 1;
-      var end = cookie.indexOf(';', start);
-      end = end === -1 ? cookie.length : end;
-      return cookie.substring(start, end);
-    }
-  }
+//Configuration.............................................
 
 
-  function getAccessToken(request, response, callback) {
-    var expiration = new Date(parseFloat(getValueFromCookie('node-tutorial-token-expires', request.headers.cookie)));
-  
-    if (expiration <= new Date()) {
-      // refresh token
-      console.log('TOKEN EXPIRED, REFRESHING');
-      var refresh_token = getValueFromCookie('node-tutorial-refresh-token', request.headers.cookie);
-      authHelper.refreshAccessToken(refresh_token, function(error, newToken){
-        if (error) {
-          callback(error, null);
-        } else if (newToken) {
-          var cookies = ['node-tutorial-token=' + newToken.token.access_token + ';Max-Age=4000',
-                         'node-tutorial-refresh-token=' + newToken.token.refresh_token + ';Max-Age=4000',
-                         'node-tutorial-token-expires=' + newToken.token.expires_at.getTime() + ';Max-Age=4000'];
-          response.setHeader('Set-Cookie', cookies);
-          callback(null, newToken.token.access_token);
-        }
-      });
-    } else {
-      // Return cached token
-      var access_token = getValueFromCookie('node-tutorial-token', request.headers.cookie);
-      callback(null, access_token);
-    }
-  }
+//application....................................
 
-  function mail(response, request) {
-    getAccessToken(request, response, function(error, token) {
-      console.log('Token found in cookie: ', token);
-      var email = getValueFromCookie('node-tutorial-email', request.headers.cookie);
-      console.log('Email found in cookie: ', email);
-      if (token) {
-        response.writeHead(200, {'Content-Type': 'text/html'});
-        response.write('<div><h1>Your inbox</h1></div>');
-  
-        // Create a Graph client
-        var client = microsoftGraph.Client.init({
-          authProvider: (done) => {
-            // Just return the token
-            done(null, token);
-          }
-        });
-  
-        // Get the 10 newest messages
-        client
-          .api('/me/mailfolders/inbox/messages')
-          .header('X-AnchorMailbox', email)
-          .top(10)
-          .select('subject,from,receivedDateTime,isRead')
-          .orderby('receivedDateTime DESC')
-          .get((err, res) => {
-            if (err) {
-              console.log('getMessages returned an error: ' + err);
-              response.write('<p>ERROR: ' + err + '</p>');
-              response.end();
-            } else {
-              console.log('getMessages returned ' + res.value.length + ' messages.');
-              response.write('<table><tr><th>From</th><th>Subject</th><th>Received</th></tr>');
-              res.value.forEach(function(message) {
-                console.log('  Subject: ' + message.subject);
-                var from = message.from ? message.from.emailAddress.name : 'NONE';
-                response.write('<tr><td>' + from + 
-                  '</td><td>' + (message.isRead ? '' : '<b>') + message.subject + (message.isRead ? '' : '</b>') +
-                  '</td><td>' + message.receivedDateTime.toString() + '</td></tr>');
-              });
-  
-              response.write('</table>');
-              response.end();
-            }
-          });
-      } else {
-        response.writeHead(200, {'Content-Type': 'text/html'});
-        response.write('<p> No token found in cookie!</p>');
-        response.end();
+function ensureAuthenticated (req, res, next) {
+    if (req.isAuthenticated()) { return next(); }
+
+    res.render('/login');
+};
+
+function sendEmail(user, message, done){
+    var client = graph.Client.init({
+      defaultVersion: 'v1.0',
+      debugLogging: true,
+      authProvider: function(authDone) {
+        authDone(null, user.accessToken);
       }
     });
-  }
 
-  function calendar(response, request) {
-    getAccessToken(request, response, function(error, token) {
-      console.log('Token found in cookie: ', token);
-      var email = getValueFromCookie('node-tutorial-email', request.headers.cookie);
-      console.log('Email found in cookie: ', email);
-      if (token) {
-
-        response.writeHead(200, {'Content-Type': 'text/html'});
-        response.write('<div><h1>Your calendar</h1></div>');
-        
-        // Create a Graph client
-        var client = microsoftGraph.Client.init({
-          authProvider: (done) => {
-            // Just return the token
-            done(null, token);
-          }
-        });
-        
-        // Get the 10 events with the greatest start date
-        client
-          .api('/me/events')
-          .header('X-AnchorMailbox', email)
-          .top(10)
-          .select('subject,start,end')
-          .orderby('start/dateTime DESC')
-          .get((err, res) => {
-            if (err) {
-              console.log('getEvents returned an error: ' + err);
-              response.write('<p>ERROR: ' + err + '</p>');
-              response.end();
-            } else {
-              console.log('getEvents returned ' + res.value.length + ' events.');
-              response.write('<table><tr><th>Subject</th><th>Start</th><th>End</th><th>Attendees</th></tr>');
-              res.value.forEach(function(event) {
-                console.log('  Subject: ' + event.subject);
-                response.write('<tr><td>' + event.subject + 
-                  '</td><td>' + event.start.dateTime.toString() +
-                  '</td><td>' + event.end.dateTime.toString() + '</td></tr>');
-              });
-        
-              response.write('</table>');
-              response.end();
-            }
-          });
-
-      } else {
-        response.writeHead(200, {'Content-Type': 'text/html'});
-        response.write('<p> No token found in cookie!</p>');
-        response.end();
+    client.api('/me/sendmail').post(message,
+      (err) => {
+        return done(err);
       }
-    });
-  }
-
-  var meetingScheduleRequest = {
-    "Subject": "Discuss the Calendar REST API",
-    "Body": {
-      "ContentType": "HTML",
-      "Content": "I think it will meet our requirements!"
-    },
-    "Start": {
-        "DateTime": "2017-12-12T18:00:00",
-        "TimeZone": "Pacific Standard Time"
-    },
-    "End": {
-        "DateTime": "2017-12-12T19:00:00",
-        "TimeZone": "Pacific Standard Time"
-    },
-    "Attendees": [
-      {
-        "EmailAddress": {
-          "Address": "37351@hexaware.com",
-          "Name": "Shruti Viswanath"
-        },
-        "Type": "Required"
-      }
-    ]
-  }
+    );
+  };
 
 
-  function scheduleMeeting(response, request) {
-    getAccessToken(request, response, function(error, token) {
-      console.log('Token found in cookie: ', token);
-      var email = getValueFromCookie('node-tutorial-email', request.headers.cookie);
-      console.log('Email found in cookie: ', email);
-      if (token) {
+exports.sendEmail = sendEmail;
 
-        response.writeHead(200, {'Content-Type': 'text/html'});
-        response.write('<div><h1>Your calendar</h1></div>');
-        
-        // Create a Graph client
-        var client = microsoftGraph.Client.init({
-          authProvider: (done) => {
-            // Just return the token
-            done(null, token);
-          }
-        });
-        
-        // Get the 10 events with the greatest start date
-        client
-          .api('/me/events')
-          .header('X-AnchorMailbox', email)
-          .top(10)
-          .select('subject,start,end')
-          .orderby('start/dateTime DESC')
-          .post(meetingScheduleRequest, (err, res) => {
-            if (err) {
-              console.log('scheduleMeeting returned an error: ' + JSON.stringify(err));
-              response.write('<p>ERROR: ' + JSON.stringify(err) + '</p>');
-              response.end();
-            } else {
-              response.write('<p>Sucess: ' + JSON.stringify(res.value) + '</p>');
-              response.end();
-            }
-          });
 
-      } else {
-        response.writeHead(200, {'Content-Type': 'text/html'});
-        response.write('<p> No token found in cookie!</p>');
-        response.end();
-      }
-    });
-  }
 
-  function contacts(response, request) {
-    getAccessToken(request, response, function(error, token) {
-      console.log('Token found in cookie: ', token);
-      var email = getValueFromCookie('node-tutorial-email', request.headers.cookie);
-      console.log('Email found in cookie: ', email);
-      if (token) {
-        response.writeHead(200, {'Content-Type': 'text/html'});
-        response.write('<div><h1>Your contacts</h1></div>');
-        
-        // Create a Graph client
-        var client = microsoftGraph.Client.init({
-          authProvider: (done) => {
-            // Just return the token
-            done(null, token);
-          }
-        });
-        
-        // Get the first 10 contacts in alphabetical order
-        // by given name
-        client
-          .api('/me/contacts')
-          .header('X-AnchorMailbox', email)
-          .top(10)
-          .select('id, givenName,surname,emailAddresses')
-          .orderby('givenName ASC')
-          .get((err, res) => {
-            if (err) {
-              console.log('getContacts returned an error: ' + err);
-              response.write('<p>ERROR: ' + err + '</p>');
-              response.end();
-            } else {
-              console.log('getContacts returned ' + res.value.length + ' contacts.');
-              response.write('<table><tr><th>First name</th><th>Last name</th><th>Email</th></tr>');
-              res.value.forEach(function(contact) {
-                var email = contact.emailAddresses[0] ? contact.emailAddresses[0].address : 'NONE';
-                response.write('<tr><td>' + contact.givenName + 
-                  '</td><td>' + contact.surname +
-                  '</td><td>' + email + ' ' + contact.id +' </td></tr>');
-              });
-        
-              response.write('</table>');
-              response.end();
-            }
-          });
-      } else {
-        response.writeHead(200, {'Content-Type': 'text/html'});
-        response.write('<p> No token found in cookie!</p>');
-        response.end();
-      }
-    });
-  }

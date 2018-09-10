@@ -15,6 +15,11 @@ const query = require('./query');
 const template = require('./template');
 var mail = require('./SendEmail');
 var MicrosoftGraph = require("@microsoft/microsoft-graph-client");
+var AuthenticationContext = require('adal-node').AuthenticationContext;
+var oResource = 'https://graph.microsoft.com';
+var oClientId = process.env.oClientId;
+    var oClientSecret = process.env.oClientSecret;
+     var oAuthorityURL = process.env.oAuthorityURL;
 
 async function showListOfFunds(clientId, riskProfile) {
     console.log("I am inside show method");
@@ -168,7 +173,7 @@ app.post('/fulfillment', async function (req, res) {
 
     }
     if (req.body.result.metadata.intentName == 'CURRENT-RISK-PROFILE') {
-             
+
         const mailBody =
             {
                 "message": {
@@ -203,6 +208,25 @@ app.post('/fulfillment', async function (req, res) {
                 accessToken: "'eyJ0eXAiOiJKV1QiLCJub25jZSI6IkFRQUJBQUFBQUFEWHpaM2lmci1HUmJEVDQ1ek5TRUZFWGdzRTZIRXdweWktNFB3dFotX2xqOGhSM1VjTUJZRjAtTjY3SHRyZkV4VXkyOE5ERzNXYmo3TGZONnhYdHRHY0Fwb0Y0djhpSTFpQ0l4R0ZyYXlHaGlBQSIsImFsZyI6IlJTMjU2IiwieDV0IjoiN19adWYxdHZrd0x4WWFIUzNxNmxValVZSUd3Iiwia2lkIjoiN19adWYxdHZrd0x4WWFIUzNxNmxValVZSUd3In0.eyJhdWQiOiJodHRwczovL2dyYXBoLm1pY3Jvc29mdC5jb20iLCJpc3MiOiJodHRwczovL3N0cy53aW5kb3dzLm5ldC83YzBjMzZmNS1hZjgzLTRjMjQtODg0NC05OTYyZTAxNjM3MTkvIiwiaWF0IjoxNTM2NTU5MjcxLCJuYmYiOjE1MzY1NTkyNzEsImV4cCI6MTUzNjU2MzE3MSwiYWNjdCI6MCwiYWNyIjoiMSIsImFpbyI6IjQyQmdZREE5Zkc3ZXgzUUYzUzFNOWg4VW82dWNOWnRWTXczUE05MFVXL0xoMVpGTElUOEEiLCJhbXIiOlsid2lhIl0sImFwcF9kaXNwbGF5bmFtZSI6IkFsaWNlIiwiYXBwaWQiOiI0OGY0MDRiMS0yYjYyLTRlN2EtOGU2Ny05OGE1ZDcyZjM2MWMiLCJhcHBpZGFjciI6IjEiLCJmYW1pbHlfbmFtZSI6IksiLCJnaXZlbl9uYW1lIjoiTml2ZXRoYSIsImlwYWRkciI6IjE2NS4yMjUuMTA0Ljk2IiwibmFtZSI6Ik5pdmV0aGEgSyIsIm9pZCI6IjFiMDIwNzBlLTYwNmMtNDJkZi1iODNkLTFhZjA5YjI5YmIxZiIsIm9ucHJlbV9zaWQiOiJTLTEtNS0yMS0xNjQ0NDkxOTM3LTgxMzQ5NzcwMy02ODIwMDMzMzAtMTUzODg0IiwicGxhdGYiOiIzIiwicHVpZCI6IjEwMDNCRkZEQTVBQzQzQTQiLCJzY3AiOiJNYWlsLlNlbmQgb3BlbmlkIHByb2ZpbGUgVXNlci5SZWFkIGVtYWlsIiwic3ViIjoiSUNUMFdnaG9CZXFUS0NQb0FHTjYxRHBtbWZNUmYtRlhHUXB3S1hibTJLayIsInRpZCI6IjdjMGMzNmY1LWFmODMtNGMyNC04ODQ0LTk5NjJlMDE2MzcxOSIsInVuaXF1ZV9uYW1lIjoiMzkxMzJASGV4YXdhcmUuY29tIiwidXBuIjoiMzkxMzJASGV4YXdhcmUuY29tIiwidXRpIjoiODhVYWVLQ1p6VTJldTRBV1JzMFFBQSIsInZlciI6IjEuMCIsInhtc19zdCI6eyJzdWIiOiJfV1ZWbjdFbnRCS0xkTU9aOGk0bGJ6QmVrWFVkaElobFFwU0JudGFKX2Q0In19.iq2n1lUIH9puA2T6RKvHlXQJE1mI4CaneFfwK-Vg92wZSe9pq8-MwhYlzKxQcOedGlo7COgAK4xontD1yU2F8n0h0oIevuQo9q5LH4LqrzBdIIj5W7c5VB_AMtNFS4R404V12x0vnoRAUx_38BfSs6TLfn4i1pZ_fHQhzPEGWaMX2gIxqUAHTAnkxT7O0AW1yExk2_92Kv5T0kGXBSfokaiIhlncsfrTIUPa85TC9pH7tWe3zlz6vEDQO1dC8VfxluCuLGIXklIdc273jkxS9zeb3a9KhSAtYgqFC0Bvei4yKPsUd6PCr0zpaGqfUuUS4IfJJ1f63-Vn1slwUyMjdw"
             }
         };  
+
+        let context = new AuthenticationContext(oAuthorityURL);
+
+            context.acquireTokenWithClientCredentials(oResource, oClientId, oClientSecret,
+                function (err, tokenResponse) {
+                    if (err) {
+                        console.log("Access error. Are you logged into your Hexaware account?");
+                    } else {                        
+                        Token = tokenResponse.accessToken; 
+                        console.log("Nivetha", Token);                      
+                            MicrosoftGraphClient = MicrosoftGraph.Client.init({
+                                defaultVersion: 'v1.0',
+                                authProvider: (done) => {
+                                    done(null, Token); //first parameter takes an error if you can't get an access token 
+                                }
+                            }); 
+
+                    }
+                });
 
         mail.sendEmail(user, mailBody, function (response,err) {
            console.log("user1,,,,,,,,",JSON.stringify(user));

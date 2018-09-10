@@ -267,7 +267,7 @@ app.post('/fulfillment', async function (req, res) {
     }
     if (req.body.result.metadata.intentName == 'EXIT-FUND-OPTION-YES') {
         var fundname = req.body.result.contexts[1].parameters.fund_name ? req.body.result.contexts[1].parameters.fund_name : req.body.result.parameters.fund_name;
-        var clientId =  req.body.sessionId.slice(-6);
+        var clientId =  req.body.result.contexts[1].parameters.clientid?req.body.result.contexts[1].parameters.clientid:req.body.sessionId.slice(-6);
         await query.ProductGet({ Name: fundname,Type:'ETF' }).then(async function (funddetails) {
             let productID = funddetails[0].ProductID;
             let productName = funddetails[0].Name;
@@ -371,7 +371,8 @@ app.post('/fulfillment', async function (req, res) {
         })
     }
     if (req.body.result.metadata.intentName == 'EXIT-FUND') {
-        var clientId = req.body.sessionId.slice(-6);
+      
+        var clientId = req.body.result.parameters.clientid?req.body.result.parameters.clientid:req.body.sessionId.slice(-6);
         console.log(clientId);
         await query.getLowPerformingFund(clientId).then(async function (data) {
             quickreplies = [];

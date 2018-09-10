@@ -289,7 +289,7 @@ app.post('/fulfillment', async function (req, res) {
                                 "subject": "Your Fund "+fundname+" is Exited",
                                 "body": {
                                     "contentType": "Text",
-                                    "content": response
+                                    "content": response.replace("<br/>","\n")
                                 },
                                 "toRecipients": [
                                     {
@@ -297,16 +297,8 @@ app.post('/fulfillment', async function (req, res) {
                                             "address": "40140@hexaware.com"
                                         }
                                     }
-                                ],
-                                "ccRecipients": [
-                                    {
-                                        "emailAddress": {
-                                            "address": "40140@hexaware.com"
-                                        }
-                                    }
                                 ]
-                            },
-                            "saveToSentItems": "true"
+                            }
                         };
             
                     user = {

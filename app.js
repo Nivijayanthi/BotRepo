@@ -333,6 +333,7 @@ app.post('/fulfillment', async function (req, res) {
     }
     if (req.body.result.metadata.intentName == 'EXIT-FUND') {
         var clientId = req.body.sessionId.slice(-6);
+        console.log(clientId);
         await query.getLowPerformingFund(clientId).then(async function (data) {
             quickreplies = [];
             await data.forEach(function (value) {

@@ -295,7 +295,7 @@ app.post('/fulfillment', async function (req, res) {
     }
     if (req.body.result.metadata.intentName == 'EXIT-FUND-OPTION') {
         var fundname = req.body.result.parameters.fund_name;
-        await query.ProductGet({ Name: fundname }).then(function (funddetails) {
+        await query.ProductGet({ Name: fundname,Type:'ETF' }).then(function (funddetails) {
 
             if (funddetails.length > 0) {
                 msg = {
@@ -343,7 +343,8 @@ app.post('/fulfillment', async function (req, res) {
                 })
             })
             console.log(quickreplies)
-
+            if(data.length>0)
+            {
             msg = {
                 "speech": "",
                 "displayText": "",
@@ -359,6 +360,13 @@ app.post('/fulfillment', async function (req, res) {
                 }]
             };
             return res.json(msg);
+        } else{
+            return res.json({
+                speech: "Sorry! No Fund Details Available currently for your profile",
+                displayText: response,
+                source: 'portal',
+            });
+        }
         })
 
     }

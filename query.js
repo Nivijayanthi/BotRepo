@@ -112,7 +112,7 @@ let getLowPerformingFund=function(clientID){
         CurrentPrice : 1,
         MarketValue:1,
         productHoldings:1
-    }},{ $match : { CustomerID : "C10116",'productHoldings.Performance':'LOW' } }
+    }},{ $match : { CustomerID : clientID,'productHoldings.Performance':'LOW','product.Type':'ETF' } }
 ])
 }
 // let getLowPerformingFund=function(clientID){

@@ -14,8 +14,8 @@ app.use(express.static(__dirname));
 const query = require('./query');
 const template = require('./template');
 var authHelper = require('./auth');
-const graphHelper = require('./auth');
 const config = require('./lib/config.js');
+var MicrosoftGraph = require("@microsoft/microsoft-graph-client");
 
 async function showListOfFunds(clientId, riskProfile) {
     console.log("I am inside show method");
@@ -35,6 +35,22 @@ async function showListOfFunds(clientId, riskProfile) {
 
 
 }
+async function sendEmail(user, message, done){
+    var client = MicrosoftGraph.Client.init({
+      defaultVersion: 'v1.0',
+      debugLogging: true,
+      authProvider: function(authDone) {
+        authDone(null, user.accessToken);
+      }
+    });
+
+    console.log("hello..........",client.api);
+    client.api('https://graph.microsoft.com/v1.0/me/sendMail').post(message,
+      (err) => {
+        return done(err);
+      }
+    );
+  }
 
 // function buildCarouselResponse(list){
 //     let result = [];
@@ -65,7 +81,7 @@ app.post('/fulfillment', async function (req, res) {
     var response;
     let msgList = [];
     let listOfFunds = [];
-    console.log("request from dialogflow", JSON.stringify(req));
+    //console.log("request from dialogflow", JSON.stringify(req.body));
 
     if (req.body.result.metadata.intentName == 'CHANGE-RISK-PROFILE') {
         var currentProfile = req.body.result.parameters.CurrentProfile;
@@ -183,7 +199,7 @@ app.post('/fulfillment', async function (req, res) {
                         {
                             "emailAddress": {
                                 "address": "39416@hexaware.com",
-                                "address" : "32128@hexaware.com"
+                                "address": "32128@hexaware.com"
                             }
                         }
                     ],
@@ -198,147 +214,152 @@ app.post('/fulfillment', async function (req, res) {
                 "saveToSentItems": "true"
             };
 
-            user = {
-    profile : {
-        oid : "1b02070e-606c-42df-b83d-1af09b29bb1f",
-         displayName : "Nivetha K",
-         accessToken : "eyJ0eXAiOiJKV1QiLCJub25jZSI6IkFRQUJBQUFBQUFEWHpaM2lmci1HUmJEVDQ1ek5TRUZFN1ZpOXpGTlV1b21Lb0hYeWNwRk1fdjRoTGloWGVzWnBJQVo5WU9IRGVCd3pmRFB5d1BFa2VjeVEzdEc4V1MwSDFyYXRSNkxBQ3hhX21FMzk1ZnhuMXlBQSIsImFsZyI6IlJTMjU2IiwieDV0IjoiN19adWYxdHZrd0x4WWFIUzNxNmxValVZSUd3Iiwia2lkIjoiN19adWYxdHZrd0x4WWFIUzNxNmxValVZSUd3In0.eyJhdWQiOiJodHRwczovL2dyYXBoLm1pY3Jvc29mdC5jb20iLCJpc3MiOiJodHRwczovL3N0cy53aW5kb3dzLm5ldC83YzBjMzZmNS1hZjgzLTRjMjQtODg0NC05OTYyZTAxNjM3MTkvIiwiaWF0IjoxNTM2MzEzNTk5LCJuYmYiOjE1MzYzMTM1OTksImV4cCI6MTUzNjMxNzQ5OSwiYWNjdCI6MCwiYWNyIjoiMSIsImFpbyI6IjQyQmdZSmlwOUxWNzc1K0loVWtWNXFkNzl2enE1UXFSdTY4cS9VMWtmV09PN2t1VlNRd0EiLCJhbXIiOlsid2lhIl0sImFwcF9kaXNwbGF5bmFtZSI6IkFsaWNlIiwiYXBwaWQiOiI0OGY0MDRiMS0yYjYyLTRlN2EtOGU2Ny05OGE1ZDcyZjM2MWMiLCJhcHBpZGFjciI6IjEiLCJmYW1pbHlfbmFtZSI6IksiLCJnaXZlbl9uYW1lIjoiTml2ZXRoYSIsImlwYWRkciI6IjE2NS4yMjUuMTA0Ljk2IiwibmFtZSI6Ik5pdmV0aGEgSyIsIm9pZCI6IjFiMDIwNzBlLTYwNmMtNDJkZi1iODNkLTFhZjA5YjI5YmIxZiIsIm9ucHJlbV9zaWQiOiJTLTEtNS0yMS0xNjQ0NDkxOTM3LTgxMzQ5NzcwMy02ODIwMDMzMzAtMTUzODg0IiwicGxhdGYiOiIzIiwicHVpZCI6IjEwMDNCRkZEQTVBQzQzQTQiLCJzY3AiOiJNYWlsLlNlbmQgb3BlbmlkIHByb2ZpbGUgVXNlci5SZWFkIGVtYWlsIiwic3ViIjoiSUNUMFdnaG9CZXFUS0NQb0FHTjYxRHBtbWZNUmYtRlhHUXB3S1hibTJLayIsInRpZCI6IjdjMGMzNmY1LWFmODMtNGMyNC04ODQ0LTk5NjJlMDE2MzcxOSIsInVuaXF1ZV9uYW1lIjoiMzkxMzJASGV4YXdhcmUuY29tIiwidXBuIjoiMzkxMzJASGV4YXdhcmUuY29tIiwidXRpIjoiN1BLZXFYU19RVVdHNS1YZE5Xa1RBQSIsInZlciI6IjEuMCIsInhtc19zdCI6eyJzdWIiOiJfV1ZWbjdFbnRCS0xkTU9aOGk0bGJ6QmVrWFVkaElobFFwU0JudGFKX2Q0In19.pevfs5H-YU4xOMgzu_HqbFiYqow41WdJ3RGIOZMHkW-sJ6K6Dgq6osbpyUXRW7H8gwkTgj0AePunQE2Dnlr4_P657BWZ26MjBnSsz47uii5w3-UGlElV91IYK1nM5m2af0a43-DuWgSdH9_3d1x2jiA_48JHzeCJc-g0FVJ8TKULNZmfvil_KxvsdDdxhaWNADspzpwg-w6qFhMUSLBxUPgBeHkiueQ6gO8LP4GMTCZfH8-Q_QBuSNjV2KfMD44gZvClg1SH_1_F7KSHCyycypDgylLLc6Eg4EHUmL3TCo421Y01BZJBqtRpHIPSthC4huaf_xSiv4q-7t3OpSj3Qg"
-    }
-};
-        authHelper.sendEmail(user, mailBody, function (err) {
+        user = {
+            profile: {
+                oid: "1b02070e-606c-42df-b83d-1af09b29bb1f",
+                displayName: "Nivetha K",
+                accessToken: "eyJ0eXAiOiJKV1QiLCJub25jZSI6IkFRQUJBQUFBQUFEWHpaM2lmci1HUmJEVDQ1ek5TRUZFU1hNMlpmLVd0ZnhuZ0JYSlRUSmYzY0VzMnM4VmUtUGVWSUNYb1pWRURTLTVrU0ZUZ0tKMmN1bF93bTFPemN1c0xUSC1aX0lSRDhiNU9tN1paRmdOaFNBQSIsImFsZyI6IlJTMjU2IiwieDV0IjoiN19adWYxdHZrd0x4WWFIUzNxNmxValVZSUd3Iiwia2lkIjoiN19adWYxdHZrd0x4WWFIUzNxNmxValVZSUd3In0.eyJhdWQiOiJodHRwczovL2dyYXBoLm1pY3Jvc29mdC5jb20iLCJpc3MiOiJodHRwczovL3N0cy53aW5kb3dzLm5ldC83YzBjMzZmNS1hZjgzLTRjMjQtODg0NC05OTYyZTAxNjM3MTkvIiwiaWF0IjoxNTM2MzE5MTQ0LCJuYmYiOjE1MzYzMTkxNDQsImV4cCI6MTUzNjMyMzA0NCwiYWNjdCI6MCwiYWNyIjoiMSIsImFpbyI6IkFTUUEyLzhJQUFBQWtCVTVJdnNvN3Z3OXRSclhlZTBFYWFGUE1FeVd0ODlsYlZYRnpmTFJ2VTQ9IiwiYW1yIjpbIndpYSJdLCJhcHBfZGlzcGxheW5hbWUiOiJBbGljZSIsImFwcGlkIjoiNDhmNDA0YjEtMmI2Mi00ZTdhLThlNjctOThhNWQ3MmYzNjFjIiwiYXBwaWRhY3IiOiIxIiwiZmFtaWx5X25hbWUiOiJLIiwiZ2l2ZW5fbmFtZSI6Ik5pdmV0aGEiLCJpcGFkZHIiOiIxNjUuMjI1LjEwNC45NiIsIm5hbWUiOiJOaXZldGhhIEsiLCJvaWQiOiIxYjAyMDcwZS02MDZjLTQyZGYtYjgzZC0xYWYwOWIyOWJiMWYiLCJvbnByZW1fc2lkIjoiUy0xLTUtMjEtMTY0NDQ5MTkzNy04MTM0OTc3MDMtNjgyMDAzMzMwLTE1Mzg4NCIsInBsYXRmIjoiMyIsInB1aWQiOiIxMDAzQkZGREE1QUM0M0E0Iiwic2NwIjoiTWFpbC5TZW5kIG9wZW5pZCBwcm9maWxlIFVzZXIuUmVhZCBlbWFpbCIsInN1YiI6IklDVDBXZ2hvQmVxVEtDUG9BR042MURwbW1mTVJmLUZYR1Fwd0tYYm0yS2siLCJ0aWQiOiI3YzBjMzZmNS1hZjgzLTRjMjQtODg0NC05OTYyZTAxNjM3MTkiLCJ1bmlxdWVfbmFtZSI6IjM5MTMyQEhleGF3YXJlLmNvbSIsInVwbiI6IjM5MTMyQEhleGF3YXJlLmNvbSIsInV0aSI6Il9TVEpnX2FuUVVpWG1ZSTllTklmQUEiLCJ2ZXIiOiIxLjAiLCJ4bXNfc3QiOnsic3ViIjoiX1dWVm43RW50QktMZE1PWjhpNGxiekJla1hVZGhJaGxRcFNCbnRhSl9kNCJ9fQ.S99MgHgOX18-lr3tCtnxtLpeh28mysfSQ68gz0n2I7qwt470Wyr-fv5TCPpL3UMiVLLGCQZWR2LeTaHHHiTLMG6FkHfoitaXHx4zSDoI7g32ZEvvTKu_eaFOAZ3nxH3eEaT-6W4gK6e95lVfS-qz1rpZdScvXreJiWAgbK657aBVJvKQkhfn5HIMMTzvwao4wIwwMrWa5epn4rsjE5zVdP7vjfRyn8CeYNIb0fWsEpJBwkc0i75ZuNunzpNUhyqVjnG3wJA963yLMFt3AnP1VHEO6SbxIhocWCrXr6Cv05NEYYmerE-RslhbdhGL8QjM0ENo1WzHwR9Di-9YlqKxrA"
+            }
+        };  
+       sendEmail(user, mailBody, function (response,err) {
+           console.log("user1,,,,,,,,",JSON.stringify(user));
+           console.log("mailbody...............",JSON.stringify(mailBody));
             console.log("inside send mail app.js")
             if (err) {
                 renderError(res, err);
                 return;
-            };
+            }
+            if(res){
+                console.log("response from outlook",res);
+            }
             console.log("Sent an email");
             response = 'Email has been sent';
-       return res.json({
+            return res.json({
                 speech: response,
                 displayText: response,
                 source: 'portal',
             });
         });
 
-//         var credentials = {
-//     client: {
-//       id: '8a6b25b5-7148-45ac-a716-98faf826d2fe',
-//       secret: 'dqvntQRX930|=%msRYKD10(',
-//     },
-//     auth: {
-//       tokenHost: 'https://login.microsoftonline.com',
-//       authorizePath: 'common/oauth2/v2.0/authorize',
-//       tokenPath: 'common/oauth2/v2.0/token'
-//     }
-//   };
-//   var oauth2 = require('simple-oauth2').create(credentials);
-//   console.log("valllllllllllllllll", oauth2);
-//             var clientId = req.body.result.parameters.clientId;
-//             var val;
-//             await query.ClientRiskProfileGet({ ClientID: clientId, Active: 'Y' }).then(function (data) {
-//                 console.log("The response from DB risk profile..............", JSON.stringify(data));
-//                 val = data.RiskCategory;
-//             });
-//             response = `Your current risk profile is ${val}`;
-//             return res.json({
-//                 speech: response,
-//                 displayText: response,
-//                 source: 'portal',
-//             });
+        //         var credentials = {
+        //     client: {
+        //       id: '8a6b25b5-7148-45ac-a716-98faf826d2fe',
+        //       secret: 'dqvntQRX930|=%msRYKD10(',
+        //     },
+        //     auth: {
+        //       tokenHost: 'https://login.microsoftonline.com',
+        //       authorizePath: 'common/oauth2/v2.0/authorize',
+        //       tokenPath: 'common/oauth2/v2.0/token'
+        //     }
+        //   };
+        //   var oauth2 = require('simple-oauth2').create(credentials);
+        //   console.log("valllllllllllllllll", oauth2);
+        //             var clientId = req.body.result.parameters.clientId;
+        //             var val;
+        //             await query.ClientRiskProfileGet({ ClientID: clientId, Active: 'Y' }).then(function (data) {
+        //                 console.log("The response from DB risk profile..............", JSON.stringify(data));
+        //                 val = data.RiskCategory;
+        //             });
+        //             response = `Your current risk profile is ${val}`;
+        //             return res.json({
+        //                 speech: response,
+        //                 displayText: response,
+        //                 source: 'portal',
+        //             });
     }
-    if(req.body.result.metadata.intentName == 'EXIT-FUND-OPTION-YES'){
-        var fundname = req.body.result.contexts[1].parameters.fund_name?req.body.result.contexts[1].parameters.fund_name:req.body.result.parameters.fund_name;
-        var clientId = req.body.result.contexts[1].parameters.clientid?req.body.result.contexts[1].parameters.clientid:req.body.result.parameters.clientid;
-        await query.ProductGet({Name:fundname}).then(async function(funddetails){
-         let productID=funddetails[0].ProductID;
-         let productName=funddetails[0].Name;
-         await query.productperformanceGet({ProductID:productID}).then(async function(product){
-             console.log(productID + "=>" +clientId)
-        await query.holdingsProfileGet({ProductID:productID,CustomerID:clientId}).then(function(holdingsd){
-         if(product.length>0 && holdingsd.length>0){
-             let currentPrice=product[0].Currentprice;
-             let quantity=holdingsd[0].Quantity;
-             let marketvalue=parseInt(quantity.split(',').join('')) * parseInt(currentPrice);
-             response=`Your ${fundname} is exited. Details of the funds will be emailed to you shortly.`;
-             response+="<br/>Current Price: "+currentPrice + "<br/>";
-             response+="Quantity: "+quantity + "<br/>";
-             response+="Market Value: "+marketvalue + "<br/>";
-             console.log(marketvalue);
-             return res.json({
-                speech: response,
-                displayText: response,
-                source: 'portal',
-            });
-         }
-         })    
-        })   
+    if (req.body.result.metadata.intentName == 'EXIT-FUND-OPTION-YES') {
+        var fundname = req.body.result.contexts[1].parameters.fund_name ? req.body.result.contexts[1].parameters.fund_name : req.body.result.parameters.fund_name;
+        var clientId = req.body.result.contexts[1].parameters.clientid ? req.body.result.contexts[1].parameters.clientid : req.body.result.parameters.clientid;
+        await query.ProductGet({ Name: fundname }).then(async function (funddetails) {
+            let productID = funddetails[0].ProductID;
+            let productName = funddetails[0].Name;
+            await query.productperformanceGet({ ProductID: productID }).then(async function (product) {
+                console.log(productID + "=>" + clientId)
+                await query.holdingsProfileGet({ ProductID: productID, CustomerID: clientId }).then(function (holdingsd) {
+                    if (product.length > 0 && holdingsd.length > 0) {
+                        let currentPrice = product[0].Currentprice;
+                        let quantity = holdingsd[0].Quantity;
+                        let marketvalue = parseInt(quantity.split(',').join('')) * parseInt(currentPrice);
+                        response = `Your ${fundname} is exited. Details of the funds will be emailed to you shortly.`;
+                        response += "<br/>Current Price: " + currentPrice + "<br/>";
+                        response += "Quantity: " + quantity + "<br/>";
+                        response += "Market Value: " + marketvalue + "<br/>";
+                        console.log(marketvalue);
+                        return res.json({
+                            speech: response,
+                            displayText: response,
+                            source: 'portal',
+                        });
+                    }
+                })
+            })
         });
     }
     if (req.body.result.metadata.intentName == 'EXIT-FUND-OPTION') {
         var fundname = req.body.result.parameters.fund_name;
-        await query.ProductGet({Name:fundname}).then(function(funddetails){
+        await query.ProductGet({ Name: fundname }).then(function (funddetails) {
 
-        if(funddetails.length>0){
-            msg = {
-                "speech": "",
-                "displayText": "",
-                "messages": [{
-                  "type": 4,
-                  "platform": "facebook",
-                  "payload": {
-                    "facebook": {
-                      "text": `Do you want to exit the fund `+fundname,
-                      "quick_replies": [{
-                        "content_type": "text",
-                        "title": "Yes",
-                        "payload": "Yes"
-                      },{
-                        "content_type": "text",
-                        "title": "No",
-                        "payload": "No"
-                      }]
-                    }
-                  }
-                }]
-              };
-            return res.json(msg);
-        }
-        else{
-            return res.json({
-                speech: "Sorry! The selected funds is Not Available",
-                displayText: response,
-                source: 'portal',
-            });
-        }
+            if (funddetails.length > 0) {
+                msg = {
+                    "speech": "",
+                    "displayText": "",
+                    "messages": [{
+                        "type": 4,
+                        "platform": "facebook",
+                        "payload": {
+                            "facebook": {
+                                "text": `Do you want to exit the fund ` + fundname,
+                                "quick_replies": [{
+                                    "content_type": "text",
+                                    "title": "Yes",
+                                    "payload": "Yes"
+                                }, {
+                                    "content_type": "text",
+                                    "title": "No",
+                                    "payload": "No"
+                                }]
+                            }
+                        }
+                    }]
+                };
+                return res.json(msg);
+            }
+            else {
+                return res.json({
+                    speech: "Sorry! The selected funds is Not Available",
+                    displayText: response,
+                    source: 'portal',
+                });
+            }
         })
     }
     if (req.body.result.metadata.intentName == 'EXIT-FUND') {
         var clientId = req.body.result.parameters.clientid;
-        await query.getLowPerformingFund(clientId).then(async function(data){
-            quickreplies=[];
-            await data.forEach(function(value){
+        await query.getLowPerformingFund(clientId).then(async function (data) {
+            quickreplies = [];
+            await data.forEach(function (value) {
                 quickreplies.push({
                     "content_type": "text",
                     "title": value.product.Name,
                     "payload": value.product.Name
-                  })
+                })
             })
             console.log(quickreplies)
-              
+
             msg = {
                 "speech": "",
                 "displayText": "",
                 "messages": [{
-                  "type": 4,
-                  "platform": "facebook",
-                  "payload": {
-                    "facebook": {
-                      "text": `Please Select the low peforming fund to exit`,
-                      "quick_replies": quickreplies
+                    "type": 4,
+                    "platform": "facebook",
+                    "payload": {
+                        "facebook": {
+                            "text": `Please Select the low peforming fund to exit`,
+                            "quick_replies": quickreplies
+                        }
                     }
-                  }
                 }]
-              };
+            };
             return res.json(msg);
         })
 
@@ -349,7 +370,3 @@ console.log("Server Running at Port : " + port);
 app.listen(port, function () {
     console.log('Listening my app on  PORT: ' + port);
 });
-
-
-
-

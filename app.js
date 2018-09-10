@@ -82,13 +82,13 @@ app.post('/fulfillment', async function (req, res) {
         console.log("Out...........", listOfFunds);
         var objList = new template.QuickReplyTemplate;
         if (listOfFunds.length > 0) {
-            msg.payload.facebook.text = "Please find the list of funds available for your risk category";
+            msg.payload.facebook.text = "Please find the list of funds available for the risk category";
             listOfFunds.forEach(async function (value) {
                 objList.title = value;
                 await msgList.push(JSON.parse(JSON.stringify(objList)));
             });
             //console.log("masssssssssssssss",JSON.stringify(msgList));
-            msg.payload.facebook.text = "Please find the list of funds avaialable for your risk category";
+            msg.payload.facebook.text = "Please find the list of funds avaialable for the risk category";
             msg.payload.facebook.quick_replies = msgList;
             await dialogFlowResponse.messages.push(msg);
             console.log("Final msgggggggggggggggggg", JSON.stringify(dialogFlowResponse));
@@ -98,7 +98,7 @@ app.post('/fulfillment', async function (req, res) {
             return res.json(dialogFlowResponse);
 
         } else {
-            response = "Sorry!!There are no funds available under your new risk category";
+            response = "Sorry!!There are no funds available under the new risk category";
             return res.json({
                 speech: response,
                 displayText: response,
@@ -132,13 +132,13 @@ app.post('/fulfillment', async function (req, res) {
                 await msgList.push(JSON.parse(JSON.stringify(objList)));
             });
             console.log("masssssssssssssss", JSON.stringify(msgList));
-            msg.payload.facebook.text = "Please find the list of funds avaialable for your risk category";
+            msg.payload.facebook.text = "Please find the list of funds avaialable for the risk category";
             msg.payload.facebook.quick_replies = msgList;
             await dialogFlowResponse.messages.push(msg);
             console.log("Final msgggggggggggggggggg", JSON.stringify(dialogFlowResponse));
             return res.json(dialogFlowResponse);
         } else {
-            response = "Sorry!!There are no funds available under your new risk category";
+            response = "Sorry!!There are no funds available under the new risk category";
             return res.json({
                 speech: response,
                 displayText: response,
@@ -157,10 +157,10 @@ app.post('/fulfillment', async function (req, res) {
             console.log("Inside change");
             var currentProfile = req.body.result.contexts[0].parameters.CurrentProfile;
             var targetProfile = req.body.result.contexts[0].parameters.TargetProfile;
-            response = `Your change request for risk category from ${currentProfile} to ${targetProfile} has been sent to the Trading desk. You will be receiving a detailed  email shortly.`;
+            response = `The change request for risk category from ${currentProfile} to ${targetProfile} has been sent to the Trading desk. You will be receiving a detailed  email shortly.`;
         } if (resType == 'add-fund-folowup') {
             console.log("Inside add");
-            response = `Your request to add new fund has been sent to the Trading desk. You will be receiving a detailed  email shortly.`;
+            response = `The request to add new fund has been sent to the Trading desk. You will be receiving a detailed  email shortly.`;
 
         }
         return res.json({

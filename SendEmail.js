@@ -56,8 +56,6 @@ var findByOid = function(oid, fn) {
 
 function ensureAuthenticated (req, res, next) {
     if (req.isAuthenticated()) { return next(); }
-
-    res.render('/login');
 };
 
 function sendEmail(user, message, done){

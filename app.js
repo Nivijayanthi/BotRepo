@@ -44,7 +44,9 @@ async function showListOfFunds(clientId, riskProfile) {
 
 
 app.post('/fulfillment', async function (req, res) {
-    console.log(req.body)
+    console.log("-----------------Session ID-----------------")
+    console.log(req.body.sessionId)
+    console.log("--------------------------------------------")
     var dialogFlowResponse = {
         speech: "hello",
         messages: []

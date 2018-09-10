@@ -55,4 +55,3 @@ async function getTokenFromCode(auth_code) {
 
 exports.getTokenFromCode = getTokenFromCode;
 exports.getAccessToken = getAccessToken;
-exports.getAuthUrl = getAuthUrl;

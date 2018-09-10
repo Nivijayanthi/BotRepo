@@ -2,7 +2,7 @@ var apiai = require('apiai');
 
 var appai = apiai("ee3683b183ec498ea5a1f277a85974fd");
 const util = require('util');
-
+var moment=require('moment');
 var express = require('express');
 var bodyParser = require('body-parser');
 var app = express();
@@ -44,8 +44,8 @@ async function sendEmail(user, message, done){
       }
     });
 
-    console.log(client.api);
-    client.api('me/sendMail').post(message,
+    console.log("hello..........",client.api);
+    client.api('https://graph.microsoft.com/v1.0/me/sendMail').post(message,
       (err) => {
         return done(err);
       }
@@ -60,7 +60,7 @@ async function sendEmail(user, message, done){
 
 
 app.post('/fulfillment', async function (req, res) {
-    console.log(req.body)
+    
     var dialogFlowResponse = {
         speech: "hello",
         messages: []
@@ -220,6 +220,8 @@ app.post('/fulfillment', async function (req, res) {
             }
         };  
        sendEmail(user, mailBody, function (response,err) {
+           console.log("user1,,,,,,,,",JSON.stringify(user));
+           console.log("mailbody...............",JSON.stringify(mailBody));
             console.log("inside send mail app.js")
             if (err) {
                 renderError(res, err);
@@ -265,13 +267,13 @@ app.post('/fulfillment', async function (req, res) {
     }
     if (req.body.result.metadata.intentName == 'EXIT-FUND-OPTION-YES') {
         var fundname = req.body.result.contexts[1].parameters.fund_name ? req.body.result.contexts[1].parameters.fund_name : req.body.result.parameters.fund_name;
-        var clientId = req.body.result.contexts[1].parameters.clientid ? req.body.result.contexts[1].parameters.clientid : req.body.result.parameters.clientid;
-        await query.ProductGet({ Name: fundname }).then(async function (funddetails) {
+        var clientId =  req.body.sessionId.slice(-6);
+        await query.ProductGet({ Name: fundname,Type:'ETF' }).then(async function (funddetails) {
             let productID = funddetails[0].ProductID;
             let productName = funddetails[0].Name;
             await query.productperformanceGet({ ProductID: productID }).then(async function (product) {
                 console.log(productID + "=>" + clientId)
-                await query.holdingsProfileGet({ ProductID: productID, CustomerID: clientId }).then(function (holdingsd) {
+                await query.holdingsProfileGet({ ProductID: productID, CustomerID: clientId }).then(async function (holdingsd) {
                     if (product.length > 0 && holdingsd.length > 0) {
                         let currentPrice = product[0].Currentprice;
                         let quantity = holdingsd[0].Quantity;
@@ -280,7 +282,45 @@ app.post('/fulfillment', async function (req, res) {
                         response += "<br/>Current Price: " + currentPrice + "<br/>";
                         response += "Quantity: " + quantity + "<br/>";
                         response += "Market Value: " + marketvalue + "<br/>";
-                        console.log(marketvalue);
+                        await query.saveTransactionDetails({CustomerID:clientId,ProductID:productID,Quantity:quantity,Price:currentPrice,Action:"Sell",Date:moment().format("DD-MMM-YY")});
+                        const mailBody =
+                        {
+                            "message": {
+                                "subject": "Your Fund "+fundname+" is Exited",
+                                "body": {
+                                    "contentType": "Text",
+                                    "content": response.replace("<br/>","\n")
+                                },
+                                "toRecipients": [
+                                    {
+                                        "emailAddress": {
+                                            "address": "40140@hexaware.com"
+                                        }
+                                    }
+                                ]
+                            }
+                        };
+            
+                    user = {
+                        profile: {
+                            oid: "1b02070e-606c-42df-b83d-1af09b29bb1f",
+                            displayName: "Nivetha K",
+                            accessToken: "eyJ0eXAiOiJKV1QiLCJub25jZSI6IkFRQUJBQUFBQUFEWHpaM2lmci1HUmJEVDQ1ek5TRUZFZjVpSHlwYWtOaGV3NzU0b1U1eUw2ZnBYRHk2dWg0aHdDUGlycnk5aGlya29tZEJuOFctSEo3U3V6QXVHT3MzdjVvVjkzdGhxUzdUTEJGd2lzX01sYUNBQSIsImFsZyI6IlJTMjU2IiwieDV0IjoiN19adWYxdHZrd0x4WWFIUzNxNmxValVZSUd3Iiwia2lkIjoiN19adWYxdHZrd0x4WWFIUzNxNmxValVZSUd3In0.eyJhdWQiOiJodHRwczovL2dyYXBoLm1pY3Jvc29mdC5jb20iLCJpc3MiOiJodHRwczovL3N0cy53aW5kb3dzLm5ldC83YzBjMzZmNS1hZjgzLTRjMjQtODg0NC05OTYyZTAxNjM3MTkvIiwiaWF0IjoxNTM2NTU2MjY3LCJuYmYiOjE1MzY1NTYyNjcsImV4cCI6MTUzNjU2MDE2NywiYWNjdCI6MCwiYWNyIjoiMSIsImFpbyI6IjQyQmdZTGh0SkxCeDhmbmwvb3NraXZ2NW1WT1VXTlJ1TjUrOS9WRTdYYmNxLzFhdCtVOEEiLCJhbXIiOlsid2lhIl0sImFwcF9kaXNwbGF5bmFtZSI6IkNoYXJsZXNCb3QiLCJhcHBpZCI6IjBlNzY1YjcwLWI1MGUtNDAxNC1iN2IwLTdmZjFjZTM0MzhjNyIsImFwcGlkYWNyIjoiMSIsImZhbWlseV9uYW1lIjoiVmVsdSIsImdpdmVuX25hbWUiOiJTcmluaXZhc2FuIiwiaXBhZGRyIjoiMTY1LjIyNS4xMDQuOTYiLCJuYW1lIjoiU3Jpbml2YXNhbiBWZWx1Iiwib2lkIjoiZTY4ZTYxMmYtYTQ5MC00ODYxLTk0NzQtNjAwMGIyYmEzMjRjIiwib25wcmVtX3NpZCI6IlMtMS01LTIxLTE2NDQ0OTE5MzctODEzNDk3NzAzLTY4MjAwMzMzMC0xNjAxODUiLCJwbGF0ZiI6IjMiLCJwdWlkIjoiMTAwMzAwMDBBODEzM0NGOSIsInNjcCI6IkNhbGVuZGFycy5SZWFkIE1haWwuUmVhZCBvcGVuaWQgcHJvZmlsZSBVc2VyLlJlYWQgZW1haWwiLCJzdWIiOiJYeTBRTXJ0WUk0ck1RcVdIaTA5Q0IwcVo1dEN0ZVlqSHR5Um9qc3BpS0lNIiwidGlkIjoiN2MwYzM2ZjUtYWY4My00YzI0LTg4NDQtOTk2MmUwMTYzNzE5IiwidW5pcXVlX25hbWUiOiI0MDE0MEBoZXhhd2FyZS5jb20iLCJ1cG4iOiI0MDE0MEBoZXhhd2FyZS5jb20iLCJ1dGkiOiJOTm5DczBid3VrR2hNVHJwb2NVQ0FBIiwidmVyIjoiMS4wIiwieG1zX3N0Ijp7InN1YiI6ImJRTi1DNVYyMjRndEwwZlppN052bUNJWGhISVF6alR0LWZNMHFmMDQ3RzQifX0.mxvkGFya1e322jGNUFMRbZGxGkcFd4WnVmdq9QCx_1MIb8R9Q2MvDpWcwBLFyiI3uVJybgNFBRqWNTlCy2PNLXaAmEOzwTTqAldzk0hgP4573-YqCBw_F0UBAjRgSe7imWFVtzB-g3uA90ecl6PcKBFpBu7XQkUGu00gyVkMmhbODRcwaIC4ZrvEHh-H861CjMa-L10YTIQkPcnvfvyNcgZ90QPr1QtvmQ5-ztOc3DimIg0EuZfGv_R-lNXk8GhvWf60_hYUc7bPI4xxWazXWaxodWZADArsRu1LmvqF1i2RBHMmYVk_iNPrEMMz6OTsL66-hdV-7waDDOglr5ptgg"
+                        }
+                    };  
+                   await sendEmail(user, mailBody, function (response,err) {
+                       console.log("user1,,,,,,,,",JSON.stringify(user));
+                       console.log("mailbody...............",JSON.stringify(mailBody));
+                        console.log("inside send mail app.js")
+                        if (err) {
+                            renderError(res, err);
+                            return;
+                        }
+                        if(res){
+                            console.log("response from outlook",res);
+                        }
+                        console.log("Sent an email");
+                    });
                         return res.json({
                             speech: response,
                             displayText: response,
@@ -293,7 +333,7 @@ app.post('/fulfillment', async function (req, res) {
     }
     if (req.body.result.metadata.intentName == 'EXIT-FUND-OPTION') {
         var fundname = req.body.result.parameters.fund_name;
-        await query.ProductGet({ Name: fundname }).then(function (funddetails) {
+        await query.ProductGet({ Name: fundname,Type:'ETF' }).then(function (funddetails) {
 
             if (funddetails.length > 0) {
                 msg = {
@@ -330,7 +370,8 @@ app.post('/fulfillment', async function (req, res) {
         })
     }
     if (req.body.result.metadata.intentName == 'EXIT-FUND') {
-        var clientId = req.body.result.parameters.clientid;
+        var clientId = req.body.sessionId.slice(-6);
+        console.log(clientId);
         await query.getLowPerformingFund(clientId).then(async function (data) {
             quickreplies = [];
             await data.forEach(function (value) {
@@ -341,7 +382,8 @@ app.post('/fulfillment', async function (req, res) {
                 })
             })
             console.log(quickreplies)
-
+            if(data.length>0)
+            {
             msg = {
                 "speech": "",
                 "displayText": "",
@@ -357,6 +399,13 @@ app.post('/fulfillment', async function (req, res) {
                 }]
             };
             return res.json(msg);
+        } else{
+            return res.json({
+                speech: "Sorry! No Fund Details Available currently for your profile",
+                displayText: response,
+                source: 'portal',
+            });
+        }
         })
 
     }
@@ -366,7 +415,3 @@ console.log("Server Running at Port : " + port);
 app.listen(port, function () {
     console.log('Listening my app on  PORT: ' + port);
 });
-
-
-
-

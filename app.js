@@ -209,7 +209,7 @@ app.post('/fulfillment', async function (req, res) {
         var val;
         await query.ClientRiskProfileGet({ ClientID: clientId, Active: 'Y' }).then(function (data) {
             console.log("The response from DB risk profile..............", JSON.stringify(data));
-            val = data.RiskCategory;
+            val = data[0].RiskCategory;
         });
         response = `Your current risk profile is ${val}.`;
         return res.json({

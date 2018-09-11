@@ -82,8 +82,7 @@ const mailBody =
             "toRecipients": [
                 {
                     "emailAddress": {
-                        "address": "39416@hexaware.com",
-                        "address": "32128@hexaware.com"
+                        "address": "39416@hexaware.com"
                     }
                 }
             ],

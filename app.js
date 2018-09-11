@@ -13,101 +13,11 @@ app.use(express.static(__dirname));
 //imports
 const query = require('./query');
 const template = require('./template');
-var mail = require('./SendEmail');
-var MicrosoftGraph = require("@microsoft/microsoft-graph-client");
-const authHelper = require('./auth');
-const graphApi = require('./try');
-const passport = require('passport');
-const OIDCStrategy = require('passport-azure-ad').OIDCStrategy;
-const config = require('./lib/config');
 
-// authentication =================================================================
-var callback = (iss, sub, profile, accessToken, refreshToken, done) => {
-    if (!profile.oid) {
-        return done(new Error("No oid found"), null);
-    }
-
-    findByOid(profile.oid, function (err, user) {
-        if (err) {
-            return done(err);
-        }
-
-        if (!user) {
-            users.push({ profile, accessToken, refreshToken });
-            return done(null, profile);
-        }
-
-        return done(null, user);
-    });
-};
-
-passport.use(new OIDCStrategy(config.creds, callback));
-
-const users = [];
-
-passport.serializeUser((user, done) => {
-    done(null, user.oid);
-});
-
-passport.deserializeUser((id, done) => {
-    findByOid(id, function (err, user) {
-        done(err, user);
-    });
-});
-
-var findByOid = function (oid, fn) {
-    for (var i = 0, len = users.length; i < len; i++) {
-        var user = users[i];
-        if (user.profile.oid === oid) {
-            return fn(null, user);
-        }
-    }
-    return fn(null, null);
-};
-
-
-function ensureAuthenticated(req, res, next) {
-    if (req.isAuthenticated()) { return next(); }
-};
-//application..........................................
-
-const mailBody =
-    {
-        "message": {
-            "subject": "Test Outlook",
-            "body": {
-                "contentType": "Text",
-                "content": "Hello there!"
-            },
-            "toRecipients": [
-                {
-                    "emailAddress": {
-                        "address": "39416@hexaware.com"
-                    }
-                }
-            ],
-            "ccRecipients": [
-                {
-                    "emailAddress": {
-                        "address": "37351@hexaware.com"
-                    }
-                }
-            ]
-        },
-        "saveToSentItems": "true"
-    };
-
-user = {
-    profile: {
-        oid: "1b02070e-606c-42df-b83d-1af09b29bb1f",
-        displayName: "Nivetha K",
-        accessToken: "eyJ0eXAiOiJKV1QiLCJub25jZSI6IkFRQUJBQUFBQUFEWHpaM2lmci1HUmJEVDQ1ek5TRUZFOUZMQnpUSmxxSUl5bFMzeGlSTUdHWGlVQUxNbUlJR1ZDcDRIRjB0aEJMOXBmVXBNdlpwZXBJQ1dWZzZIY0FOX0RTNVpSRFAtSmhZU3BtSU5Lb1d2a1NBQSIsImFsZyI6IlJTMjU2IiwieDV0IjoiN19adWYxdHZrd0x4WWFIUzNxNmxValVZSUd3Iiwia2lkIjoiN19adWYxdHZrd0x4WWFIUzNxNmxValVZSUd3In0.eyJhdWQiOiJodHRwczovL2dyYXBoLm1pY3Jvc29mdC5jb20iLCJpc3MiOiJodHRwczovL3N0cy53aW5kb3dzLm5ldC83YzBjMzZmNS1hZjgzLTRjMjQtODg0NC05OTYyZTAxNjM3MTkvIiwiaWF0IjoxNTM2NjQ1NjA3LCJuYmYiOjE1MzY2NDU2MDcsImV4cCI6MTUzNjY0OTUwNywiYWNjdCI6MCwiYWNyIjoiMSIsImFpbyI6IjQyQmdZSmgzNHRuLzR0b1lSNmZRcWRkWHRnaGtXUlVhWC83SkpkalphaHE4c05oSjhRQUEiLCJhbXIiOlsid2lhIl0sImFwcF9kaXNwbGF5bmFtZSI6IkFsaWNlIiwiYXBwaWQiOiI0OGY0MDRiMS0yYjYyLTRlN2EtOGU2Ny05OGE1ZDcyZjM2MWMiLCJhcHBpZGFjciI6IjEiLCJmYW1pbHlfbmFtZSI6IksiLCJnaXZlbl9uYW1lIjoiTml2ZXRoYSIsImlwYWRkciI6IjE2NS4yMjUuMTA0Ljk2IiwibmFtZSI6Ik5pdmV0aGEgSyIsIm9pZCI6IjFiMDIwNzBlLTYwNmMtNDJkZi1iODNkLTFhZjA5YjI5YmIxZiIsIm9ucHJlbV9zaWQiOiJTLTEtNS0yMS0xNjQ0NDkxOTM3LTgxMzQ5NzcwMy02ODIwMDMzMzAtMTUzODg0IiwicGxhdGYiOiIzIiwicHVpZCI6IjEwMDNCRkZEQTVBQzQzQTQiLCJzY3AiOiJNYWlsLlNlbmQgb3BlbmlkIHByb2ZpbGUgVXNlci5SZWFkIGVtYWlsIiwic3ViIjoiSUNUMFdnaG9CZXFUS0NQb0FHTjYxRHBtbWZNUmYtRlhHUXB3S1hibTJLayIsInRpZCI6IjdjMGMzNmY1LWFmODMtNGMyNC04ODQ0LTk5NjJlMDE2MzcxOSIsInVuaXF1ZV9uYW1lIjoiMzkxMzJASGV4YXdhcmUuY29tIiwidXBuIjoiMzkxMzJASGV4YXdhcmUuY29tIiwidXRpIjoibXE4aDZUbGc4VUtEbHJiVjBhZ09BQSIsInZlciI6IjEuMCIsInhtc19zdCI6eyJzdWIiOiJfV1ZWbjdFbnRCS0xkTU9aOGk0bGJ6QmVrWFVkaElobFFwU0JudGFKX2Q0In19.qts99szouQ8slneZVc1XAwFn2dusYM42rcmqFdkhYQK_lAb_PPr6QkXhL9IUkCtiOJqVUfzJXPdq1Yxwb1Vc5C4J_BUd6mWNGpdGQKiztUuCV_Z108CHV3ttN4eWCeCcVTZD3G0bMaWGacAK9Iq6KYhxLSAqwwf4gP1PnzKH51greKMG-kN6ppNbnMNPoV4ImB0xa7jPQDYR61tRto1EpvzYwPzn-aEDcXcZu6LMReoYodlphbMTdyONWhpnl405s0gSUS8fc5cR8PTg5r4Ir2Pox94pt3EoBkJwB49fjsSUVj2QWoiFRopiGavjGGROOJuCUD9Rs6mvpKE4tNC-Ug"
-    }
-};
-
-async function showListOfFunds(clientId, riskProfile) {
+async function showListOfFunds(clientId, riskProfile, transactType) {
     console.log("I am inside show method");
     let funds = [];
+    if(transactType == null){
     await query.giveFundDetails(clientId, riskProfile).then(async function (data) {
         console.log("The response from DB join..............", JSON.stringify(data));
         await data.forEach(async function (arrayItem) {
@@ -118,20 +28,21 @@ async function showListOfFunds(clientId, riskProfile) {
             console.log("&&&&&&&&&&", JSON.stringify(funds));
         });
     });
+    }else{
+         await query.getFundDetailsByType(clientId, riskProfile, transactType).then(async function (data) {
+        console.log("The response from DB join..............", JSON.stringify(data));
+        await data.forEach(async function (arrayItem) {
+            console.log("%%%%%%%%%%", JSON.stringify(arrayItem));
+            if (arrayItem.ProductIDStatus == true) {
+                await funds.push(arrayItem.Name);
+            }
+            console.log("&&&&&&&&&&", JSON.stringify(funds));
+        });
+    });
+    }
     console.log("return..........", funds)
     return funds;
 }
-
-app.get('/sendEmail', async function (req, res) {
-    const code = req.query.code;
-    let token;
-    if (code) {
-        token = await authHelper.getTokenFromCode(code);
-        user.accessToken = token;
-        console.log("Send email token 123", token);
-    }
-
-});
 
 
 app.post('/fulfillment', async function (req, res) {
@@ -167,7 +78,7 @@ app.post('/fulfillment', async function (req, res) {
         console.log("targetProfile", targetProfile);
         console.log("clientId", clientId);
 
-        listOfFunds = await showListOfFunds(clientId, targetProfile);
+        listOfFunds = await showListOfFunds(clientId, targetProfile, null);
         console.log("Out...........", listOfFunds);
         var objList = new template.QuickReplyTemplate;
         if (listOfFunds.length > 0) {
@@ -198,7 +109,7 @@ app.post('/fulfillment', async function (req, res) {
 
     }
     if (req.body.result.metadata.intentName == 'ADD-FUND') {
-        console.log("i am inside Add fund");
+        console.log("i am inside Add fund", JSON.stringify(req.body.result));
         var clientId = req.body.result.parameters.clientId;
         console.log(req.body.result.parameters);
         var val;
@@ -208,9 +119,9 @@ app.post('/fulfillment', async function (req, res) {
             val = data.RiskCategory;
         });
         if (val) {
-            listOfFunds = await showListOfFunds(clientId, val);
+            listOfFunds = await showListOfFunds(clientId, val, null);
         } else {
-            listOfFunds = await showListOfFunds(clientId, 'Growth');
+            listOfFunds = await showListOfFunds(clientId, 'Growth', null);
         }
 
         console.log("List of fund........", listOfFunds);
@@ -237,6 +148,7 @@ app.post('/fulfillment', async function (req, res) {
 
 
     }
+    
     if (req.body.result.metadata.intentName == 'SEND-EMAIL') {
         console.log("i am inside exit fund", JSON.stringify(req.body.result));
         var clientId = req.body.result.contexts[0].parameters.clientId;

@@ -111,10 +111,7 @@ app.post('/fulfillment', async function (req, res) {
     if (req.body.result.metadata.intentName == 'NEW-TRANSACTION-TYPE-ADD') {
         var transactType = req.body.result.resolvedQuery;
         var clientId = req.body.result.parameters.clientId ? req.body.result.parameters.clientId : req.body.sessionId.slice(-6);
-        console.log("i am inside Add fund", JSON.stringify(req.body.result));
-        console.log(req.body.result.parameters);
         var val;
-        console.log(clientId);
         await query.ClientRiskProfileGet({ ClientID: clientId, Active: 'Y' }).then(function (data) {
             console.log("The response from DB risk profile..............", JSON.stringify(data));
             val = data.RiskCategory;
@@ -125,18 +122,47 @@ app.post('/fulfillment', async function (req, res) {
             listOfFunds = await showListOfFunds(clientId, 'Growth', transactType);
         }
 
-        console.log("List of fund........", listOfFunds);
         var objList = new template.QuickReplyTemplate;
         if (listOfFunds.length > 0) {
             listOfFunds.forEach(async function (value) {
                 objList.title = value;
                 await msgList.push(JSON.parse(JSON.stringify(objList)));
             });
-            console.log("masssssssssssssss", JSON.stringify(msgList));
+            msg.payload.facebook.text = "Please find the list of products avaialable for the risk category";
+            msg.payload.facebook.quick_replies = msgList;
+            await dialogFlowResponse.messages.push(msg);
+            return res.json(dialogFlowResponse);
+        } else {
+            response = "Sorry!!There are no products available under the new risk category";
+            return res.json({
+                speech: response,
+                displayText: response,
+                source: 'portal',
+            });
+        }
+    }
+    if (req.body.result.metadata.intentName == 'ADD-FUND') {
+        var transactType = "req.body.result.resolvedQuery";
+        var clientId = req.body.result.parameters.clientId ? req.body.result.parameters.clientId : req.body.sessionId.slice(-6);
+        var val;
+        await query.ClientRiskProfileGet({ ClientID: clientId, Active: 'Y' }).then(function (data) {
+            val = data.RiskCategory;
+        });
+        if (val) {
+            listOfFunds = await showListOfFunds(clientId, val, null);
+        } else {
+            listOfFunds = await showListOfFunds(clientId, 'Growth', null);
+        }
+
+        var objList = new template.QuickReplyTemplate;
+        if (listOfFunds.length > 0) {
+            listOfFunds.forEach(async function (value) {
+                objList.title = value;
+                await msgList.push(JSON.parse(JSON.stringify(objList)));
+            });
             msg.payload.facebook.text = "Please find the list of funds avaialable for the risk category";
             msg.payload.facebook.quick_replies = msgList;
             await dialogFlowResponse.messages.push(msg);
-            console.log("Final msgggggggggggggggggg", JSON.stringify(dialogFlowResponse));
             return res.json(dialogFlowResponse);
         } else {
             response = "Sorry!!There are no funds available under the new risk category";

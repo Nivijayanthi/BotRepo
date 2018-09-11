@@ -16,7 +16,93 @@ const template = require('./template');
 var mail = require('./SendEmail');
 var MicrosoftGraph = require("@microsoft/microsoft-graph-client");
 const authHelper = require('./auth');
+const graphApi = require('./try');
 
+// authentication =================================================================
+var callback = (iss, sub, profile, accessToken, refreshToken, done) => {
+  if (!profile.oid) {
+    return done(new Error("No oid found"), null);
+  }
+
+  findByOid(profile.oid, function(err, user){
+    if (err) {
+      return done(err);
+    }
+
+    if (!user) {
+      users.push({profile, accessToken, refreshToken});
+      return done(null, profile);
+    }
+
+    return done(null, user);
+  });
+};
+
+passport.use(new OIDCStrategy(config.creds, callback));
+
+const users = [];
+
+passport.serializeUser((user, done) => {
+  done(null, user.oid);
+});
+
+passport.deserializeUser((id, done) => {
+  findByOid(id, function (err, user) {
+    done(err, user);
+  });
+});
+
+var findByOid = function(oid, fn) {
+  for (var i = 0, len = users.length; i < len; i++) {
+    var user = users[i];
+    if (user.profile.oid === oid) {
+      return fn(null, user);
+    }
+  }
+  return fn(null, null);
+};
+
+
+function ensureAuthenticated (req, res, next) {
+    if (req.isAuthenticated()) { return next(); }
+};
+//application..........................................
+
+const mailBody =
+            {
+                "message": {
+                    "subject": "Meet for lunch?",
+                    "body": {
+                        "contentType": "Text",
+                        "content": "The new cafeteria is open."
+                    },
+                    "toRecipients": [
+                        {
+                            "emailAddress": {
+                                "address": "39416@hexaware.com",
+                                "address": "32128@hexaware.com"
+                            }
+                        }
+                    ],
+                    "ccRecipients": [
+                        {
+                            "emailAddress": {
+                                "address": "37351@hexaware.com"
+                            }
+                        }
+                    ]
+                },
+                "saveToSentItems": "true"
+            };
+
+        user = {
+            profile: {
+                oid: "1b02070e-606c-42df-b83d-1af09b29bb1f",
+                displayName: "Nivetha K",
+                accessToken: null
+            }
+        }; 
+        
 async function showListOfFunds(clientId, riskProfile) {
     console.log("I am inside show method");
     let funds = [];
@@ -32,20 +118,34 @@ async function showListOfFunds(clientId, riskProfile) {
     });
     console.log("return..........", funds)
     return funds;
-
-
 }
 
-// function buildCarouselResponse(list){
-//     let result = [];
-
-//     return result;
-// }
-
-
-app.post('/fulfillment', async function (req, res) {
-
+app.get('/sendEmail', async function (req,res){
     const code =req.query.code;
+    let token;
+    if(code){
+        token = await authHelper.getTokenFromCode(code);
+        user.accessToken = token;
+        console.log("Send email",token);
+    } 
+
+});
+
+app.post('/emailSender',
+  ensureAuthenticated,
+  (req, res) => {
+    mail.sendEmail(req.user, mailBody, function(err) {
+      console.log("User profile", JSON.stringify(req));
+      if (err) {
+        renderError(res, err);
+        return;
+      }
+      console.log("Sent an email");
+    });
+});
+
+
+app.post('/fulfillment', async function (req, res) {   
 
     var clientId =  req.body.sessionId.slice(-6);
     
@@ -170,79 +270,9 @@ app.post('/fulfillment', async function (req, res) {
         });
 
     }
-    if (req.body.result.metadata.intentName == 'CURRENT-RISK-PROFILE') {
+    if (req.body.result.metadata.intentName == 'CURRENT-RISK-PROFILE') {      
 
-         token = await authHelper.getTokenFromCode(code);
-
-        const mailBody =
-            {
-                "message": {
-                    "subject": "Meet for lunch?",
-                    "body": {
-                        "contentType": "Text",
-                        "content": "The new cafeteria is open."
-                    },
-                    "toRecipients": [
-                        {
-                            "emailAddress": {
-                                "address": "39416@hexaware.com",
-                                "address": "32128@hexaware.com"
-                            }
-                        }
-                    ],
-                    "ccRecipients": [
-                        {
-                            "emailAddress": {
-                                "address": "37351@hexaware.com"
-                            }
-                        }
-                    ]
-                },
-                "saveToSentItems": "true"
-            };
-
-        user = {
-            profile: {
-                oid: "1b02070e-606c-42df-b83d-1af09b29bb1f",
-                displayName: "Nivetha K",
-                accessToken: null
-            }
-        };  
-
-        user.accessToken = token;
-
-        mail.sendEmail(user, mailBody, function (response,err) {
-           console.log("user1,,,,,,,,",JSON.stringify(user));
-           console.log("mailbody...............",JSON.stringify(mailBody));
-            console.log("inside send mail app.js")
-            if (err) {
-                renderError(res, err);
-                return;
-            }
-            if(res){
-                console.log("response from outlook",res);
-            }
-            console.log("Sent an email");
-            response = 'Email has been sent';
-            return res.json({
-                speech: response,
-                displayText: response,
-                source: 'portal',
-            });
-        });
-
-        //         var credentials = {
-        //     client: {
-        //       id: '8a6b25b5-7148-45ac-a716-98faf826d2fe',
-        //       secret: 'dqvntQRX930|=%msRYKD10(',
-        //     },
-        //     auth: {
-        //       tokenHost: 'https://login.microsoftonline.com',
-        //       authorizePath: 'common/oauth2/v2.0/authorize',
-        //       tokenPath: 'common/oauth2/v2.0/token'
-        //     }
-        //   };
-        //   var oauth2 = require('simple-oauth2').create(credentials);
+        
         //   console.log("valllllllllllllllll", oauth2);
         //             var clientId = req.body.result.parameters.clientId;
         //             var val;
@@ -270,7 +300,7 @@ app.post('/fulfillment', async function (req, res) {
                         let currentPrice = product[0].Currentprice;
                         let quantity = holdingsd[0].Quantity;
                         let marketvalue = parseInt(quantity.split(',').join('')) * parseInt(currentPrice);
-                        response = `Your ${fundname} is exited. Details of the funds will be emailed to you shortly.`;
+                        response = `The ${fundname} is exited. Details of the funds will be emailed to you shortly.`;
                         response += "<br/>Current Price: " + currentPrice + "<br/>";
                         response += "Quantity: " + quantity + "<br/>";
                         response += "Market Value: " + marketvalue + "<br/>";
@@ -355,7 +385,7 @@ app.post('/fulfillment', async function (req, res) {
             }
             else {
                 return res.json({
-                    speech: "Sorry! The selected funds is Not Available",
+                    speech: "Sorry! The selected fund is Not Available",
                     displayText: response,
                     source: 'portal',
                 });
@@ -395,7 +425,7 @@ app.post('/fulfillment', async function (req, res) {
             return res.json(msg);
         } else{
             return res.json({
-                speech: "Sorry! No Fund Details Available currently for your profile",
+                speech: "Sorry! No Fund Details Available currently for the profile",
                 displayText: response,
                 source: 'portal',
             });

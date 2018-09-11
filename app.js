@@ -277,7 +277,7 @@ app.post('/fulfillment', async function (req, res) {
         console.log("I am inside the current risk profile");
 
         mail.sendEmail(user, mailBody, function (err) {
-            console.log("User profile", JSON.stringify(req.user));
+            console.log("User profile", JSON.stringify(user));
             if (err) {
                 renderError(res, err);
                 return;

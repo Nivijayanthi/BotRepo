@@ -204,7 +204,8 @@ app.post('/fulfillment', async function (req, res) {
     }
     if (req.body.result.metadata.intentName == 'CURRENT-RISK-PROFILE') {
 
-        var clientId = req.body.sessionId.slice(-6);
+        //var clientId = req.body.sessionId.slice(-6);
+        var clientId = 'C10112';
         var val;
         await query.ClientRiskProfileGet({ ClientID: clientId, Active: 'Y' }).then(function (data) {
             console.log("The response from DB risk profile..............", JSON.stringify(data));

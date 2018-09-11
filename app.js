@@ -179,7 +179,7 @@ app.post('/fulfillment', async function (req, res) {
     
     if (req.body.result.metadata.intentName == 'SEND-EMAIL') {
         console.log("i am inside exit fund", JSON.stringify(req.body.result));
-        var clientId = req.body.result.contexts[0].parameters.clientId ? req.body.result.contexts[0].parameters.clientId : req.body.sessionId.slice(-6);
+        var clientId = req.body.sessionId.slice(-6);
         var resType = req.body.result.contexts[0].name;
         console.log("Hellllllllllllllllllo", resType);
         if (resType == 'change-risk-profile-followup') {

@@ -109,6 +109,7 @@ app.post('/fulfillment', async function (req, res) {
 
     }
     if (req.body.result.metadata.intentName == 'NEW-TRANSACTION-TYPE-ADD') {
+        console.log("Inside new transac",req.body.result.resolvedQuery);
         var transactType = req.body.result.resolvedQuery;
         var clientId = req.body.result.parameters.clientId ? req.body.result.parameters.clientId : req.body.sessionId.slice(-6);
         var val;
@@ -191,6 +192,7 @@ app.post('/fulfillment', async function (req, res) {
             response = `The request to add new fund has been sent to the Trading desk. You will be receiving a detailed  email shortly.`;
 
         } if(resType == 'NEW-TRANSACTION-TYPE-ADD'){
+            console.log("response type.............",resType);
             response = `The request to add new product has been sent to the Trading desk. You will be receiving a detailed  email shortly.`;
         }
         return res.json({

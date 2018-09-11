@@ -72,7 +72,7 @@ app.post('/fulfillment', async function (req, res) {
     if (req.body.result.metadata.intentName == 'CHANGE-RISK-PROFILE') {
         var currentProfile = req.body.result.parameters.CurrentProfile;
         var targetProfile = req.body.result.parameters.TargetProfile;
-        var clientId = req.body.result.parameters.clientId;
+        var clientId = req.body.result.parameters.clientId ? req.body.result.parameters.clientId : req.body.sessionId.slice(-6);
 
         console.log("currentProfile", currentProfile);
         console.log("targetProfile", targetProfile);
@@ -178,7 +178,7 @@ app.post('/fulfillment', async function (req, res) {
     
     if (req.body.result.metadata.intentName == 'SEND-EMAIL') {
         console.log("i am inside exit fund", JSON.stringify(req.body.result));
-        var clientId = req.body.result.contexts[0].parameters.clientId;
+        var clientId = req.body.result.contexts[0].parameters.clientId ? req.body.result.contexts[0].parameters.clientId : req.body.sessionId.slice(-6);
         var resType = req.body.result.contexts[0].name;
         console.log("Hellllllllllllllllllo", resType);
         if (resType == 'change-risk-profile-followup') {
@@ -190,6 +190,8 @@ app.post('/fulfillment', async function (req, res) {
             console.log("Inside add");
             response = `The request to add new fund has been sent to the Trading desk. You will be receiving a detailed  email shortly.`;
 
+        } if(resType == 'NEW-TRANSACTION-TYPE-ADD'){
+            response = `The request to add new product has been sent to the Trading desk. You will be receiving a detailed  email shortly.`;
         }
         return res.json({
             speech: response,

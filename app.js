@@ -191,7 +191,7 @@ app.post('/fulfillment', async function (req, res) {
             console.log("Inside add");
             response = `The request to add new fund has been sent to the Trading desk. You will be receiving a detailed  email shortly.`;
 
-        } if(resType == 'NEW-TRANSACTION-TYPE-ADD'){
+        } if(resType == 'new-transaction-type-add'){
             console.log("response type.............",resType);
             response = `The request to add new product has been sent to the Trading desk. You will be receiving a detailed  email shortly.`;
         }

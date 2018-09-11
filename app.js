@@ -109,6 +109,7 @@ app.post('/fulfillment', async function (req, res) {
 
     }
     if (req.body.result.metadata.intentName == 'ADD-FUND') {
+        var transactType = req.body.result.resolvedQuery;
         var clientId = req.body.result.parameters.clientId ? req.body.result.parameters.clientId : req.body.sessionId.slice(-6);
         console.log("i am inside Add fund", JSON.stringify(req.body.result));
         console.log(req.body.result.parameters);
@@ -119,9 +120,9 @@ app.post('/fulfillment', async function (req, res) {
             val = data.RiskCategory;
         });
         if (val) {
-            listOfFunds = await showListOfFunds(clientId, val, null);
+            listOfFunds = await showListOfFunds(clientId, val, transactType);
         } else {
-            listOfFunds = await showListOfFunds(clientId, 'Growth', null);
+            listOfFunds = await showListOfFunds(clientId, 'Growth', transactType);
         }
 
         console.log("List of fund........", listOfFunds);

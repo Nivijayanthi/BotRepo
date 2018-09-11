@@ -85,6 +85,7 @@ app.post('/fulfillment', async function (req, res) {
             msg.payload.facebook.text = "Please find the list of funds available for the risk category";
             listOfFunds.forEach(async function (value) {
                 objList.title = value;
+                 objList.payload = value;
                 await msgList.push(JSON.parse(JSON.stringify(objList)));
             });
             //console.log("masssssssssssssss",JSON.stringify(msgList));
@@ -127,6 +128,7 @@ app.post('/fulfillment', async function (req, res) {
         if (listOfFunds.length > 0) {
             listOfFunds.forEach(async function (value) {
                 objList.title = value;
+                objList.payload = value;
                 await msgList.push(JSON.parse(JSON.stringify(objList)));
             });
             msg.payload.facebook.text = "Please find the list of products avaialable for the risk category";
@@ -159,6 +161,7 @@ app.post('/fulfillment', async function (req, res) {
         if (listOfFunds.length > 0) {
             listOfFunds.forEach(async function (value) {
                 objList.title = value;
+                 objList.payload = value;
                 await msgList.push(JSON.parse(JSON.stringify(objList)));
             });
             msg.payload.facebook.text = "Please find the list of funds avaialable for the risk category";
@@ -176,7 +179,15 @@ app.post('/fulfillment', async function (req, res) {
 
 
     }
-
+    if(req.body.result.metadata.intentName == 'NEW-TRANSACTION-TYPE-ADD-SEND'){
+        var productName = req.body.result.contexts[0].parameters.productName;
+        response = `The request to add ${productName} has been sent to the Trading desk. You will be receiving a detailed  email shortly.`;
+         return res.json({
+            speech: response,
+            displayText: response,
+            source: 'portal',
+        });
+    }
     if (req.body.result.metadata.intentName == 'SEND-EMAIL') {
         console.log("i am inside exit fund", JSON.stringify(req.body.result));
         var clientId = req.body.sessionId.slice(-6);
@@ -191,9 +202,6 @@ app.post('/fulfillment', async function (req, res) {
             console.log("Inside add");
             response = `The request to add new fund has been sent to the Trading desk. You will be receiving a detailed  email shortly.`;
 
-        } if (resType == 'new-transaction-type-add') {
-            console.log("response type.............", req.body.result);
-            response = `The request to add new product has been sent to the Trading desk. You will be receiving a detailed  email shortly.`;
         }
         return res.json({
             speech: response,

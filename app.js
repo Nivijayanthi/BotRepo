@@ -19,6 +19,7 @@ const authHelper = require('./auth');
 const graphApi = require('./try');
 const passport = require('passport');
 const OIDCStrategy = require('passport-azure-ad').OIDCStrategy;
+const config = require('./lib/config');
 
 // authentication =================================================================
 var callback = (iss, sub, profile, accessToken, refreshToken, done) => {

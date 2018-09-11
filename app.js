@@ -17,28 +17,28 @@ const template = require('./template');
 async function showListOfFunds(clientId, riskProfile, transactType) {
     console.log("I am inside show method");
     let funds = [];
-    if(transactType == null){
-    await query.giveFundDetails(clientId, riskProfile).then(async function (data) {
-        console.log("The response from DB join..............", JSON.stringify(data));
-        await data.forEach(async function (arrayItem) {
-            console.log("%%%%%%%%%%", JSON.stringify(arrayItem));
-            if (arrayItem.ProductIDStatus == true) {
-                await funds.push(arrayItem.Name);
-            }
-            console.log("&&&&&&&&&&", JSON.stringify(funds));
+    if (transactType == null) {
+        await query.giveFundDetails(clientId, riskProfile).then(async function (data) {
+            console.log("The response from DB join..............", JSON.stringify(data));
+            await data.forEach(async function (arrayItem) {
+                console.log("%%%%%%%%%%", JSON.stringify(arrayItem));
+                if (arrayItem.ProductIDStatus == true) {
+                    await funds.push(arrayItem.Name);
+                }
+                console.log("&&&&&&&&&&", JSON.stringify(funds));
+            });
         });
-    });
-    }else{
-         await query.getFundDetailsByType(clientId, riskProfile, transactType).then(async function (data) {
-        console.log("The response from DB join..............", JSON.stringify(data));
-        await data.forEach(async function (arrayItem) {
-            console.log("%%%%%%%%%%", JSON.stringify(arrayItem));
-            if (arrayItem.ProductIDStatus == true) {
-                await funds.push(arrayItem.Name);
-            }
-            console.log("&&&&&&&&&&", JSON.stringify(funds));
+    } else {
+        await query.getFundDetailsByType(clientId, riskProfile, transactType).then(async function (data) {
+            console.log("The response from DB join..............", JSON.stringify(data));
+            await data.forEach(async function (arrayItem) {
+                console.log("%%%%%%%%%%", JSON.stringify(arrayItem));
+                if (arrayItem.ProductIDStatus == true) {
+                    await funds.push(arrayItem.Name);
+                }
+                console.log("&&&&&&&&&&", JSON.stringify(funds));
+            });
         });
-    });
     }
     console.log("return..........", funds)
     return funds;
@@ -109,7 +109,7 @@ app.post('/fulfillment', async function (req, res) {
 
     }
     if (req.body.result.metadata.intentName == 'NEW-TRANSACTION-TYPE-ADD') {
-        console.log("Inside new transac",req);
+        console.log("Inside new transac", req);
         var transactType = req.body.result.resolvedQuery;
         var clientId = req.body.result.parameters.clientId ? req.body.result.parameters.clientId : req.body.sessionId.slice(-6);
         var val;
@@ -176,7 +176,7 @@ app.post('/fulfillment', async function (req, res) {
 
 
     }
-    
+
     if (req.body.result.metadata.intentName == 'SEND-EMAIL') {
         console.log("i am inside exit fund", JSON.stringify(req.body.result));
         var clientId = req.body.sessionId.slice(-6);
@@ -191,8 +191,8 @@ app.post('/fulfillment', async function (req, res) {
             console.log("Inside add");
             response = `The request to add new fund has been sent to the Trading desk. You will be receiving a detailed  email shortly.`;
 
-        } if(resType == 'new-transaction-type-add'){
-            console.log("response type.............",req.body.result);
+        } if (resType == 'new-transaction-type-add') {
+            console.log("response type.............", req.body.result);
             response = `The request to add new product has been sent to the Trading desk. You will be receiving a detailed  email shortly.`;
         }
         return res.json({
@@ -203,32 +203,19 @@ app.post('/fulfillment', async function (req, res) {
 
     }
     if (req.body.result.metadata.intentName == 'CURRENT-RISK-PROFILE') {
-        console.log("I am inside the current risk profile");
-        console.log("Auth url.........",authHelper.getAuthUrl() );
 
-
-        mail.sendEmail(user, mailBody, function (err) {
-            console.log("User profile", JSON.stringify(user));
-            if (err) {
-                renderError(res, err);
-                return;
-            }
-            console.log("Sent an email");
+        var clientId = req.body.sessionId.slice(-6);
+        var val;
+        await query.ClientRiskProfileGet({ ClientID: clientId, Active: 'Y' }).then(function (data) {
+            console.log("The response from DB risk profile..............", JSON.stringify(data));
+            val = data.RiskCategory;
         });
-
-        //   console.log("valllllllllllllllll", oauth2);
-        //             var clientId = req.body.result.parameters.clientId;
-        //             var val;
-        //             await query.ClientRiskProfileGet({ ClientID: clientId, Active: 'Y' }).then(function (data) {
-        //                 console.log("The response from DB risk profile..............", JSON.stringify(data));
-        //                 val = data.RiskCategory;
-        //             });
-        //             response = `Your current risk profile is ${val}`;
-        //             return res.json({
-        //                 speech: response,
-        //                 displayText: response,
-        //                 source: 'portal',
-        //             });
+        response = `Your current risk profile is ${val}.`;
+        return res.json({
+            speech: response,
+            displayText: response,
+            source: 'portal',
+        });
     }
     if (req.body.result.metadata.intentName == 'EXIT-FUND-OPTION-YES') {
         var fundname = req.body.result.contexts[1].parameters.fund_name ? req.body.result.contexts[1].parameters.fund_name : req.body.result.parameters.fund_name;

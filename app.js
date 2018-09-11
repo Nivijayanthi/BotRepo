@@ -70,42 +70,57 @@ app.post('/fulfillment', async function (req, res) {
     //console.log("request from dialogflow", JSON.stringify(req.body));
 
     if (req.body.result.metadata.intentName == 'CHANGE-RISK-PROFILE') {
-        var currentProfile = req.body.result.parameters.CurrentProfile;
-        var targetProfile = req.body.result.parameters.TargetProfile;
+        var currentProfile;
+        var targetProfile;
         var clientId = req.body.result.parameters.clientId ? req.body.result.parameters.clientId : req.body.sessionId.slice(-6);
-
-        console.log("currentProfile", currentProfile);
-        console.log("targetProfile", targetProfile);
-        console.log("clientId", clientId);
-
-        listOfFunds = await showListOfFunds(clientId, targetProfile, null);
-        console.log("Out...........", listOfFunds);
-        var objList = new template.QuickReplyTemplate;
-        if (listOfFunds.length > 0) {
-            msg.payload.facebook.text = "Please find the list of funds available for the risk category";
-            listOfFunds.forEach(async function (value) {
-                objList.title = value;
-                 objList.payload = value;
-                await msgList.push(JSON.parse(JSON.stringify(objList)));
+        if (!req.body.result.parameters.CurrentProfile) {
+            await query.ClientRiskProfileGet({ ClientID: clientId, Active: 'Y' }).then(function (data) {
+                console.log("The response from DB risk profile..............", JSON.stringify(data));
+                if (data) {
+                    currentProfile = data.RiskCategory;
+                } else {
+                    currentProfile = 'Growth';
+                }
             });
-            //console.log("masssssssssssssss",JSON.stringify(msgList));
-            msg.payload.facebook.text = "Please find the list of funds avaialable for the risk category";
-            msg.payload.facebook.quick_replies = msgList;
-            await dialogFlowResponse.messages.push(msg);
-            console.log("Final msgggggggggggggggggg", JSON.stringify(dialogFlowResponse));
-            //       query.clientRiskProfileUpdate(clientId, {To : '06-Sep-2018'}).then(function(data){
-            //     console.log("updated successfully" , JSON.stringify(data));
-            // });
-            return res.json(dialogFlowResponse);
-
         } else {
-            response = "Sorry!!There are no funds available under the new risk category";
-            return res.json({
-                speech: response,
-                displayText: response,
-                source: 'portal',
-            });
+            currentProfile = req.body.result.parameters.CurrentProfile;
+        }
+        if (!req.body.result.parameters.TargetProfile) {
+            console.log("currentProfile", currentProfile);
+            console.log("targetProfile", targetProfile);
+            console.log("clientId", clientId);
+            return res.json(template.TargetProfileSelectResponse);
+        } else {
+            targetProfile = req.body.result.parameters.TargetProfile;
+            listOfFunds = await showListOfFunds(clientId, targetProfile, null);
+            console.log("Out...........", listOfFunds);
+            var objList = new template.QuickReplyTemplate;
+            if (listOfFunds.length > 0) {
+                msg.payload.facebook.text = "Please find the list of funds available for the risk category";
+                listOfFunds.forEach(async function (value) {
+                    objList.title = value;
+                    objList.payload = value;
+                    await msgList.push(JSON.parse(JSON.stringify(objList)));
+                });
+                //console.log("masssssssssssssss",JSON.stringify(msgList));
+                msg.payload.facebook.text = "Please find the list of funds avaialable for the risk category";
+                msg.payload.facebook.quick_replies = msgList;
+                await dialogFlowResponse.messages.push(msg);
+                console.log("Final msgggggggggggggggggg", JSON.stringify(dialogFlowResponse));
+                //       query.clientRiskProfileUpdate(clientId, {To : '06-Sep-2018'}).then(function(data){
+                //     console.log("updated successfully" , JSON.stringify(data));
+                // });
+                return res.json(dialogFlowResponse);
 
+            } else {
+                response = "Sorry!!There are no funds available under the new risk category";
+                return res.json({
+                    speech: response,
+                    displayText: response,
+                    source: 'portal',
+                });
+
+            }
         }
 
     }
@@ -161,7 +176,7 @@ app.post('/fulfillment', async function (req, res) {
         if (listOfFunds.length > 0) {
             listOfFunds.forEach(async function (value) {
                 objList.title = value;
-                 objList.payload = value;
+                objList.payload = value;
                 await msgList.push(JSON.parse(JSON.stringify(objList)));
             });
             msg.payload.facebook.text = "Please find the list of funds avaialable for the risk category";
@@ -179,10 +194,11 @@ app.post('/fulfillment', async function (req, res) {
 
 
     }
-    if(req.body.result.metadata.intentName == 'NEW-TRANSACTION-TYPE-ADD-SEND'){
+    if (req.body.result.metadata.intentName == 'NEW-TRANSACTION-TYPE-ADD-SEND') {
+        console.log("resp frm dialgflw", )
         var productName = req.body.result.contexts[0].parameters.productName;
         response = `The request to add ${productName} has been sent to the Trading desk. You will be receiving a detailed  email shortly.`;
-         return res.json({
+        return res.json({
             speech: response,
             displayText: response,
             source: 'portal',

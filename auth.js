@@ -1,6 +1,6 @@
 const graph = require('@microsoft/microsoft-graph-client');
 require('dotenv').config();
-
+const oauth2 = require('simple-oauth2').create(credentials);
  function getUserEmail(user, done) {
     var client = graph.Client.init({
       defaultVersion: 'v1.0',

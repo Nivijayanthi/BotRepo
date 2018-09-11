@@ -109,8 +109,8 @@ app.post('/fulfillment', async function (req, res) {
 
     }
     if (req.body.result.metadata.intentName == 'ADD-FUND') {
+        var clientId = req.body.result.parameters.clientId ? req.body.result.parameters.clientId : req.body.sessionId.slice(-6);
         console.log("i am inside Add fund", JSON.stringify(req.body.result));
-        var clientId = req.body.result.parameters.clientId;
         console.log(req.body.result.parameters);
         var val;
         console.log(clientId);

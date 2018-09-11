@@ -108,7 +108,7 @@ app.post('/fulfillment', async function (req, res) {
         }
 
     }
-    if (req.body.result.metadata.intentName == 'ADD-FUND') {
+    if (req.body.result.metadata.intentName == 'NEW-TRANSACTION-TYPE-ADD') {
         var transactType = req.body.result.resolvedQuery;
         var clientId = req.body.result.parameters.clientId ? req.body.result.parameters.clientId : req.body.sessionId.slice(-6);
         console.log("i am inside Add fund", JSON.stringify(req.body.result));

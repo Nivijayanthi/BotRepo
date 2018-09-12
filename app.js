@@ -131,9 +131,10 @@ app.post('/fulfillment', async function (req, res) {
         }
         if (!req.body.result.parameters.TargetProfile) {
             console.log("currentProfile", currentProfile);
-            console.log("targetProfile", targetProfile);
+            console.log("Target profile not given.......", targetProfile);
             console.log("clientId", clientId);
-            return res.json(template.TargetProfileSelectResponse);
+            template.eventCall.followupEventInput.name = "targetProfileSelect";
+            return res.json(template.eventCall);
         } else {
             targetProfile = req.body.result.parameters.TargetProfile;
             listOfFunds = await showListOfFunds(clientId, targetProfile, null);

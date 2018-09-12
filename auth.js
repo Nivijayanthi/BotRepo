@@ -3,8 +3,8 @@ require('dotenv').config();
 
          var credentials = {
             client: {
-              id: '8a6b25b5-7148-45ac-a716-98faf826d2fe',
-              secret: 'dqvntQRX930|=%msRYKD10(',
+              id: process.env.APP_ID,
+              secret: process.env.APP_PASSWORD,
             },
             auth: {
               tokenHost: 'https://login.microsoftonline.com',

@@ -115,6 +115,23 @@ let giveFundDetails=function(clientID,RiskType){
     { $unwind: { path: "$productHoldings", preserveNullAndEmptyArrays: true }}
 ]);
 }
+
+let getFundDetailsByType=function(clientID,RiskType,TransactType){
+   return product.aggregate([ { $project : {
+        ProductIDStatus:{ $ne: [ "$ProductID", clientID] },
+        ProductID : 1,
+        Name : 1 ,
+        RiskType : 1,
+        Type:1
+    }},{ $match : { RiskType : RiskType, Type : TransactType  } },{$lookup:{
+        from:"holdings",
+        localField:"ProductID",
+        foreignField:"ProductID",
+        as: "productHoldings"
+        }},
+    { $unwind: { path: "$productHoldings", preserveNullAndEmptyArrays: true }}
+]);
+}
 let getLowPerformingFund=function(clientID){
     return holdings.aggregate([ {$lookup:{
         from:"products",
@@ -161,6 +178,7 @@ module.exports.ClientProfileGet=ClientProfileGet;
 module.exports.getLowPerformingFund=getLowPerformingFund;
 module.exports.ProductGet=ProductGet;
 module.exports.productperformanceGet=productperformanceGet;
+module.exports.getFundDetailsByType=getFundDetailsByType;
 
 
 

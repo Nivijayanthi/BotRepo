@@ -2,7 +2,7 @@ var apiai = require('apiai');
 require('dotenv').config();
 var appai = apiai("ee3683b183ec498ea5a1f277a85974fd");
 const util = require('util');
-var moment=require('moment');
+var moment = require('moment');
 var express = require('express');
 var bodyParser = require('body-parser');
 var app = express();
@@ -13,42 +13,85 @@ app.use(express.static(__dirname));
 //imports
 const query = require('./query');
 const template = require('./template');
-var mail = require('./SendEmail');
-var MicrosoftGraph = require("@microsoft/microsoft-graph-client");
-const authHelper = require('./auth');
+var http = require("http");
 
-async function showListOfFunds(clientId, riskProfile) {
+async function showListOfFunds(clientId, riskProfile, transactType) {
     console.log("I am inside show method");
     let funds = [];
-    await query.giveFundDetails(clientId, riskProfile).then(async function (data) {
-        console.log("The response from DB join..............", JSON.stringify(data));
-        await data.forEach(async function (arrayItem) {
-            console.log("%%%%%%%%%%", JSON.stringify(arrayItem));
-            if (arrayItem.ProductIDStatus == true) {
-                await funds.push(arrayItem.Name);
-            }
-            console.log("&&&&&&&&&&", JSON.stringify(funds));
+    if (transactType == null) {
+        await query.giveFundDetails(clientId, riskProfile).then(async function (data) {
+            console.log("The response from DB join..............", JSON.stringify(data));
+            await data.forEach(async function (arrayItem) {
+                console.log("%%%%%%%%%%", JSON.stringify(arrayItem));
+                if (arrayItem.ProductIDStatus == true) {
+                    await funds.push(arrayItem.Name);
+                }
+                console.log("&&&&&&&&&&", JSON.stringify(funds));
+            });
         });
-    });
+    } else {
+        await query.getFundDetailsByType(clientId, riskProfile, transactType).then(async function (data) {
+            console.log("The response from DB join..............", JSON.stringify(data));
+            await data.forEach(async function (arrayItem) {
+                console.log("%%%%%%%%%%", JSON.stringify(arrayItem));
+                if (arrayItem.ProductIDStatus == true) {
+                    await funds.push(arrayItem.Name);
+                }
+                console.log("&&&&&&&&&&", JSON.stringify(funds));
+            });
+        });
+    }
     console.log("return..........", funds)
     return funds;
-
-
 }
-
-// function buildCarouselResponse(list){
-//     let result = [];
-
-//     return result;
-// }
+const mailContent = {
+    "subject": "Your Fund " + fundname + " is Exited",
+    "body": {
+        "contentType": "Text",
+        "content": responses
+    },
+    "toRecipients": [
+        {
+            "emailAddress": {
+                "address": "40140@hexaware.com"
+            }
+        }
+    ]
+};
+async function sendMail(content) {
+    var options = {
+        hostname: 'charleswealthbot.herokuapp.com',
+        path: '/sendEmail',
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: {
+            mailContent: content
+        }
+    };
+    var req = http.request(options, function (res) {
+        console.log('Status: ' + res.statusCode);
+        console.log('Headers: ' + JSON.stringify(res.headers));
+        res.setEncoding('utf8');
+        res.on('data', function (body) {
+            console.log('Body: ' + body);
+        });
+    });
+    req.on('error', function (e) {
+        console.log('problem with request: ' + e.message);
+    });
+    // write data to request body
+    req.write('{"string": "Hello, World"}');
+    console.log("Mail sent");
+    req.end();
+}
 
 
 app.post('/fulfillment', async function (req, res) {
 
-    const code =req.query.code;
+    var clientId = req.body.sessionId.slice(-6);
 
-    var clientId =  req.body.sessionId.slice(-6);
-    
     var dialogFlowResponse = {
         speech: "hello",
         messages: []
@@ -70,72 +113,118 @@ app.post('/fulfillment', async function (req, res) {
     //console.log("request from dialogflow", JSON.stringify(req.body));
 
     if (req.body.result.metadata.intentName == 'CHANGE-RISK-PROFILE') {
-        var currentProfile = req.body.result.parameters.CurrentProfile;
-        var targetProfile = req.body.result.parameters.TargetProfile;
-        var clientId = req.body.result.parameters.clientId;
-
-        console.log("currentProfile", currentProfile);
-        console.log("targetProfile", targetProfile);
-        console.log("clientId", clientId);
-
-        listOfFunds = await showListOfFunds(clientId, targetProfile);
-        console.log("Out...........", listOfFunds);
-        var objList = new template.QuickReplyTemplate;
-        if (listOfFunds.length > 0) {
-            msg.payload.facebook.text = "Please find the list of funds available for the risk category";
-            listOfFunds.forEach(async function (value) {
-                objList.title = value;
-                await msgList.push(JSON.parse(JSON.stringify(objList)));
+        var currentProfile;
+        var targetProfile;
+        var clientId = req.body.result.parameters.clientId ? req.body.result.parameters.clientId : req.body.sessionId.slice(-6);
+        if (!req.body.result.parameters.CurrentProfile) {
+            await query.ClientRiskProfileGet({ ClientID: clientId, Active: 'Y' }).then(function (data) {
+                console.log("The response from DB risk profile..............", JSON.stringify(data));
+                if (data) {
+                    currentProfile = data.RiskCategory;
+                } else {
+                    currentProfile = 'Growth';
+                }
             });
-            //console.log("masssssssssssssss",JSON.stringify(msgList));
-            msg.payload.facebook.text = "Please find the list of funds avaialable for the risk category";
-            msg.payload.facebook.quick_replies = msgList;
-            await dialogFlowResponse.messages.push(msg);
-            console.log("Final msgggggggggggggggggg", JSON.stringify(dialogFlowResponse));
-            //       query.clientRiskProfileUpdate(clientId, {To : '06-Sep-2018'}).then(function(data){
-            //     console.log("updated successfully" , JSON.stringify(data));
-            // });
-            return res.json(dialogFlowResponse);
-
         } else {
-            response = "Sorry!!There are no funds available under the new risk category";
-            return res.json({
-                speech: response,
-                displayText: response,
-                source: 'portal',
-            });
+            currentProfile = req.body.result.parameters.CurrentProfile;
+        }
+        if (!req.body.result.parameters.TargetProfile) {
+            console.log("currentProfile", currentProfile);
+            console.log("targetProfile", targetProfile);
+            console.log("clientId", clientId);
+            return res.json(template.TargetProfileSelectResponse);
+        } else {
+            targetProfile = req.body.result.parameters.TargetProfile;
+            listOfFunds = await showListOfFunds(clientId, targetProfile, null);
+            console.log("Out...........", listOfFunds);
+            var objList = new template.QuickReplyTemplate;
+            if (listOfFunds.length > 0) {
+                msg.payload.facebook.text = "Please find the list of funds available for the risk category";
+                listOfFunds.forEach(async function (value) {
+                    objList.title = value;
+                    objList.payload = value;
+                    await msgList.push(JSON.parse(JSON.stringify(objList)));
+                });
+                //console.log("masssssssssssssss",JSON.stringify(msgList));
+                msg.payload.facebook.text = "Please find the list of funds avaialable for the risk category";
+                msg.payload.facebook.quick_replies = msgList;
+                await dialogFlowResponse.messages.push(msg);
+                console.log("Final msgggggggggggggggggg", JSON.stringify(dialogFlowResponse));
+                //       query.clientRiskProfileUpdate(clientId, {To : '06-Sep-2018'}).then(function(data){
+                //     console.log("updated successfully" , JSON.stringify(data));
+                // });
+                return res.json(dialogFlowResponse);
 
+            } else {
+                response = "Sorry!!There are no funds available under the new risk category";
+                return res.json({
+                    speech: response,
+                    displayText: response,
+                    source: 'portal',
+                });
+
+            }
         }
 
     }
-    if (req.body.result.metadata.intentName == 'ADD-FUND') {
-        console.log("i am inside Add fund");
-        var clientId = req.body.result.parameters.clientId;
-        console.log(req.body.result.parameters);
+    if (req.body.result.metadata.intentName == 'NEW-TRANSACTION-TYPE-ADD') {
+        console.log("Inside new transac", req);
+        var transactType = req.body.result.resolvedQuery;
+        var clientId = req.body.result.parameters.clientId ? req.body.result.parameters.clientId : req.body.sessionId.slice(-6);
         var val;
-        console.log(clientId);
         await query.ClientRiskProfileGet({ ClientID: clientId, Active: 'Y' }).then(function (data) {
             console.log("The response from DB risk profile..............", JSON.stringify(data));
             val = data.RiskCategory;
         });
         if (val) {
-            listOfFunds = await showListOfFunds(clientId, val);
+            listOfFunds = await showListOfFunds(clientId, val, transactType);
         } else {
-            listOfFunds = await showListOfFunds(clientId, 'Growth');
+            listOfFunds = await showListOfFunds(clientId, 'Growth', transactType);
         }
 
-        console.log("List of fund........", listOfFunds);
         var objList = new template.QuickReplyTemplate;
         if (listOfFunds.length > 0) {
             listOfFunds.forEach(async function (value) {
                 objList.title = value;
+                objList.payload = value;
                 await msgList.push(JSON.parse(JSON.stringify(objList)));
             });
-            console.log("masssssssssssssss", JSON.stringify(msgList));
+            msg.payload.facebook.text = "Please find the list of products avaialable for the risk category";
+            msg.payload.facebook.quick_replies = msgList;
+            await dialogFlowResponse.messages.push(msg);
+            return res.json(dialogFlowResponse);
+        } else {
+            response = "Sorry!!There are no products available under the new risk category";
+            return res.json({
+                speech: response,
+                displayText: response,
+                source: 'portal',
+            });
+        }
+    }
+    if (req.body.result.metadata.intentName == 'ADD-FUND') {
+        var transactType = "req.body.result.resolvedQuery";
+        var clientId = req.body.result.parameters.clientId ? req.body.result.parameters.clientId : req.body.sessionId.slice(-6);
+        var val;
+        await query.ClientRiskProfileGet({ ClientID: clientId, Active: 'Y' }).then(function (data) {
+            val = data.RiskCategory;
+        });
+        if (val) {
+            listOfFunds = await showListOfFunds(clientId, val, null);
+        } else {
+            listOfFunds = await showListOfFunds(clientId, 'Growth', null);
+        }
+
+        var objList = new template.QuickReplyTemplate;
+        if (listOfFunds.length > 0) {
+            listOfFunds.forEach(async function (value) {
+                objList.title = value;
+                objList.payload = value;
+                await msgList.push(JSON.parse(JSON.stringify(objList)));
+            });
             msg.payload.facebook.text = "Please find the list of funds avaialable for the risk category";
             msg.payload.facebook.quick_replies = msgList;
             await dialogFlowResponse.messages.push(msg);
-            console.log("Final msgggggggggggggggggg", JSON.stringify(dialogFlowResponse));
             return res.json(dialogFlowResponse);
         } else {
             response = "Sorry!!There are no funds available under the new risk category";
@@ -148,9 +237,19 @@ app.post('/fulfillment', async function (req, res) {
 
 
     }
+    if (req.body.result.metadata.intentName == 'NEW-TRANSACTION-TYPE-ADD-SEND') {
+        console.log("resp frm dialgflw", )
+        var productName = req.body.result.contexts[0].parameters.productName;
+        response = `The request to add ${productName} has been sent to the Trading desk. You will be receiving a detailed  email shortly.`;
+        return res.json({
+            speech: response,
+            displayText: response,
+            source: 'portal',
+        });
+    }
     if (req.body.result.metadata.intentName == 'SEND-EMAIL') {
         console.log("i am inside exit fund", JSON.stringify(req.body.result));
-        var clientId = req.body.result.contexts[0].parameters.clientId;
+        var clientId = req.body.sessionId.slice(-6);
         var resType = req.body.result.contexts[0].name;
         console.log("Hellllllllllllllllllo", resType);
         if (resType == 'change-risk-profile-followup') {
@@ -172,95 +271,25 @@ app.post('/fulfillment', async function (req, res) {
     }
     if (req.body.result.metadata.intentName == 'CURRENT-RISK-PROFILE') {
 
-         token = await authHelper.getTokenFromCode(code);
-
-        const mailBody =
-            {
-                "message": {
-                    "subject": "Meet for lunch?",
-                    "body": {
-                        "contentType": "Text",
-                        "content": "The new cafeteria is open."
-                    },
-                    "toRecipients": [
-                        {
-                            "emailAddress": {
-                                "address": "39416@hexaware.com",
-                                "address": "32128@hexaware.com"
-                            }
-                        }
-                    ],
-                    "ccRecipients": [
-                        {
-                            "emailAddress": {
-                                "address": "37351@hexaware.com"
-                            }
-                        }
-                    ]
-                },
-                "saveToSentItems": "true"
-            };
-
-        user = {
-            profile: {
-                oid: "1b02070e-606c-42df-b83d-1af09b29bb1f",
-                displayName: "Nivetha K",
-                accessToken: null
-            }
-        };  
-
-        user.accessToken = token;
-
-        mail.sendEmail(user, mailBody, function (response,err) {
-           console.log("user1,,,,,,,,",JSON.stringify(user));
-           console.log("mailbody...............",JSON.stringify(mailBody));
-            console.log("inside send mail app.js")
-            if (err) {
-                renderError(res, err);
-                return;
-            }
-            if(res){
-                console.log("response from outlook",res);
-            }
-            console.log("Sent an email");
-            response = 'Email has been sent';
-            return res.json({
-                speech: response,
-                displayText: response,
-                source: 'portal',
-            });
+        //var clientId = req.body.sessionId.slice(-6);
+        var clientId = 'C10112';
+        var val;
+        await query.ClientRiskProfileGet({ ClientID: clientId, Active: 'Y' }).then(function (data) {
+            console.log("The response from DB risk profile..............", JSON.stringify(data));
+            val = data[0].RiskCategory;
         });
-
-        //         var credentials = {
-        //     client: {
-        //       id: '8a6b25b5-7148-45ac-a716-98faf826d2fe',
-        //       secret: 'dqvntQRX930|=%msRYKD10(',
-        //     },
-        //     auth: {
-        //       tokenHost: 'https://login.microsoftonline.com',
-        //       authorizePath: 'common/oauth2/v2.0/authorize',
-        //       tokenPath: 'common/oauth2/v2.0/token'
-        //     }
-        //   };
-        //   var oauth2 = require('simple-oauth2').create(credentials);
-        //   console.log("valllllllllllllllll", oauth2);
-        //             var clientId = req.body.result.parameters.clientId;
-        //             var val;
-        //             await query.ClientRiskProfileGet({ ClientID: clientId, Active: 'Y' }).then(function (data) {
-        //                 console.log("The response from DB risk profile..............", JSON.stringify(data));
-        //                 val = data.RiskCategory;
-        //             });
-        //             response = `Your current risk profile is ${val}`;
-        //             return res.json({
-        //                 speech: response,
-        //                 displayText: response,
-        //                 source: 'portal',
-        //             });
+        response = `Your current risk profile is ${val}.`;
+        sendMail(mailContent);
+        return res.json({
+            speech: response,
+            displayText: response,
+            source: 'portal',
+        });
     }
     if (req.body.result.metadata.intentName == 'EXIT-FUND-OPTION-YES') {
         var fundname = req.body.result.contexts[1].parameters.fund_name ? req.body.result.contexts[1].parameters.fund_name : req.body.result.parameters.fund_name;
-        var clientId =  req.body.result.contexts[1].parameters.clientid?req.body.result.contexts[1].parameters.clientid:req.body.sessionId.slice(-6);
-        await query.ProductGet({ Name: fundname,Type:'ETF' }).then(async function (funddetails) {
+        var clientId = req.body.result.contexts[1].parameters.clientid ? req.body.result.contexts[1].parameters.clientid : req.body.sessionId.slice(-6);
+        await query.ProductGet({ Name: fundname, Type: 'ETF' }).then(async function (funddetails) {
             let productID = funddetails[0].ProductID;
             let productName = funddetails[0].Name;
             await query.productperformanceGet({ ProductID: productID }).then(async function (product) {
@@ -270,7 +299,7 @@ app.post('/fulfillment', async function (req, res) {
                         let currentPrice = product[0].Currentprice;
                         let quantity = holdingsd[0].Quantity;
                         let marketvalue = parseInt(quantity.split(',').join('')) * parseInt(currentPrice);
-                        response = `Your ${fundname} is exited. Details of the funds will be emailed to you shortly.`;
+                        response = `The ${fundname} is exited. Details of the funds will be emailed to you shortly.`;
                         response += "<br/>Current Price: " + currentPrice + "<br/>";
                         response += "Quantity: " + quantity + "<br/>";
                         response += "Market Value: " + marketvalue + "<br/>";
@@ -288,7 +317,7 @@ app.post('/fulfillment', async function (req, res) {
     }
     if (req.body.result.metadata.intentName == 'EXIT-FUND-OPTION') {
         var fundname = req.body.result.parameters.fund_name;
-        await query.ProductGet({ Name: fundname,Type:'ETF' }).then(function (funddetails) {
+        await query.ProductGet({ Name: fundname, Type: 'ETF' }).then(function (funddetails) {
 
             if (funddetails.length > 0) {
                 msg = {
@@ -317,7 +346,7 @@ app.post('/fulfillment', async function (req, res) {
             }
             else {
                 return res.json({
-                    speech: "Sorry! The selected funds is Not Available",
+                    speech: "Sorry! The selected fund is Not Available",
                     displayText: response,
                     source: 'portal',
                 });
@@ -325,8 +354,8 @@ app.post('/fulfillment', async function (req, res) {
         })
     }
     if (req.body.result.metadata.intentName == 'EXIT-FUND') {
-      
-        var clientId = req.body.result.parameters.clientid?req.body.result.parameters.clientid:req.body.sessionId.slice(-6);
+
+        var clientId = req.body.result.parameters.clientid ? req.body.result.parameters.clientid : req.body.sessionId.slice(-6);
         console.log(clientId);
         await query.getLowPerformingFund(clientId).then(async function (data) {
             quickreplies = [];
@@ -338,30 +367,29 @@ app.post('/fulfillment', async function (req, res) {
                 })
             })
             console.log(quickreplies)
-            if(data.length>0)
-            {
-            msg = {
-                "speech": "",
-                "displayText": "",
-                "messages": [{
-                    "type": 4,
-                    "platform": "facebook",
-                    "payload": {
-                        "facebook": {
-                            "text": `Please Select the low peforming fund to exit`,
-                            "quick_replies": quickreplies
+            if (data.length > 0) {
+                msg = {
+                    "speech": "",
+                    "displayText": "",
+                    "messages": [{
+                        "type": 4,
+                        "platform": "facebook",
+                        "payload": {
+                            "facebook": {
+                                "text": `Please Select the low peforming fund to exit`,
+                                "quick_replies": quickreplies
+                            }
                         }
-                    }
-                }]
-            };
-            return res.json(msg);
-        } else{
-            return res.json({
-                speech: "Sorry! No Fund Details Available currently for your profile",
-                displayText: response,
-                source: 'portal',
-            });
-        }
+                    }]
+                };
+                return res.json(msg);
+            } else {
+                return res.json({
+                    speech: "Sorry! No Fund Details Available currently for the profile",
+                    displayText: response,
+                    source: 'portal',
+                });
+            }
         })
 
     }

@@ -44,20 +44,20 @@ async function showListOfFunds(clientId, riskProfile, transactType) {
     console.log("return..........", funds)
     return funds;
 }
-// const mailContent = {
-//     "subject": "Your Fund is Exited",
-//     "body": {
-//         "contentType": "Text",
-//         "content": responses
-//     },
-//     "toRecipients": [
-//         {
-//             "emailAddress": {
-//                 "address": "40140@hexaware.com"
-//             }
-//         }
-//     ]
-// };
+const mailContent = {
+    "subject": "Your Fund is Exited",
+    "body": {
+        "contentType": "Text",
+        "content": responses
+    },
+    "toRecipients": [
+        {
+            "emailAddress": {
+                "address": "40140@hexaware.com"
+            }
+        }
+    ]
+};
 async function sendMail(content) {
     var options = {
         hostname: 'charleswealthbot.herokuapp.com',

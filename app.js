@@ -48,7 +48,7 @@ const mailContent = {
     "subject": "Your Fund is Exited",
     "body": {
         "contentType": "Text",
-        "content": responses
+        "content": "Hello"
     },
     "toRecipients": [
         {

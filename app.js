@@ -82,13 +82,13 @@ app.post('/fulfillment', async function (req, res) {
         console.log("Out...........", listOfFunds);
         var objList = new template.QuickReplyTemplate;
         if (listOfFunds.length > 0) {
-            msg.payload.facebook.text = "Please find the list of funds available for your risk category";
+            msg.payload.facebook.text = "Please find the list of funds available for the risk category";
             listOfFunds.forEach(async function (value) {
                 objList.title = value;
                 await msgList.push(JSON.parse(JSON.stringify(objList)));
             });
             //console.log("masssssssssssssss",JSON.stringify(msgList));
-            msg.payload.facebook.text = "Please find the list of funds avaialable for your risk category";
+            msg.payload.facebook.text = "Please find the list of funds avaialable for the risk category";
             msg.payload.facebook.quick_replies = msgList;
             await dialogFlowResponse.messages.push(msg);
             console.log("Final msgggggggggggggggggg", JSON.stringify(dialogFlowResponse));
@@ -98,7 +98,7 @@ app.post('/fulfillment', async function (req, res) {
             return res.json(dialogFlowResponse);
 
         } else {
-            response = "Sorry!!There are no funds available under your new risk category";
+            response = "Sorry!!There are no funds available under the new risk category";
             return res.json({
                 speech: response,
                 displayText: response,
@@ -132,13 +132,13 @@ app.post('/fulfillment', async function (req, res) {
                 await msgList.push(JSON.parse(JSON.stringify(objList)));
             });
             console.log("masssssssssssssss", JSON.stringify(msgList));
-            msg.payload.facebook.text = "Please find the list of funds avaialable for your risk category";
+            msg.payload.facebook.text = "Please find the list of funds avaialable for the risk category";
             msg.payload.facebook.quick_replies = msgList;
             await dialogFlowResponse.messages.push(msg);
             console.log("Final msgggggggggggggggggg", JSON.stringify(dialogFlowResponse));
             return res.json(dialogFlowResponse);
         } else {
-            response = "Sorry!!There are no funds available under your new risk category";
+            response = "Sorry!!There are no funds available under the new risk category";
             return res.json({
                 speech: response,
                 displayText: response,
@@ -157,10 +157,10 @@ app.post('/fulfillment', async function (req, res) {
             console.log("Inside change");
             var currentProfile = req.body.result.contexts[0].parameters.CurrentProfile;
             var targetProfile = req.body.result.contexts[0].parameters.TargetProfile;
-            response = `Your change request for risk category from ${currentProfile} to ${targetProfile} has been sent to the Trading desk. You will be receiving a detailed  email shortly.`;
+            response = `The change request for risk category from ${currentProfile} to ${targetProfile} has been sent to the Trading desk. You will be receiving a detailed  email shortly.`;
         } if (resType == 'add-fund-folowup') {
             console.log("Inside add");
-            response = `Your request to add new fund has been sent to the Trading desk. You will be receiving a detailed  email shortly.`;
+            response = `The request to add new fund has been sent to the Trading desk. You will be receiving a detailed  email shortly.`;
 
         }
         return res.json({
@@ -276,44 +276,6 @@ app.post('/fulfillment', async function (req, res) {
                         response += "Market Value: " + marketvalue + "<br/>";
                         responses = response.replace("<br/>","\n");
                         await query.saveTransactionDetails({CustomerID:clientId,ProductID:productID,Quantity:quantity,Price:currentPrice,Action:"Sell",Date:moment().format("DD-MMM-YY")});
-                        const mailBody =
-                        {
-                            "message": {
-                                "subject": "Your Fund "+fundname+" is Exited",
-                                "body": {
-                                    "contentType": "Text",
-                                    "content": responses
-                                },
-                                "toRecipients": [
-                                    {
-                                        "emailAddress": {
-                                            "address": "40140@hexaware.com"
-                                        }
-                                    }
-                                ]
-                            }
-                        };
-            
-                    user = {
-                        profile: {
-                            oid: "1b02070e-606c-42df-b83d-1af09b29bb1f",
-                            displayName: "Nivetha K",
-                            accessToken: "eyJ0eXAiOiJKV1QiLCJub25jZSI6IkFRQUJBQUFBQUFEWHpaM2lmci1HUmJEVDQ1ek5TRUZFZjVpSHlwYWtOaGV3NzU0b1U1eUw2ZnBYRHk2dWg0aHdDUGlycnk5aGlya29tZEJuOFctSEo3U3V6QXVHT3MzdjVvVjkzdGhxUzdUTEJGd2lzX01sYUNBQSIsImFsZyI6IlJTMjU2IiwieDV0IjoiN19adWYxdHZrd0x4WWFIUzNxNmxValVZSUd3Iiwia2lkIjoiN19adWYxdHZrd0x4WWFIUzNxNmxValVZSUd3In0.eyJhdWQiOiJodHRwczovL2dyYXBoLm1pY3Jvc29mdC5jb20iLCJpc3MiOiJodHRwczovL3N0cy53aW5kb3dzLm5ldC83YzBjMzZmNS1hZjgzLTRjMjQtODg0NC05OTYyZTAxNjM3MTkvIiwiaWF0IjoxNTM2NTU2MjY3LCJuYmYiOjE1MzY1NTYyNjcsImV4cCI6MTUzNjU2MDE2NywiYWNjdCI6MCwiYWNyIjoiMSIsImFpbyI6IjQyQmdZTGh0SkxCeDhmbmwvb3NraXZ2NW1WT1VXTlJ1TjUrOS9WRTdYYmNxLzFhdCtVOEEiLCJhbXIiOlsid2lhIl0sImFwcF9kaXNwbGF5bmFtZSI6IkNoYXJsZXNCb3QiLCJhcHBpZCI6IjBlNzY1YjcwLWI1MGUtNDAxNC1iN2IwLTdmZjFjZTM0MzhjNyIsImFwcGlkYWNyIjoiMSIsImZhbWlseV9uYW1lIjoiVmVsdSIsImdpdmVuX25hbWUiOiJTcmluaXZhc2FuIiwiaXBhZGRyIjoiMTY1LjIyNS4xMDQuOTYiLCJuYW1lIjoiU3Jpbml2YXNhbiBWZWx1Iiwib2lkIjoiZTY4ZTYxMmYtYTQ5MC00ODYxLTk0NzQtNjAwMGIyYmEzMjRjIiwib25wcmVtX3NpZCI6IlMtMS01LTIxLTE2NDQ0OTE5MzctODEzNDk3NzAzLTY4MjAwMzMzMC0xNjAxODUiLCJwbGF0ZiI6IjMiLCJwdWlkIjoiMTAwMzAwMDBBODEzM0NGOSIsInNjcCI6IkNhbGVuZGFycy5SZWFkIE1haWwuUmVhZCBvcGVuaWQgcHJvZmlsZSBVc2VyLlJlYWQgZW1haWwiLCJzdWIiOiJYeTBRTXJ0WUk0ck1RcVdIaTA5Q0IwcVo1dEN0ZVlqSHR5Um9qc3BpS0lNIiwidGlkIjoiN2MwYzM2ZjUtYWY4My00YzI0LTg4NDQtOTk2MmUwMTYzNzE5IiwidW5pcXVlX25hbWUiOiI0MDE0MEBoZXhhd2FyZS5jb20iLCJ1cG4iOiI0MDE0MEBoZXhhd2FyZS5jb20iLCJ1dGkiOiJOTm5DczBid3VrR2hNVHJwb2NVQ0FBIiwidmVyIjoiMS4wIiwieG1zX3N0Ijp7InN1YiI6ImJRTi1DNVYyMjRndEwwZlppN052bUNJWGhISVF6alR0LWZNMHFmMDQ3RzQifX0.mxvkGFya1e322jGNUFMRbZGxGkcFd4WnVmdq9QCx_1MIb8R9Q2MvDpWcwBLFyiI3uVJybgNFBRqWNTlCy2PNLXaAmEOzwTTqAldzk0hgP4573-YqCBw_F0UBAjRgSe7imWFVtzB-g3uA90ecl6PcKBFpBu7XQkUGu00gyVkMmhbODRcwaIC4ZrvEHh-H861CjMa-L10YTIQkPcnvfvyNcgZ90QPr1QtvmQ5-ztOc3DimIg0EuZfGv_R-lNXk8GhvWf60_hYUc7bPI4xxWazXWaxodWZADArsRu1LmvqF1i2RBHMmYVk_iNPrEMMz6OTsL66-hdV-7waDDOglr5ptgg"
-                        }
-                    };  
-                   await sendEmail(user, mailBody, function (response,err) {
-                       console.log("user1,,,,,,,,",JSON.stringify(user));
-                       console.log("mailbody...............",JSON.stringify(mailBody));
-                        console.log("inside send mail app.js")
-                        if (err) {
-                            renderError(res, err);
-                            return;
-                        }
-                        if(res){
-                            console.log("response from outlook",res);
-                        }
-                        console.log("Sent an email");
-                    });
                         return res.json({
                             speech: response,
                             displayText: response,

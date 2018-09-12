@@ -1,6 +1,19 @@
 const graph = require('@microsoft/microsoft-graph-client');
 require('dotenv').config();
-const oauth2 = require('simple-oauth2').create(credentials);
+
+         var credentials = {
+            client: {
+              id: '8a6b25b5-7148-45ac-a716-98faf826d2fe',
+              secret: 'dqvntQRX930|=%msRYKD10(',
+            },
+            auth: {
+              tokenHost: 'https://login.microsoftonline.com',
+              authorizePath: 'common/oauth2/v2.0/authorize',
+              tokenPath: 'common/oauth2/v2.0/token'
+            }
+          };
+          var oauth2 = require('simple-oauth2').create(credentials);
+
  function getUserEmail(user, done) {
     var client = graph.Client.init({
       defaultVersion: 'v1.0',

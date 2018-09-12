@@ -111,6 +111,7 @@ app.post('/fulfillment', async function (req, res) {
     //console.log("request from dialogflow", JSON.stringify(req.body));
 
     if (req.body.result.metadata.intentName == 'CHANGE-RISK-PROFILE') {
+        console.log("I am inisde change", JSON.stringify(req.body.result));
         var currentProfile;
         var targetProfile;
         var clientId = req.body.result.parameters.clientId ? req.body.result.parameters.clientId : req.body.sessionId.slice(-6);

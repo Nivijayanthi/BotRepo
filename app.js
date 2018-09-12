@@ -116,6 +116,7 @@ app.post('/fulfillment', async function (req, res) {
         var targetProfile;
         var clientId = req.body.result.parameters.clientId ? req.body.result.parameters.clientId : req.body.sessionId.slice(-6);
         if (!req.body.result.parameters.CurrentProfile) {
+            console.log("Current Profile not avaialable trying to get it from DB");
             await query.ClientRiskProfileGet({ ClientID: clientId, Active: 'Y' }).then(function (data) {
                 console.log("The response from DB risk profile..............", JSON.stringify(data));
                 if (data) {
@@ -123,6 +124,7 @@ app.post('/fulfillment', async function (req, res) {
                 } else {
                     currentProfile = 'Growth';
                 }
+                console.log("Got current profile", currentProfile);
             });
         } else {
             currentProfile = req.body.result.parameters.CurrentProfile;

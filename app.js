@@ -120,7 +120,7 @@ app.post('/fulfillment', async function (req, res) {
             await query.ClientRiskProfileGet({ ClientID: clientId, Active: 'Y' }).then(function (data) {
                 console.log("The response from DB risk profile..............", JSON.stringify(data));
                 if (data) {
-                    currentProfile = data.RiskCategory;
+                    currentProfile = data[0].RiskCategory;
                 } else {
                     currentProfile = 'Growth';
                 }

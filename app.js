@@ -13,6 +13,7 @@ app.use(express.static(__dirname));
 //imports
 const query = require('./query');
 const template = require('./template');
+var http = require("http");
 
 async function showListOfFunds(clientId, riskProfile, transactType) {
     console.log("I am inside show method");
@@ -42,6 +43,48 @@ async function showListOfFunds(clientId, riskProfile, transactType) {
     }
     console.log("return..........", funds)
     return funds;
+}
+const mailContent = {
+    "subject": "Your Fund " + fundname + " is Exited",
+    "body": {
+        "contentType": "Text",
+        "content": responses
+    },
+    "toRecipients": [
+        {
+            "emailAddress": {
+                "address": "40140@hexaware.com"
+            }
+        }
+    ]
+};
+async function sendMail(content) {
+    var options = {
+        hostname: 'charleswealthbot.herokuapp.com',
+        path: '/sendEmail',
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: {
+            mailContent: content
+        }
+    };
+    var req = http.request(options, function (res) {
+        console.log('Status: ' + res.statusCode);
+        console.log('Headers: ' + JSON.stringify(res.headers));
+        res.setEncoding('utf8');
+        res.on('data', function (body) {
+            console.log('Body: ' + body);
+        });
+    });
+    req.on('error', function (e) {
+        console.log('problem with request: ' + e.message);
+    });
+    // write data to request body
+    req.write('{"string": "Hello, World"}');
+    console.log("Mail sent");
+    req.end();
 }
 
 
@@ -236,6 +279,7 @@ app.post('/fulfillment', async function (req, res) {
             val = data[0].RiskCategory;
         });
         response = `Your current risk profile is ${val}.`;
+        sendMail(mailContent);
         return res.json({
             speech: response,
             displayText: response,

@@ -66,9 +66,7 @@ async function sendMail(content) {
         headers: {
             'Content-Type': 'application/json',
         },
-        body: {
-            mailContent: content
-        }
+        body: content
     };
     var req = http.request(options, function (res) {
         console.log('Status: ' + res.statusCode);

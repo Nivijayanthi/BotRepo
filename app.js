@@ -169,6 +169,10 @@ app.post('/fulfillment', async function (req, res) {
         }
 
     }
+    if(req.body.result.metadata.intentName == 'CHANGE-RISK-PROFILE-TARGET'){
+        console.log('I am inside Target', JSON.stringify(req.body.result));
+        return res.json(template.TargetProfileSelectResponse);
+    }
     if (req.body.result.metadata.intentName == 'NEW-TRANSACTION-TYPE-ADD') {
         console.log("Inside new transac", req);
         var transactType = req.body.result.resolvedQuery;

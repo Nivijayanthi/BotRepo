@@ -47,6 +47,9 @@ async function showListOfFunds(clientId, riskProfile, transactType) {
 
 async function buildTargetProfileSelectResponse(currentProfile){
     var TargetProfileSelectResponse = {
+        type: 4,
+        platform: "facebook",
+        payload:{
     facebook: {
         text: "Please choose the target risk category",
         quick_replies: [
@@ -67,6 +70,7 @@ async function buildTargetProfileSelectResponse(currentProfile){
             }
         ]
     }
+        }
 };
 //let replies = [];
 

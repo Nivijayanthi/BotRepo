@@ -185,14 +185,12 @@ app.post('/fulfillment', async function (req, res) {
             currentProfile = req.body.result.parameters.CurrentProfile;
         }
         if (!req.body.result.parameters.TargetProfile) {
-            var event = new template.eventCall;
-            console.log("currentProfile", event);
+            console.log("currentProfile", currentProfile);
             console.log("Target profile not given.......", targetProfile);
             console.log("clientId", clientId);
-            event.followupEvent.name = "targetProfileSelect";
-            event.followupEvent.data.ClientId = clientId;
-            event.followupEvent.data.CurrentProfile = currentProfile;
-            console.log("after", event);
+            template.eventCall.followupEvent.name = "targetProfileSelect";
+            template.eventCall.followupEvent.data.ClientId = clientId;
+            template.eventCall.followupEvent.data.CurrentProfile = currentProfile;
             return res.json(template.eventCall);
         } else {
             targetProfile = req.body.result.parameters.TargetProfile;
@@ -252,9 +250,8 @@ app.post('/fulfillment', async function (req, res) {
         }
     }
     if(req.body.result.metadata.intentName == 'CHANGE-RISK-PROFILE-TARGET-SELECT-NO'){
-        var event= new template.eventCall;
-        event.followupEvent.name = "thankYou ";
-        console.log("I am inside no intent", event);
+        template.eventCall.followupEvent.name = "thankYou ";
+        console.log("I am inside no intent", template.eventCall);
             return res.json(template.eventCall);
     }
     if (req.body.result.metadata.intentName == 'NEW-TRANSACTION-TYPE-ADD') {

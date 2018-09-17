@@ -57,10 +57,11 @@ async function buildTargetProfileSelectResponse(currentProfile){
                 console.log("current", JSON.stringify(currentProfile));
                 if (!reply.title == currentProfile) {
                     console.log("reply.title", reply.title);
-                    await TargetProfileSelectResponse.facebook.quick_replies.push(JSON.parse(JSON.stringify(reply)));
+                    await TargetProfileSelectResponse.facebook.quick_replies.push(reply);
                 }
-                console.log("&&&&&&&&&&", JSON.stringify(TargetProfileSelectResponse));
+                await console.log("&&&&&&&&&&", JSON.stringify(TargetProfileSelectResponse));
             });
+            console.log("TargetProfileSelectResponse",TargetProfileSelectResponse)
     return TargetProfileSelectResponse;
 
 };

@@ -44,6 +44,18 @@ async function showListOfFunds(clientId, riskProfile, transactType) {
     console.log("return..........", funds)
     return funds;
 }
+
+async function buildTargetProfileSelectResponse(currentProfile){
+      await template.quickReplyResponse.forEach(async function (reply) {
+                console.log("%%%%%%%%%%", JSON.stringify(reply));
+                if (reply.title != currentProfile) {
+                    await template.TargetProfileSelectResponse.quick_replies.push(JSON.parse(JSON.stringify(reply)));
+                }
+                console.log("&&&&&&&&&&", JSON.stringify(template.TargetProfileSelectResponse));
+            });
+    return template.TargetProfileSelectResponse;
+
+};
 const mailContent = {
     "subject": "Your Fund is Exited",
     "body": {
@@ -171,6 +183,7 @@ app.post('/fulfillment', async function (req, res) {
     }
     if(req.body.result.metadata.intentName == 'CHANGE-RISK-PROFILE-TARGET'){
         console.log('I am inside Target', JSON.stringify(req.body.result));
+        var result = buildTargetProfileSelectResponse(req.body.result.parameters.contexts[0]);
         return res.json(template.TargetProfileSelectResponse);
     }
     if (req.body.result.metadata.intentName == 'NEW-TRANSACTION-TYPE-ADD') {

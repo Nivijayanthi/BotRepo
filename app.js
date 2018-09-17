@@ -251,6 +251,7 @@ app.post('/fulfillment', async function (req, res) {
     }
     if(req.body.result.metadata.intentName == 'CHANGE-RISK-PROFILE-TARGET-SELECT-NO'){
         template.eventCall.followupEvent.name = "thankYou ";
+        console.log("I am inside no intent", template.eventCall);
             return res.json(template.eventCall);
     }
     if (req.body.result.metadata.intentName == 'NEW-TRANSACTION-TYPE-ADD') {
@@ -324,7 +325,7 @@ app.post('/fulfillment', async function (req, res) {
 
     }
     if (req.body.result.metadata.intentName == 'NEW-TRANSACTION-TYPE-ADD-SEND') {
-        console.log("resp frm dialgflw", )
+        console.log("resp frm dialgflw", req.body.result);
         var productName = req.body.result.contexts[0].parameters.productName;
         response = `The request to add ${productName} has been sent to the Trading desk. You will be receiving a detailed  email shortly.`;
         return res.json({

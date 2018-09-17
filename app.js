@@ -236,7 +236,7 @@ app.post('/fulfillment', async function (req, res) {
                 objList.payload = value;
                 await msgList.push(JSON.parse(JSON.stringify(objList)));
             });
-            msg.payload.facebook.text = "Please find the list of products avaialable for the risk category";
+            msg.payload.facebook.text = `The risk category has been updated to ${req.body.result.contexts[0].parameters.TargetProfile}. Please find the list of products avaialable for the risk category`;
             msg.payload.facebook.quick_replies = msgList;
             await dialogFlowResponse.messages.push(msg);
             return res.json(dialogFlowResponse);

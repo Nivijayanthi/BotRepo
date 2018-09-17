@@ -60,3 +60,11 @@ ClientId : null
 } 
 //contextOut: req.body.result.contexts
 }
+
+module.exports.CommonEventCall = {
+    followupEvent: {
+name: null,
+data: {    
+}
+} 
+}

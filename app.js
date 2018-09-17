@@ -250,9 +250,9 @@ app.post('/fulfillment', async function (req, res) {
         }
     }
     if(req.body.result.metadata.intentName == 'CHANGE-RISK-PROFILE-TARGET-SELECT-NO'){
-        template.eventCall.followupEvent.name = "thankYou ";
-        console.log("I am inside no intent", template.eventCall);
-            return res.json(template.eventCall);
+        template.CommonEventCall.followupEvent.name = "thankYou ";
+        console.log("I am inside no intent", template.CommonEventCall);
+            return res.json(template.CommonEventCall);
     }
     if (req.body.result.metadata.intentName == 'NEW-TRANSACTION-TYPE-ADD') {
         console.log("Inside new transac", req);

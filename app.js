@@ -279,7 +279,7 @@ app.post('/fulfillment', async function (req, res) {
                         }
                     }]
                 };
-        return res.json(yesOrNomsg);
+        return res.json(yesOrNo);
     }
     if (req.body.result.metadata.intentName == 'NEW-TRANSACTION-TYPE-ADD') {
         console.log("Inside new transac", req);

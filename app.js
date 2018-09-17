@@ -58,9 +58,9 @@ var replies = [];
                 if (reply.title != currentProfile) {
                     await TargetProfileSelectResponse.facebook.quick_replies.push(JSON.parse(JSON.stringify(reply)));
                 }
-                console.log("&&&&&&&&&&", JSON.stringify(template.TargetProfileSelectResponse));
+                console.log("&&&&&&&&&&", JSON.stringify(TargetProfileSelectResponse));
             });
-    return template.TargetProfileSelectResponse;
+    return TargetProfileSelectResponse;
 
 };
 const mailContent = {

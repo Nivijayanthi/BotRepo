@@ -186,12 +186,13 @@ app.post('/fulfillment', async function (req, res) {
         }
         if (!req.body.result.parameters.TargetProfile) {
             var event = new template.eventCall;
-            console.log("currentProfile", currentProfile);
+            console.log("currentProfile", event);
             console.log("Target profile not given.......", targetProfile);
             console.log("clientId", clientId);
             event.followupEvent.name = "targetProfileSelect";
             event.followupEvent.data.ClientId = clientId;
             event.followupEvent.data.CurrentProfile = currentProfile;
+            console.log("after", event);
             return res.json(template.eventCall);
         } else {
             targetProfile = req.body.result.parameters.TargetProfile;

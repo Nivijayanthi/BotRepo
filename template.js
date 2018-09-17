@@ -49,8 +49,7 @@ module.exports.quickReplyResponse = function(){
     return objArr; 
 }
 
-module.exports.eventCall = function(){
-    var event={
+module.exports.eventCall ={
 followupEvent: {
 name: null,
 data: {
@@ -60,6 +59,4 @@ ClientId : null
 }
 } 
 //contextOut: req.body.result.contexts
-}
-return event;
 }

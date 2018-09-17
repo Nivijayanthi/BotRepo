@@ -356,10 +356,16 @@ app.post('/fulfillment', async function (req, res) {
 
     if(req.body.result.metadata.intentName == 'ADD-FUND-SEND'){
         console.log("I am inside add fund send ", req.body.result);
+        response = `The request to add ${req.body.result.parameters.ProductName} has been sent to the Trading desk. You will be receiving a detailed  email shortly.`;
+        return res.json({
+            speech: response,
+            displayText: response,
+            source: 'portal',
+        });
     }
     if (req.body.result.metadata.intentName == 'NEW-TRANSACTION-TYPE-ADD-SEND') {
         console.log("resp frm dialgflw", req.body.result);
-        var productName = req.body.result.contexts[0].parameters.productName;
+        var productName = req.body.result.parameters.ProductName;
         response = `The request to add ${productName} has been sent to the Trading desk. You will be receiving a detailed  email shortly.`;
         return res.json({
             speech: response,

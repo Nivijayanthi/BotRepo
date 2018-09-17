@@ -229,14 +229,25 @@ app.post('/fulfillment', async function (req, res) {
     if(req.body.result.metadata.intentName == 'CHANGE-RISK-PROFILE-TARGET-SELECT-YES'){
         console.log('I am inside Target select', JSON.stringify(req.body.result));
         listOfFunds = await showListOfFunds(req.body.result.contexts[1].parameters.ClientId, req.body.result.contexts[0].parameters.TargetProfile, null);
-   
-            response =`The risk category has been updated to ${req.body.result.contexts[0].parameters.TargetProfile}.`;
+        var objList = new template.QuickReplyTemplate;
+        if (listOfFunds.length > 0) {
+            listOfFunds.forEach(async function (value) {
+                objList.title = value;
+                objList.payload = value;
+                await msgList.push(JSON.parse(JSON.stringify(objList)));
+            });
+            msg.payload.facebook.text = `The risk category has been updated to ${req.body.result.contexts[0].parameters.TargetProfile}. Please find the list of products avaialable for the risk category`;
+            msg.payload.facebook.quick_replies = msgList;
+            await dialogFlowResponse.messages.push(msg);
+            return res.json(dialogFlowResponse);
+        } else {
+            response = "Sorry!!There are no products available under the new risk category";
             return res.json({
                 speech: response,
                 displayText: response,
                 source: 'portal',
             });
-        
+        }
     }
     if(req.body.result.metadata.intentName == 'CHANGE-RISK-PROFILE-TARGET-SELECT-NO'){
         template.CommonEventCall.followupEvent.name = "thankYou ";
@@ -245,7 +256,7 @@ app.post('/fulfillment', async function (req, res) {
     }
 
     if(req.body.result.metadata.intentName == 'CHANGE-RISK-PROFILE-TARGET-SELECT-YES-SEND'){
-        console.log("resp from dialog flow", JSON.stringify(req.body.result.contexts[0].parameters));
+        console.log("resp from dialog flow", JSON.stringify(req.body.result.contexts[0].parameters.ProductName));
         var yesOrNo = {
                     "speech": "",
                     "displayText": "",

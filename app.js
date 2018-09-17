@@ -58,7 +58,7 @@ let replies = [];
                 console.log("current", JSON.stringify(currentProfile));
                 if (!reply.title == currentProfile) {
                     console.log("reply.title", reply.title);
-                    await replies.push(reply);
+                    await replies.push(JSON.parse(JSON.stringify(reply)));
                 }
                 await console.log("&&&&&&&&&&", JSON.stringify(replies));
             });

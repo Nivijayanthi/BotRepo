@@ -58,9 +58,9 @@ let replies = [];
                 console.log("current", JSON.stringify(currentProfile));
                 if (!reply.title == currentProfile) {
                     console.log("reply.title", reply.title);
-                    await replies.push(JSON.parse(JSON.stringify(reply)));
+                    replies.push(JSON.parse(JSON.stringify(reply)));
                 }
-                await console.log("&&&&&&&&&&", JSON.stringify(replies));
+            console.log("&&&&&&&&&&", JSON.stringify(replies));
             });
             TargetProfileSelectResponse.facebook.quick_replies = replies;
             console.log("TargetProfileSelectResponse",TargetProfileSelectResponse)

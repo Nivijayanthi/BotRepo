@@ -230,7 +230,7 @@ app.post('/fulfillment', async function (req, res) {
         console.log('I am inside Target', JSON.stringify(req.body.result));
         var result1 = buildTargetProfileSelectResponse(req.body.result.contexts[0].parameters.CurrentProfile);
         console.log("Result",result1);
-        return res.json(result);
+        return res.json(result1);
     }
     if (req.body.result.metadata.intentName == 'NEW-TRANSACTION-TYPE-ADD') {
         console.log("Inside new transac", req);

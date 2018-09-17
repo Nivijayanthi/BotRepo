@@ -52,10 +52,11 @@ async function buildTargetProfileSelectResponse(currentProfile){
         quick_replies: []
     }
 };
-var replies = [];
       await template.quickReplyResponse.forEach(async function (reply) {
                 console.log("((((((((((((((((", JSON.stringify(reply));
-                if (reply.title != currentProfile) {
+                console.log("current", JSON.stringify(currentProfile));
+                if (!reply.title == currentProfile) {
+                    console.log("reply.title", reply.title);
                     await TargetProfileSelectResponse.facebook.quick_replies.push(JSON.parse(JSON.stringify(reply)));
                 }
                 console.log("&&&&&&&&&&", JSON.stringify(TargetProfileSelectResponse));

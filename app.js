@@ -226,7 +226,7 @@ app.post('/fulfillment', async function (req, res) {
         }
 
     }
-    if(req.body.result.metadata.intentName == 'CHANGE-RISK-PROFILE-TARGET-SELECT'){
+    if(req.body.result.metadata.intentName == 'CHANGE-RISK-PROFILE-TARGET-SELECT-YES'){
         console.log('I am inside Target select', JSON.stringify(req.body.result));
         listOfFunds = await showListOfFunds(req.body.result.contexts[1].parameters.ClientId, req.body.result.contexts[0].parameters.TargetProfile, null);
         var objList = new template.QuickReplyTemplate;

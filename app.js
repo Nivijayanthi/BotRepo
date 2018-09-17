@@ -229,7 +229,7 @@ app.post('/fulfillment', async function (req, res) {
     if(req.body.result.metadata.intentName == 'CHANGE-RISK-PROFILE-TARGET'){
         console.log('I am inside Target', JSON.stringify(req.body.result));
         var result1 = buildTargetProfileSelectResponse(req.body.result.contexts[0].parameters.CurrentProfile);
-        Console.log("Result",result1);
+        console.log("Result",result1);
         return res.json(result);
     }
     if (req.body.result.metadata.intentName == 'NEW-TRANSACTION-TYPE-ADD') {

@@ -30,7 +30,7 @@ module.exports.QuickReplyTemplate = function () {
 module.exports.TargetProfileSelectResponse = {
     "facebook": {
         "text": "Please choose the target risk category",
-        "quick_replies": []
+        quick_replies: []
     }
 }
 

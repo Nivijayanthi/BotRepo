@@ -49,21 +49,37 @@ async function buildTargetProfileSelectResponse(currentProfile){
     var TargetProfileSelectResponse = {
     facebook: {
         text: "Please choose the target risk category",
-        quick_replies: []
+        quick_replies:[
+            {
+                "content_type": "text",
+                "title": "Growth",
+                "payload": "Growth"
+            },
+            {
+                "content_type": "text",
+                "title": "Adventurous",
+                "payload": "Adventurous"
+            },
+            {
+                "content_type": "text",
+                "title": "Moderate",
+                "payload": "Moderate"
+            }
+        ]
     }
 };
-let replies = [];
-      await template.quickReplyResponse.forEach(async function (reply) {
-                console.log("((((((((((((((((", JSON.stringify(reply));
-                console.log("current", JSON.stringify(currentProfile));
-                if (!reply.title == currentProfile) {
-                    console.log("reply.title", reply.title);
-                    replies.push(JSON.parse(JSON.stringify(reply)));
-                }
-            console.log("&&&&&&&&&&", JSON.stringify(replies));
-            });
-            TargetProfileSelectResponse.facebook.quick_replies = replies;
-            console.log("TargetProfileSelectResponse",TargetProfileSelectResponse)
+// let replies = [];
+//       await template.quickReplyResponse.forEach(async function (reply) {
+//                 console.log("((((((((((((((((", JSON.stringify(reply));
+//                 console.log("current", JSON.stringify(currentProfile));
+//                 if (!reply.title == currentProfile) {
+//                     console.log("reply.title", reply.title);
+//                     replies.push(JSON.parse(JSON.stringify(reply)));
+//                 }
+//             console.log("&&&&&&&&&&", JSON.stringify(replies));
+//             });
+//             TargetProfileSelectResponse.facebook.quick_replies = replies;
+//             console.log("TargetProfileSelectResponse",TargetProfileSelectResponse)
     return TargetProfileSelectResponse;
 
 };

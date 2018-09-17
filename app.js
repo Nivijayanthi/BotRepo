@@ -47,12 +47,12 @@ async function showListOfFunds(clientId, riskProfile, transactType) {
 
 async function buildTargetProfileSelectResponse(currentProfile){
     var TargetProfileSelectResponse = {
-        type: 4,
-        platform: "facebook",
-        payload:{
-    facebook: {
-        text: "Please choose the target risk category",
-        quick_replies: [
+        "type": 4,
+        "platform": "facebook",
+        "payload":{
+    "facebook": {
+        "text": "Please choose the target risk category",
+        "quick_replies": [
             {
                 "content_type": "text",
                 "title": "Growth",
@@ -226,12 +226,12 @@ app.post('/fulfillment', async function (req, res) {
         }
 
     }
-    if(req.body.result.metadata.intentName == 'CHANGE-RISK-PROFILE-TARGET'){
-        console.log('I am inside Target', JSON.stringify(req.body.result));
-        var result1 = buildTargetProfileSelectResponse(req.body.result.contexts[0].parameters.CurrentProfile);
-        console.log("Result",result1);
-        return res.json(result1);
-    }
+    // if(req.body.result.metadata.intentName == 'CHANGE-RISK-PROFILE-TARGET'){
+    //     console.log('I am inside Target', JSON.stringify(req.body.result));
+    //     var result1 = buildTargetProfileSelectResponse(req.body.result.contexts[0].parameters.CurrentProfile);
+    //     console.log("Result",result1);
+    //     return res.json(result1);
+    // }
     if (req.body.result.metadata.intentName == 'NEW-TRANSACTION-TYPE-ADD') {
         console.log("Inside new transac", req);
         var transactType = req.body.result.resolvedQuery;

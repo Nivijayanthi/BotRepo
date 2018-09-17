@@ -183,7 +183,7 @@ app.post('/fulfillment', async function (req, res) {
     }
     if(req.body.result.metadata.intentName == 'CHANGE-RISK-PROFILE-TARGET'){
         console.log('I am inside Target', JSON.stringify(req.body.result));
-        var result = buildTargetProfileSelectResponse(req.body.result.parameters.contexts[0]);
+        var result = buildTargetProfileSelectResponse("Moderate");
         return res.json(template.TargetProfileSelectResponse);
     }
     if (req.body.result.metadata.intentName == 'NEW-TRANSACTION-TYPE-ADD') {

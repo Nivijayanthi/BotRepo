@@ -49,33 +49,49 @@ async function buildTargetProfileSelectResponse(currentProfile){
     var TargetProfileSelectResponse = {
     facebook: {
         text: "Please choose the target risk category",
-        quick_replies: []
+        quick_replies: [
+            {
+                "content_type": "text",
+                "title": "Growth",
+                "payload": "Growth"
+            },
+            {
+                "content_type": "text",
+                "title": "Adventurous",
+                "payload": "Adventurous"
+            },
+            {
+                "content_type": "text",
+                "title": "Moderate",
+                "payload": "Moderate"
+            }
+        ]
     }
 };
 //let replies = [];
 
-var objArr = new template.quickReplyResponse;
+// var objArr = new template.quickReplyResponse;
 
-for (var i = 0; i < objArr.length; i++) {
-    if (objArr[i].title != currentProfile) {
-        console.log("reply.title", objArr[i].title);
-        console.log(objArr);
-        TargetProfileSelectResponse.facebook.quick_replies.push(objArr[i]);                  
-    }
-}
-    //   await template.quickReplyResponse.forEach(async function (reply) {
-    //             console.log("((((((((((((((((", JSON.stringify(reply));
-    //             console.log("current", JSON.stringify(currentProfile));
-    //             if (reply.title != currentProfile) {
-    //                 console.log("reply.title", reply.title);
-    //                 console.log(reply);
-    //                 TargetProfileSelectResponse.facebook.quick_replies.push(reply);                    
-    //             }
-    //         // console.log("&&&&&&&&&&", replies[0]);
-    //         // console.log("Str", JSON.stringify(replies));
-    //         });
-            //TargetProfileSelectResponse.facebook.quick_replies = replies;
-            console.log("TargetProfileSelectResponse",TargetProfileSelectResponse)
+// for (var i = 0; i < objArr.length; i++) {
+//     if (objArr[i].title != currentProfile) {
+//         console.log("reply.title", objArr[i].title);
+//         console.log(objArr);
+//         TargetProfileSelectResponse.facebook.quick_replies.push(objArr[i]);                  
+//     }
+// }
+//     //   await template.quickReplyResponse.forEach(async function (reply) {
+//     //             console.log("((((((((((((((((", JSON.stringify(reply));
+//     //             console.log("current", JSON.stringify(currentProfile));
+//     //             if (reply.title != currentProfile) {
+//     //                 console.log("reply.title", reply.title);
+//     //                 console.log(reply);
+//     //                 TargetProfileSelectResponse.facebook.quick_replies.push(reply);                    
+//     //             }
+//     //         // console.log("&&&&&&&&&&", replies[0]);
+//     //         // console.log("Str", JSON.stringify(replies));
+//     //         });
+//             //TargetProfileSelectResponse.facebook.quick_replies = replies;
+//             console.log("TargetProfileSelectResponse",TargetProfileSelectResponse)
     return TargetProfileSelectResponse;
 
 };

@@ -52,13 +52,15 @@ async function buildTargetProfileSelectResponse(currentProfile){
         quick_replies: []
     }
 };
-let replies = [];
+//let replies = [];
 
-for (var i = 0; i < template.quickReplyResponse.length; i++) {
-    if (template.quickReplyResponse[i].title != currentProfile) {
-        console.log("reply.title", template.quickReplyResponse[i].title);
-        console.log(template.quickReplyResponse[i]);
-        TargetProfileSelectResponse.facebook.quick_replies.push(template.quickReplyResponse[i]);                    
+var objArr = new template.quickReplyResponse;
+
+for (var i = 0; i < objArr.length; i++) {
+    if (objArr[i].title != currentProfile) {
+        console.log("reply.title", objArr[i].title);
+        console.log(objArr);
+        TargetProfileSelectResponse.facebook.quick_replies.push(objArr[i]);                  
     }
 }
     //   await template.quickReplyResponse.forEach(async function (reply) {

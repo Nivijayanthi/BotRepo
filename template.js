@@ -28,7 +28,8 @@ module.exports.QuickReplyTemplate = function () {
 }
 
 
-module.exports.quickReplyResponse = [
+module.exports.quickReplyResponse = function(){ 
+    var objArr =[
             {
                 "content_type": "text",
                 "title": "Growth",
@@ -44,7 +45,9 @@ module.exports.quickReplyResponse = [
                 "title": "Moderate",
                 "payload": "Moderate"
             }
-        ];
+        ]
+    return objArr; 
+}
 
 module.exports.eventCall ={
 followupEvent: {

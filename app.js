@@ -228,10 +228,26 @@ app.post('/fulfillment', async function (req, res) {
     }
     if(req.body.result.metadata.intentName == 'CHANGE-RISK-PROFILE-TARGET-SELECT'){
         console.log('I am inside Target select', JSON.stringify(req.body.result));
-        //listOfFunds = await showListOfFunds(clientId, val, null);
-        var result1 =null;
-        console.log("Result",result1);
-        return res.json(result1);
+        listOfFunds = await showListOfFunds(req.body.result.contexts[1].parameters.ClientId, req.body.result.contexts[0].parameters.TargetProfile, null);
+        var objList = new template.QuickReplyTemplate;
+        if (listOfFunds.length > 0) {
+            listOfFunds.forEach(async function (value) {
+                objList.title = value;
+                objList.payload = value;
+                await msgList.push(JSON.parse(JSON.stringify(objList)));
+            });
+            msg.payload.facebook.text = "Please find the list of products avaialable for the risk category";
+            msg.payload.facebook.quick_replies = msgList;
+            await dialogFlowResponse.messages.push(msg);
+            return res.json(dialogFlowResponse);
+        } else {
+            response = "Sorry!!There are no products available under the new risk category";
+            return res.json({
+                speech: response,
+                displayText: response,
+                source: 'portal',
+            });
+        }
     }
     if (req.body.result.metadata.intentName == 'NEW-TRANSACTION-TYPE-ADD') {
         console.log("Inside new transac", req);

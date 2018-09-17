@@ -353,6 +353,10 @@ app.post('/fulfillment', async function (req, res) {
 
 
     }
+
+    if(req.body.result.metadata.intentName == 'ADD-FUND-SEND'){
+        console.log("I am inside add fund send ", req.body.result);
+    }
     if (req.body.result.metadata.intentName == 'NEW-TRANSACTION-TYPE-ADD-SEND') {
         console.log("resp frm dialgflw", req.body.result);
         var productName = req.body.result.contexts[0].parameters.productName;

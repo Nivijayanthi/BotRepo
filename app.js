@@ -249,6 +249,10 @@ app.post('/fulfillment', async function (req, res) {
             });
         }
     }
+    if(req.body.result.metadata.intentName == 'CHANGE-RISK-PROFILE-TARGET-SELECT-NO'){
+        template.eventCall.followupEvent.name = "thankYou ";
+            return res.json(template.eventCall);
+    }
     if (req.body.result.metadata.intentName == 'NEW-TRANSACTION-TYPE-ADD') {
         console.log("Inside new transac", req);
         var transactType = req.body.result.resolvedQuery;

@@ -49,7 +49,7 @@ async function buildTargetProfileSelectResponse(currentProfile){
     var TargetProfileSelectResponse = {
     facebook: {
         text: "Please choose the target risk category",
-        quick_replies: []
+        quick_replies: null
     }
 };
 let replies = [];

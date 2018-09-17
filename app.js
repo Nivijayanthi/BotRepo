@@ -49,20 +49,29 @@ async function buildTargetProfileSelectResponse(currentProfile){
     var TargetProfileSelectResponse = {
     facebook: {
         text: "Please choose the target risk category",
-        quick_replies: null
+        quick_replies: []
     }
 };
 let replies = [];
-      await template.quickReplyResponse.forEach(async function (reply) {
-                console.log("((((((((((((((((", JSON.stringify(reply));
-                console.log("current", JSON.stringify(currentProfile));
-                if (reply.title != currentProfile) {
-                    console.log("reply.title", reply.title);
-                    TargetProfileSelectResponse.facebook.quick_replies.push(reply);
-                }
-            // console.log("&&&&&&&&&&", replies[0]);
-            // console.log("Str", JSON.stringify(replies));
-            });
+
+for (var i = 0; i < template.quickReplyResponse.length; i++) {
+    if (template.quickReplyResponse[i].title != currentProfile) {
+        console.log("reply.title", template.quickReplyResponse[i].title);
+        console.log(template.quickReplyResponse[i]);
+        TargetProfileSelectResponse.facebook.quick_replies.push(template.quickReplyResponse[i]);                    
+    }
+}
+    //   await template.quickReplyResponse.forEach(async function (reply) {
+    //             console.log("((((((((((((((((", JSON.stringify(reply));
+    //             console.log("current", JSON.stringify(currentProfile));
+    //             if (reply.title != currentProfile) {
+    //                 console.log("reply.title", reply.title);
+    //                 console.log(reply);
+    //                 TargetProfileSelectResponse.facebook.quick_replies.push(reply);                    
+    //             }
+    //         // console.log("&&&&&&&&&&", replies[0]);
+    //         // console.log("Str", JSON.stringify(replies));
+    //         });
             //TargetProfileSelectResponse.facebook.quick_replies = replies;
             console.log("TargetProfileSelectResponse",TargetProfileSelectResponse)
     return TargetProfileSelectResponse;

@@ -226,7 +226,7 @@ app.post('/fulfillment', async function (req, res) {
         }
 
     }
-    if(req.body.result.metadata.intentName == 'CHANGE-RISK-PROFILE-TARGET-SELECT-YES'){
+    if(req.body.result.metadata.intentName == 'CRP-TARGET-SELECT-YES'){
          var contextLength = req.body.result.contexts.length;
         console.log('I am inside Target select', JSON.stringify(req.body.result));
         listOfFunds = await showListOfFunds(req.body.result.contexts[contextLength-1].parameters.ClientId, req.body.result.contexts[contextLength-2].parameters.TargetProfile, null);
@@ -251,13 +251,13 @@ app.post('/fulfillment', async function (req, res) {
             });
         }
     }
-    if(req.body.result.metadata.intentName == 'CHANGE-RISK-PROFILE-TARGET-SELECT-NO'){
+    if(req.body.result.metadata.intentName == 'CRP-TARGET-SELECT-NO'){
         template.CommonEventCall.followupEvent.name = "thankYou ";
         console.log("I am inside no intent", template.CommonEventCall);
             return res.json(template.CommonEventCall);
     }
 
-    if(req.body.result.metadata.intentName == 'CHANGE-RISK-PROFILE-TARGET-SELECT-YES-SEND'){
+    if(req.body.result.metadata.intentName == 'CRP-TARGET-SELECT-YES-BUY'){
         console.log("resp from dialog flow", JSON.stringify(req.body.result.contexts[0].parameters.ProductName));
         var yesOrNo = {
                     "speech": "",
@@ -267,7 +267,7 @@ app.post('/fulfillment', async function (req, res) {
                         "platform": "facebook",
                         "payload": {
                             "facebook": {
-                                "text": `Do you want to buy` + req.body.result.contexts[0].parameters.ProductName,
+                                "text": `Do you want to buy ` + req.body.result.contexts[0].parameters.ProductName,
                                 "quick_replies": [{
                                     "content_type": "text",
                                     "title": "Yes",
@@ -282,6 +282,15 @@ app.post('/fulfillment', async function (req, res) {
                     }]
                 };
         return res.json(yesOrNo);
+    }
+    if (req.body.result.metadata.intentName == 'CRP-TARGET-SELECT-YES-BUY-YES') {
+        console.log("I am inside add fund send ", req.body.result);
+        response = `The request to buy  ${req.body.result.parameters.ProductName} has been sent to the Trading desk. You will be receiving a detailed  email shortly.`;
+        return res.json({
+            speech: response,
+            displayText: response,
+            source: 'portal',
+        });
     }
     if (req.body.result.metadata.intentName == 'NEW-TRANSACTION-TYPE-ADD') {
         console.log("Inside new transac", req);

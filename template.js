@@ -27,12 +27,6 @@ module.exports.QuickReplyTemplate = function () {
     return objectList;
 }
 
-module.exports.TargetProfileSelectResponse = {
-    "facebook": {
-        "text": "Please choose the target risk category",
-        quick_replies: []
-    }
-}
 
 module.exports.quickReplyResponse = [
             {

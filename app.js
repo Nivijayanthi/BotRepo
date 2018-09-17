@@ -46,10 +46,17 @@ async function showListOfFunds(clientId, riskProfile, transactType) {
 }
 
 async function buildTargetProfileSelectResponse(currentProfile){
+    var TargetProfileSelectResponse = {
+    "facebook": {
+        "text": "Please choose the target risk category",
+        quick_replies: []
+    }
+};
+var replies = [];
       await template.quickReplyResponse.forEach(async function (reply) {
                 console.log("%%%%%%%%%%", JSON.stringify(reply));
                 if (reply.title != currentProfile) {
-                    await template.TargetProfileSelectResponse.quick_replies.push(JSON.parse(JSON.stringify(reply)));
+                    await TargetProfileSelectResponse.quick_replies.push(JSON.parse(JSON.stringify(reply)));
                 }
                 console.log("&&&&&&&&&&", JSON.stringify(template.TargetProfileSelectResponse));
             });

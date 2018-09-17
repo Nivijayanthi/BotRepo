@@ -60,7 +60,8 @@ let replies = [];
                     console.log("reply.title", reply.title);
                     replies.push(JSON.parse(JSON.stringify(reply)));
                 }
-            console.log("&&&&&&&&&&", JSON.stringify(replies));
+            console.log("&&&&&&&&&&", replies[0]);
+            console.log("Str", JSON.stringify(replies));
             });
             TargetProfileSelectResponse.facebook.quick_replies = replies;
             console.log("TargetProfileSelectResponse",TargetProfileSelectResponse)

@@ -49,7 +49,7 @@ async function buildTargetProfileSelectResponse(currentProfile){
     var TargetProfileSelectResponse = {
     facebook: {
         text: "Please choose the target risk category",
-        quick_replies: null
+        quick_replies: []
     }
 };
 let replies = [];
@@ -58,12 +58,12 @@ let replies = [];
                 console.log("current", JSON.stringify(currentProfile));
                 if (reply.title != currentProfile) {
                     console.log("reply.title", reply.title);
-                    replies.push(JSON.parse(JSON.stringify(reply)));
+                    TargetProfileSelectResponse.facebook.quick_replies.push(JSON.parse(JSON.stringify(reply)));
                 }
-            console.log("&&&&&&&&&&", replies[0]);
-            console.log("Str", JSON.stringify(replies));
+            // console.log("&&&&&&&&&&", replies[0]);
+            // console.log("Str", JSON.stringify(replies));
             });
-            TargetProfileSelectResponse.facebook.quick_replies = replies;
+            //TargetProfileSelectResponse.facebook.quick_replies = replies;
             console.log("TargetProfileSelectResponse",TargetProfileSelectResponse)
     return TargetProfileSelectResponse;
 

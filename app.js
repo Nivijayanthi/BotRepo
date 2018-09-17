@@ -58,7 +58,7 @@ let replies = [];
                 console.log("current", JSON.stringify(currentProfile));
                 if (reply.title != currentProfile) {
                     console.log("reply.title", reply.title);
-                    replies.push(JSON.stringify(reply));
+                    replies.push(JSON.parse(JSON.stringify(reply)));
                 }
             console.log("&&&&&&&&&&", JSON.stringify(replies));
             });

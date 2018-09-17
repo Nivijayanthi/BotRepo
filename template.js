@@ -51,12 +51,12 @@ module.exports.TargetProfileSelectResponse = {
 }
 
 module.exports.eventCall ={
-  "followupEventInput": {
-    "name": null,
-    "parameters": {
-      "parameter-name-1": null,
-      "parameter-name-2": null
-    },
-    "languageCode": "en-US"
-  }
+followupEvent: {
+name: null,
+data: {
+"phone-number": "",
+"MSG": ""
+}
+} 
+//contextOut: req.body.result.contexts
 }

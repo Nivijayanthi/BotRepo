@@ -133,7 +133,7 @@ app.post('/fulfillment', async function (req, res) {
             console.log("currentProfile", currentProfile);
             console.log("Target profile not given.......", targetProfile);
             console.log("clientId", clientId);
-            template.eventCall.followupEventInput.name = "targetProfileSelect";
+            template.eventCall.followupEvent.name = "targetProfileSelect";
             return res.json(template.eventCall);
         } else {
             targetProfile = req.body.result.parameters.TargetProfile;

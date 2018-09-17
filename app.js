@@ -146,6 +146,8 @@ app.post('/fulfillment', async function (req, res) {
             console.log("Target profile not given.......", targetProfile);
             console.log("clientId", clientId);
             template.eventCall.followupEvent.name = "targetProfileSelect";
+            template.eventCall.followupEvent.data.ClientId = clientId;
+            template.eventCall.followupEvent.data.CurrentProfile = currentProfile;
             return res.json(template.eventCall);
         } else {
             targetProfile = req.body.result.parameters.TargetProfile;
@@ -183,8 +185,8 @@ app.post('/fulfillment', async function (req, res) {
     }
     if(req.body.result.metadata.intentName == 'CHANGE-RISK-PROFILE-TARGET'){
         console.log('I am inside Target', JSON.stringify(req.body.result));
-        var result = buildTargetProfileSelectResponse("Moderate");
-        return res.json(template.TargetProfileSelectResponse);
+        var result = buildTargetProfileSelectResponse(req.body.result.contexts[0].CurrentProfile);
+        return res.json(result);
     }
     if (req.body.result.metadata.intentName == 'NEW-TRANSACTION-TYPE-ADD') {
         console.log("Inside new transac", req);

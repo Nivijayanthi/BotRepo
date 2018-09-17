@@ -56,8 +56,9 @@ module.exports.eventCall ={
 followupEvent: {
 name: null,
 data: {
-"phone-number": "",
-"MSG": ""
+CurrentProfile: null,
+TargetProfile: null,
+ClientId : null
 }
 } 
 //contextOut: req.body.result.contexts

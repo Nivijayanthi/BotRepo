@@ -254,6 +254,10 @@ app.post('/fulfillment', async function (req, res) {
         console.log("I am inside no intent", template.CommonEventCall);
             return res.json(template.CommonEventCall);
     }
+
+    if(req.body.result.metadata.intentName == 'CHANGE-RISK-PROFILE-TARGET-SELECT-YES-SEND'){
+        console.log("resp from dialog flow", JSON.stringify(req.body.result));
+    }
     if (req.body.result.metadata.intentName == 'NEW-TRANSACTION-TYPE-ADD') {
         console.log("Inside new transac", req);
         var transactType = req.body.result.resolvedQuery;

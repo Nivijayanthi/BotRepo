@@ -256,7 +256,30 @@ app.post('/fulfillment', async function (req, res) {
     }
 
     if(req.body.result.metadata.intentName == 'CHANGE-RISK-PROFILE-TARGET-SELECT-YES-SEND'){
-        console.log("resp from dialog flow", JSON.stringify(req.body.result));
+        console.log("resp from dialog flow", JSON.stringify(req.body.result.contexts[0].parameters));
+        var yesOrNo = {
+                    "speech": "",
+                    "displayText": "",
+                    "messages": [{
+                        "type": 4,
+                        "platform": "facebook",
+                        "payload": {
+                            "facebook": {
+                                "text": `Do you want to buy` + req.body.result.contexts[0].parameters.ProductName,
+                                "quick_replies": [{
+                                    "content_type": "text",
+                                    "title": "Yes",
+                                    "payload": "Yes"
+                                }, {
+                                    "content_type": "text",
+                                    "title": "No",
+                                    "payload": "No"
+                                }]
+                            }
+                        }
+                    }]
+                };
+        return res.json(yesOrNomsg);
     }
     if (req.body.result.metadata.intentName == 'NEW-TRANSACTION-TYPE-ADD') {
         console.log("Inside new transac", req);

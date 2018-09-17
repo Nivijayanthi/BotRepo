@@ -58,7 +58,7 @@ let replies = [];
                 console.log("current", JSON.stringify(currentProfile));
                 if (reply.title != currentProfile) {
                     console.log("reply.title", reply.title);
-                    TargetProfileSelectResponse.facebook.quick_replies.push(JSON.parse(JSON.stringify(reply)));
+                    TargetProfileSelectResponse.facebook.quick_replies.push(reply);
                 }
             // console.log("&&&&&&&&&&", replies[0]);
             // console.log("Str", JSON.stringify(replies));

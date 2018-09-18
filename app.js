@@ -213,7 +213,7 @@ app.post('/fulfillment', async function (req, res) {
     if(req.body.result.metadata.intentName == 'CHANGE-RISK-PROFILE-TARGET'){
         console.log("I am inside target opt", JSON.stringify(req.body.result));
         console.log("Current Profile", req.body.result.contexts[0].parameters.CurrentProfile);
-        var TargetResponse = buildTargetProfileSelectResponse(req.body.result.contexts[0].parameters.CurrentProfile);
+        var TargetResponse = await buildTargetProfileSelectResponse(req.body.result.contexts[0].parameters.CurrentProfile);
         console.log("TargetResponse",TargetResponse);
         var abc = {
         "type": 4,
@@ -241,7 +241,7 @@ app.post('/fulfillment', async function (req, res) {
     }
         }
 };
-        return res.json(abc);
+        return res.json(TargetResponse);
     }
     if(req.body.result.metadata.intentName == 'CRP-TARGET-SELECT-YES'){
          var contextLength = req.body.result.contexts.length;

@@ -51,6 +51,8 @@ let replies = [];
 
 var objArr = new template.quickReplyResponse;
 
+//JSONArray replies = new JSONArray();
+
 let processingArray = [];
 for (var i = 0; i < objArr.length; i++) {
     processingArray = objArr[i];
@@ -95,7 +97,7 @@ var TargetProfileSelectResponse = {
 
 
             console.log("TargetProfileSelectResponse",TargetProfileSelectResponse)
-    return TargetProfileSelectResponse;
+    return JSON.parse(JSON.stringify(TargetProfileSelectResponse));
 
 };
 const mailContent = {
@@ -237,13 +239,14 @@ app.post('/fulfillment', async function (req, res) {
         console.log('I am inside Target select', JSON.stringify(req.body.result));
         listOfFunds = await showListOfFunds(req.body.result.contexts[contextLength-1].parameters.ClientId, req.body.result.contexts[contextLength-2].parameters.TargetProfile, null);
         var objList = new template.QuickReplyTemplate;
-       
+        var showMore = new template.showMore;
         if (listOfFunds.length > 0) {
             listOfFunds.forEach(async function (value) {
                 objList.title = value;
                 objList.payload = value;
                 await msgList.push(JSON.parse(JSON.stringify(objList)));
             });
+            await msgList.push(showMore);
             msg.payload.facebook.text = `The risk category has been updated to ${req.body.result.contexts[contextLength-1].parameters.TargetProfile}. Please find the list of products avaialable for the risk category`;
             msg.payload.facebook.quick_replies = msgList;
             await dialogFlowResponse.messages.push(msg);
@@ -282,6 +285,11 @@ app.post('/fulfillment', async function (req, res) {
                                     "content_type": "text",
                                     "title": "No",
                                     "payload": "No"
+                                },
+                                {
+                                    "content_type": "text",
+                                    "title": "Show fund Details",
+                                    "payload": "Show fund Details"
                                 }]
                             }
                         }

@@ -27,6 +27,14 @@ module.exports.QuickReplyTemplate = function () {
     return objectList;
 }
 
+module.exports.showMore = function(){
+    var show = {
+        "content_type": "text",
+        "title": "Show more",
+        "payload": "Show more"
+      }
+      return show;
+}
 
 module.exports.quickReplyResponse = function(){ 
     var objArr =[

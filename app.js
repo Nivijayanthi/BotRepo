@@ -73,7 +73,7 @@ var objArr = new template.quickReplyResponse;
                 if (reply.title != currentProfile) {
                     console.log("reply.title", reply.title);
                     console.log(reply);
-                    TargetProfileSelectResponse.payload.facebook.quick_replies.push(reply);                    
+                    TargetProfileSelectResponse.payload.facebook.quick_replies.push(JSON.parse(JSON.stringify(reply)));                    
                 }
             console.log("&&&&&&&&&&", replies);
             console.log("Str", JSON.stringify(replies));

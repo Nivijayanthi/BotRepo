@@ -69,7 +69,7 @@ for (var i = 0; i < objArr.length; i++) {
      }
  }
 
- TargetProfileSelectResponse.payload.facebook[quick_replies] = replies;                  
+ TargetProfileSelectResponse.payload.facebook["quick_replies"] = replies;                  
  
  /*
 

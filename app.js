@@ -55,7 +55,7 @@ for (var i = 0; i < objArr.length; i++) {
      if (objArr[i].title != currentProfile) {
          console.log("reply.title", objArr[i].title);
          console.log(objArr);
-         replies.push(objArr[i]);
+         replies.push(JSON.parse(objArr[i]));
          
      }
  }
@@ -68,7 +68,7 @@ var TargetProfileSelectResponse = {
         "payload":{
             "facebook": {
         "text": "Please choose the target risk category",
-        "quick_replies": JSON.parse(replies)
+        "quick_replies": replies
     }
         }
 };

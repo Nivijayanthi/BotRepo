@@ -52,29 +52,13 @@ async function buildTargetProfileSelectResponse(currentProfile){
         "payload":{
     "facebook": {
         "text": "Please choose the target risk category",
-        "quick_replies": [
-            {
-                "content_type": "text",
-                "title": "Growth",
-                "payload": "Growth"
-            },
-            {
-                "content_type": "text",
-                "title": "Adventurous",
-                "payload": "Adventurous"
-            },
-            {
-                "content_type": "text",
-                "title": "Moderate",
-                "payload": "Moderate"
-            }
-        ]
+        "quick_replies": []
     }
         }
 };
-//let replies = [];
+let replies = [];
 
-// var objArr = new template.quickReplyResponse;
+var objArr = new template.quickReplyResponse;
 
 // for (var i = 0; i < objArr.length; i++) {
 //     if (objArr[i].title != currentProfile) {
@@ -83,19 +67,19 @@ async function buildTargetProfileSelectResponse(currentProfile){
 //         TargetProfileSelectResponse.facebook.quick_replies.push(objArr[i]);                  
 //     }
 // }
-//     //   await template.quickReplyResponse.forEach(async function (reply) {
-//     //             console.log("((((((((((((((((", JSON.stringify(reply));
-//     //             console.log("current", JSON.stringify(currentProfile));
-//     //             if (reply.title != currentProfile) {
-//     //                 console.log("reply.title", reply.title);
-//     //                 console.log(reply);
-//     //                 TargetProfileSelectResponse.facebook.quick_replies.push(reply);                    
-//     //             }
-//     //         // console.log("&&&&&&&&&&", replies[0]);
-//     //         // console.log("Str", JSON.stringify(replies));
-//     //         });
-//             //TargetProfileSelectResponse.facebook.quick_replies = replies;
-//             console.log("TargetProfileSelectResponse",TargetProfileSelectResponse)
+      await objArr.forEach(async function (reply) {
+                console.log("((((((((((((((((", JSON.stringify(reply));
+                console.log("current", JSON.stringify(currentProfile));
+                if (reply.title != currentProfile) {
+                    console.log("reply.title", reply.title);
+                    console.log(reply);
+                    replies.push(reply);                    
+                }
+            console.log("&&&&&&&&&&", replies);
+            console.log("Str", JSON.stringify(replies));
+            });
+            TargetProfileSelectResponse.facebook.quick_replies = replies;
+            console.log("TargetProfileSelectResponse",TargetProfileSelectResponse)
     return TargetProfileSelectResponse;
 
 };
@@ -228,6 +212,9 @@ app.post('/fulfillment', async function (req, res) {
     }
     if(req.body.result.metadata.intentName == 'CHANGE-RISK-PROFILE-TARGET'){
         console.log("I am inside target opt", JSON.stringify(req.body.result));
+        console.log("Current Profile", req.body.result.contexts[0].parameters.CurrentProfile);
+        var TargetResponse = buildTargetProfileSelectResponse(req.body.result.contexts[0].parameters.CurrentProfile);
+        console.log("TargetResponse",TargetResponse);
         var abc = {
         "type": 4,
         "platform": "facebook",

@@ -73,12 +73,11 @@ var objArr = new template.quickReplyResponse;
                 if (reply.title != currentProfile) {
                     console.log("reply.title", reply.title);
                     console.log(reply);
-                    replies.push(reply);                    
+                    TargetProfileSelectResponse.payload.facebook.quick_replies.push(reply);                    
                 }
             console.log("&&&&&&&&&&", replies);
             console.log("Str", JSON.stringify(replies));
             });
-            TargetProfileSelectResponse.payload.facebook.quick_replies = JSON.stringify(replies);
             console.log("TargetProfileSelectResponse",TargetProfileSelectResponse)
     return TargetProfileSelectResponse;
 

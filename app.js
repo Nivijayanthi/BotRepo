@@ -50,7 +50,7 @@ async function buildTargetProfileSelectResponse(currentProfile){
         "type": 4,
         "platform": "facebook",
         "payload":{
-    "facebook": {
+            "facebook": {
         "text": "Please choose the target risk category",
         "quick_replies": []
     }
@@ -78,7 +78,7 @@ var objArr = new template.quickReplyResponse;
             console.log("&&&&&&&&&&", replies);
             console.log("Str", JSON.stringify(replies));
             });
-            TargetProfileSelectResponse.facebook.quick_replies = replies;
+            TargetProfileSelectResponse.payload.facebook.quick_replies = replies;
             console.log("TargetProfileSelectResponse",TargetProfileSelectResponse)
     return TargetProfileSelectResponse;
 

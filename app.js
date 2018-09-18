@@ -57,7 +57,10 @@ for (var i = 0; i < objArr.length; i++) {
      if (processingArray.title != currentProfile) {
          console.log("reply.title", processingArray.title);
          console.log(processingArray);
-         replies.push(processingArray);
+         replies.push({ 'content_type': processingArray.content_type,
+            "title": processingArray.title,
+            "payload": processingArray.payload 
+        });
          
      }
  }

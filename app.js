@@ -226,6 +226,36 @@ app.post('/fulfillment', async function (req, res) {
         }
 
     }
+    if(req.body.result.metadata.intentName == 'CHANGE-RISK-PROFILE-TARGET'){
+        console.log("I am inside target opt", JSON.stringify(req.body.result));
+        var abc = {
+        "type": 4,
+        "platform": "facebook",
+        "payload":{
+    "facebook": {
+        "text": "Please choose the target risk category",
+        "quick_replies": [
+            {
+                "content_type": "text",
+                "title": "Growth",
+                "payload": "Growth"
+            },
+            {
+                "content_type": "text",
+                "title": "Adventurous",
+                "payload": "Adventurous"
+            },
+            {
+                "content_type": "text",
+                "title": "Moderate",
+                "payload": "Moderate"
+            }
+        ]
+    }
+        }
+};
+        return res.json(abc);
+    }
     if(req.body.result.metadata.intentName == 'CRP-TARGET-SELECT-YES'){
          var contextLength = req.body.result.contexts.length;
         console.log('I am inside Target select', JSON.stringify(req.body.result));

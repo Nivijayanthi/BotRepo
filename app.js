@@ -78,7 +78,7 @@ var objArr = new template.quickReplyResponse;
             console.log("&&&&&&&&&&", replies);
             console.log("Str", JSON.stringify(replies));
             });
-            TargetProfileSelectResponse.payload.facebook.quick_replies = JSON.stringify(replies);
+            TargetProfileSelectResponse.payload.facebook.quick_replies = replies;
             console.log("TargetProfileSelectResponse",TargetProfileSelectResponse)
     return TargetProfileSelectResponse;
 
@@ -214,33 +214,7 @@ app.post('/fulfillment', async function (req, res) {
         console.log("I am inside target opt", JSON.stringify(req.body.result));
         console.log("Current Profile", req.body.result.contexts[0].parameters.CurrentProfile);
         var TargetResponse = await buildTargetProfileSelectResponse(req.body.result.contexts[0].parameters.CurrentProfile);
-        console.log("TargetResponse",TargetResponse);
-        var abc = {
-        "type": 4,
-        "platform": "facebook",
-        "payload":{
-    "facebook": {
-        "text": "Please choose the target risk category",
-        "quick_replies": [
-            {
-                "content_type": "text",
-                "title": "Growth",
-                "payload": "Growth"
-            },
-            {
-                "content_type": "text",
-                "title": "Adventurous",
-                "payload": "Adventurous"
-            },
-            {
-                "content_type": "text",
-                "title": "Moderate",
-                "payload": "Moderate"
-            }
-        ]
-    }
-        }
-};
+        console.log("TargetResponse",TargetResponse); 
         return res.json(TargetResponse);
     }
     if(req.body.result.metadata.intentName == 'CRP-TARGET-SELECT-YES'){

@@ -68,7 +68,7 @@ var TargetProfileSelectResponse = {
         "payload":{
             "facebook": {
         "text": "Please choose the target risk category",
-        "quick_replies": replies.arrayItem
+        "quick_replies": replies[0]
     }
         }
 };

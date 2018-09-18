@@ -57,8 +57,8 @@ CurrentProfile: null,
 TargetProfile: null,
 ClientId : null
 }
-},
-contextOut: req.body.result.contexts
+}
+//contextOut: req.body.result.contexts
 }
 
 module.exports.CommonEventCall = {

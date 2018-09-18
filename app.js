@@ -60,13 +60,19 @@ let replies = [];
 
 var objArr = new template.quickReplyResponse;
 
-// for (var i = 0; i < objArr.length; i++) {
-//     if (objArr[i].title != currentProfile) {
-//         console.log("reply.title", objArr[i].title);
-//         console.log(objArr);
-//         TargetProfileSelectResponse.facebook.quick_replies.push(objArr[i]);                  
-//     }
-// }
+for (var i = 0; i < objArr.length; i++) {
+     if (objArr[i].title != currentProfile) {
+         console.log("reply.title", objArr[i].title);
+         console.log(objArr);
+         replies.push(objArr[i]);
+         
+     }
+ }
+
+ TargetProfileSelectResponse.payload.facebook[quick_replies] = replies;                  
+ 
+ /*
+
       await objArr.forEach(async function (reply) {
                 console.log("((((((((((((((((", JSON.stringify(reply));
                 console.log("current", JSON.stringify(currentProfile));
@@ -77,7 +83,10 @@ var objArr = new template.quickReplyResponse;
                 }
             // console.log("&&&&&&&&&&", replies);
             // console.log("Str", JSON.stringify(replies));
-            });
+        });*/
+        
+
+
             console.log("TargetProfileSelectResponse",TargetProfileSelectResponse)
     return TargetProfileSelectResponse;
 

@@ -364,7 +364,7 @@ app.post('/fulfillment', async function (req, res) {
     }
 
     if(req.body.result.metadata.intentName == 'ADD-FUND-SEND'){
-        console.log("I am inside add fund send ", req.body.result);
+        console.log("I am inside add fund send ", JSON.stringify(req.body.result));
         response = `The request to add ${req.body.result.parameters.ProductName} has been sent to the Trading desk. You will be receiving a detailed  email shortly.`;
         return res.json({
             speech: response,

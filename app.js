@@ -78,7 +78,7 @@ var objArr = new template.quickReplyResponse;
             console.log("&&&&&&&&&&", replies);
             console.log("Str", JSON.stringify(replies));
             });
-            TargetProfileSelectResponse.payload.facebook.quick_replies = replies.concat();
+            TargetProfileSelectResponse.payload.facebook.quick_replies = JSON.stringify(replies);
             console.log("TargetProfileSelectResponse",TargetProfileSelectResponse)
     return TargetProfileSelectResponse;
 

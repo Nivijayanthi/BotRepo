@@ -285,7 +285,7 @@ app.post('/fulfillment', async function (req, res) {
     }
     if (req.body.result.metadata.intentName == 'CRP-TARGET-SELECT-YES-BUY-YES') {
         console.log("I am inside add fund send ", JSON.stringify(req.body.result));
-        response = `The request to buy  ${req.body.result.parameters.ProductName} has been sent to the Trading desk. You will be receiving a detailed  email shortly.`;
+        response = `The request to buy  ${req.body.result.contexts[0].parameters.ProductName} has been sent to the Trading desk. You will be receiving a detailed  email shortly.`;
         return res.json({
             speech: response,
             displayText: response,

@@ -46,16 +46,7 @@ async function showListOfFunds(clientId, riskProfile, transactType) {
 }
 
 async function buildTargetProfileSelectResponse(currentProfile){
-    var TargetProfileSelectResponse = {
-        "type": 4,
-        "platform": "facebook",
-        "payload":{
-            "facebook": {
-        "text": "Please choose the target risk category",
-        "quick_replies": []
-    }
-        }
-};
+    
 let replies = [];
 
 var objArr = new template.quickReplyResponse;
@@ -69,8 +60,19 @@ for (var i = 0; i < objArr.length; i++) {
      }
  }
 
- TargetProfileSelectResponse.payload.facebook["quick_replies"] = JSON.stringify(replies);                  
+                  
  
+var TargetProfileSelectResponse = {
+        "type": 4,
+        "platform": "facebook",
+        "payload":{
+            "facebook": {
+        "text": "Please choose the target risk category",
+        "quick_replies": replies
+    }
+        }
+};
+
  /*
 
       await objArr.forEach(async function (reply) {

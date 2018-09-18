@@ -51,11 +51,13 @@ let replies = [];
 
 var objArr = new template.quickReplyResponse;
 
+let processingArray = [];
 for (var i = 0; i < objArr.length; i++) {
-     if (objArr[i].title != currentProfile) {
-         console.log("reply.title", objArr[i].title);
-         console.log(objArr);
-         replies.push(JSON.parse(objArr[i]));
+    processingArray = objArr[i];
+     if (processingArray.title != currentProfile) {
+         console.log("reply.title", processingArray.title);
+         console.log(processingArray);
+         replies.push(processingArray);
          
      }
  }

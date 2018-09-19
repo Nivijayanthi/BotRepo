@@ -52,27 +52,38 @@ async function buildTargetProfileSelectResponse(currentProfile) {
         payload: {
             facebook: {
                 "text": "Please choose the target risk category",
-                quick_replies: []
-            }
+                quick_replies: [ 
+                    { 
+                    content_type: 'text',
+                    title: 'Growth', 
+                    payload: 'Growth' 
+                },
+                    { 
+                    content_type: 'text',
+                    title: 'Adventurous',
+                    payload: 'Adventurous' 
+                } 
+            ]
+        }
         }
     };
-    let replies = [];
-    var objArr = new template.quickReplyResponse;
-    var objList = new template.QuickReplyTemplate;
+    // let replies = [];
+    // var objArr = new template.quickReplyResponse;
+    // var objList = new template.QuickReplyTemplate;
 
-    let processingArray = [];
-    for (var i = 0; i < objArr.length; i++) {
-        processingArray = objArr[i];
-        if (processingArray.title != currentProfile) {
-            console.log("reply.title", processingArray.title);
-            console.log(processingArray);
-            objList.title = processingArray.title;
-            objList.payload = processingArray.payload;
-            replies.push(JSON.parse(JSON.stringify(objList)));
-        }
-        console.log("Replies...........",replies);
-    }
-    TargetProfileSelectResponse.payload.facebook.quick_replies = replies;
+    // let processingArray = [];
+    // for (var i = 0; i < objArr.length; i++) {
+    //     processingArray = objArr[i];
+    //     if (processingArray.title != currentProfile) {
+    //         console.log("reply.title", processingArray.title);
+    //         console.log(processingArray);
+    //         objList.title = processingArray.title;
+    //         objList.payload = processingArray.payload;
+    //         replies.push(JSON.parse(JSON.stringify(objList)));
+    //     }
+    //     console.log("Replies...........",replies);
+    // }
+    // TargetProfileSelectResponse.payload.facebook.quick_replies = replies;
   
 
     /*

@@ -64,22 +64,19 @@ async function buildTargetProfileSelectResponse(currentProfile) {
     var objArr = new template.quickReplyResponse;
     var objList = new template.QuickReplyTemplate;
 
-    let processingArray = [];
-    for (var i = 0; i < objArr.length; i++) {
-        processingArray = objArr[i];
-        if (processingArray.title != currentProfile) {
-            console.log("reply.title", processingArray.title);
-            console.log(processingArray);
-            objList.title = processingArray.title;
-            objList.payload = processingArray.payload;
-            replies.push(JSON.parse(JSON.stringify(objList)));
-        }
-        console.log("Replies...........",replies);
-    }
-    TargetProfileSelectResponse.messages[0].payload.facebook.quick_replies = replies;
-  
-
-    /*
+    // let processingArray = [];
+    // for (var i = 0; i < objArr.length; i++) {
+    //     processingArray = objArr[i];
+    //     if (processingArray.title != currentProfile) {
+    //         console.log("reply.title", processingArray.title);
+    //         console.log(processingArray);
+    //         objList.title = processingArray.title;
+    //         objList.payload = processingArray.payload;
+    //         replies.push(JSON.parse(JSON.stringify(objList)));
+    //     }
+    //     console.log("Replies...........",replies);
+    // }
+    // TargetProfileSelectResponse.messages[0].payload.facebook.quick_replies = replies;
    
          await objArr.forEach(async function (reply) {
                    console.log("((((((((((((((((", JSON.stringify(reply));
@@ -87,11 +84,11 @@ async function buildTargetProfileSelectResponse(currentProfile) {
                    if (reply.title != currentProfile) {
                        console.log("reply.title", reply.title);
                        console.log(reply);
-                       TargetProfileSelectResponse.payload.facebook.quick_replies.push(reply);                    
+                       TargetProfileSelectResponse.messages[0].payload.facebook.quick_replies.push(reply);                    
                    }
                // console.log("&&&&&&&&&&", replies);
                // console.log("Str", JSON.stringify(replies));
-           });*/
+           });
 
 
 

@@ -100,6 +100,9 @@ async function sendMail(content) {
     req.end();
 }
 
+app.get("/test", function(req,res){
+    res.send("My name is Rat!");
+});
 
 app.post('/fulfillment', async function (req, res) {
 

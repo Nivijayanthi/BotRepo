@@ -45,59 +45,52 @@ async function showListOfFunds(clientId, riskProfile, transactType) {
     return funds;
 }
 
-async function buildTargetProfileSelectResponse(currentProfile){
-    
-let replies = [];
+async function buildTargetProfileSelectResponse(currentProfile) {
 
-var objArr = new template.quickReplyResponse;
+    let replies = [];
+    var objArr = new template.quickReplyResponse;
+    var objList = new template.QuickReplyTemplate;
 
-//JSONArray replies = new JSONArray();
-
-let processingArray = [];
-for (var i = 0; i < objArr.length; i++) {
-    processingArray = objArr[i];
-     if (processingArray.title != currentProfile) {
-         console.log("reply.title", processingArray.title);
-         console.log(processingArray);
-         replies.push({ 'content_type': processingArray.content_type,
-            "title": processingArray.title,
-            "payload": processingArray.payload 
-        });
-         
-     }
- }
-
-                  
- 
-var TargetProfileSelectResponse = {
+    let processingArray = [];
+    for (var i = 0; i < objArr.length; i++) {
+        processingArray = objArr[i];
+        if (processingArray.title != currentProfile) {
+            console.log("reply.title", processingArray.title);
+            console.log(processingArray);
+            objList.title = processingArray.title;
+            objList.payload = processingArray.payload;
+            replies.push(JSON.parse(JSON.stringify(objList)));
+        }
+    }
+    var TargetProfileSelectResponse = {
         "type": 4,
         "platform": "facebook",
-        "payload":{
+        "payload": {
             "facebook": {
-        "text": "Please choose the target risk category",
-        "quick_replies": replies
-    }
+                "text": "Please choose the target risk category",
+                "quick_replies": replies
+            }
         }
-};
+    };
 
- /*
+    /*
+   
+         await objArr.forEach(async function (reply) {
+                   console.log("((((((((((((((((", JSON.stringify(reply));
+                   console.log("current", JSON.stringify(currentProfile));
+                   if (reply.title != currentProfile) {
+                       console.log("reply.title", reply.title);
+                       console.log(reply);
+                       TargetProfileSelectResponse.payload.facebook.quick_replies.push(reply);                    
+                   }
+               // console.log("&&&&&&&&&&", replies);
+               // console.log("Str", JSON.stringify(replies));
+           });*/
 
-      await objArr.forEach(async function (reply) {
-                console.log("((((((((((((((((", JSON.stringify(reply));
-                console.log("current", JSON.stringify(currentProfile));
-                if (reply.title != currentProfile) {
-                    console.log("reply.title", reply.title);
-                    console.log(reply);
-                    TargetProfileSelectResponse.payload.facebook.quick_replies.push(reply);                    
-                }
-            // console.log("&&&&&&&&&&", replies);
-            // console.log("Str", JSON.stringify(replies));
-        });*/
-        
 
 
-            console.log("TargetProfileSelectResponse",TargetProfileSelectResponse)
-    return JSON.parse(JSON.stringify(TargetProfileSelectResponse));
+    console.log("TargetProfileSelectResponse", TargetProfileSelectResponse)
+    return TargetProfileSelectResponse;
 
 };
 const mailContent = {
@@ -228,17 +221,17 @@ app.post('/fulfillment', async function (req, res) {
         }
 
     }
-    if(req.body.result.metadata.intentName == 'CHANGE-RISK-PROFILE-TARGET'){
+    if (req.body.result.metadata.intentName == 'CHANGE-RISK-PROFILE-TARGET') {
         console.log("I am inside target opt", JSON.stringify(req.body.result));
         console.log("Current Profile", req.body.result.contexts[0].parameters.CurrentProfile);
         var TargetResponse = await buildTargetProfileSelectResponse(req.body.result.contexts[0].parameters.CurrentProfile);
-        console.log("TargetResponse",TargetResponse); 
+        console.log("TargetResponse", TargetResponse);
         return res.json(TargetResponse);
     }
-    if(req.body.result.metadata.intentName == 'CRP-TARGET-SELECT-YES'){
-         var contextLength = req.body.result.contexts.length;
+    if (req.body.result.metadata.intentName == 'CRP-TARGET-SELECT-YES') {
+        var contextLength = req.body.result.contexts.length;
         console.log('I am inside Target select', JSON.stringify(req.body.result));
-        listOfFunds = await showListOfFunds(req.body.result.contexts[contextLength-1].parameters.ClientId, req.body.result.contexts[contextLength-2].parameters.TargetProfile, null);
+        listOfFunds = await showListOfFunds(req.body.result.contexts[contextLength - 1].parameters.ClientId, req.body.result.contexts[contextLength - 2].parameters.TargetProfile, null);
         var objList = new template.QuickReplyTemplate;
         var showMore = new template.showMore;
         if (listOfFunds.length > 0) {
@@ -248,7 +241,7 @@ app.post('/fulfillment', async function (req, res) {
                 await msgList.push(JSON.parse(JSON.stringify(objList)));
             });
             await msgList.push(showMore);
-            msg.payload.facebook.text = `The risk category has been updated to ${req.body.result.contexts[contextLength-1].parameters.TargetProfile}. Please find the list of products avaialable for the risk category`;
+            msg.payload.facebook.text = `The risk category has been updated to ${req.body.result.contexts[contextLength - 1].parameters.TargetProfile}. Please find the list of products avaialable for the risk category`;
             msg.payload.facebook.quick_replies = msgList;
             await dialogFlowResponse.messages.push(msg);
             return res.json(dialogFlowResponse);
@@ -261,41 +254,41 @@ app.post('/fulfillment', async function (req, res) {
             });
         }
     }
-    if(req.body.result.metadata.intentName == 'CRP-TARGET-SELECT-NO'){
+    if (req.body.result.metadata.intentName == 'CRP-TARGET-SELECT-NO') {
         template.CommonEventCall.followupEvent.name = "thankYou ";
         console.log("I am inside no intent", template.CommonEventCall);
-            return res.json(template.CommonEventCall);
+        return res.json(template.CommonEventCall);
     }
 
-    if(req.body.result.metadata.intentName == 'CRP-TARGET-SELECT-YES-BUY'){
+    if (req.body.result.metadata.intentName == 'CRP-TARGET-SELECT-YES-BUY') {
         console.log("resp from dialog flow", JSON.stringify(req.body.result.contexts[0].parameters.ProductName));
         var yesOrNo = {
-                    "speech": "",
-                    "displayText": "",
-                    "messages": [{
-                        "type": 4,
-                        "platform": "facebook",
-                        "payload": {
-                            "facebook": {
-                                "text": `Do you want to buy ` + req.body.result.contexts[0].parameters.ProductName,
-                                "quick_replies": [{
-                                    "content_type": "text",
-                                    "title": "Yes",
-                                    "payload": "Yes"
-                                }, {
-                                    "content_type": "text",
-                                    "title": "No",
-                                    "payload": "No"
-                                },
-                                {
-                                    "content_type": "text",
-                                    "title": "Show fund Details",
-                                    "payload": "Show fund Details"
-                                }]
-                            }
-                        }
-                    }]
-                };
+            "speech": "",
+            "displayText": "",
+            "messages": [{
+                "type": 4,
+                "platform": "facebook",
+                "payload": {
+                    "facebook": {
+                        "text": `Do you want to buy ` + req.body.result.contexts[0].parameters.ProductName,
+                        "quick_replies": [{
+                            "content_type": "text",
+                            "title": "Yes",
+                            "payload": "Yes"
+                        }, {
+                            "content_type": "text",
+                            "title": "No",
+                            "payload": "No"
+                        },
+                        {
+                            "content_type": "text",
+                            "title": "Show fund Details",
+                            "payload": "Show fund Details"
+                        }]
+                    }
+                }
+            }]
+        };
         return res.json(yesOrNo);
     }
     if (req.body.result.metadata.intentName == 'CRP-TARGET-SELECT-YES-BUY-YES') {
@@ -378,7 +371,7 @@ app.post('/fulfillment', async function (req, res) {
 
     }
 
-    if(req.body.result.metadata.intentName == 'ADD-FUND-SEND'){
+    if (req.body.result.metadata.intentName == 'ADD-FUND-SEND') {
         console.log("I am inside add fund send ", JSON.stringify(req.body.result));
         response = `The request to add ${req.body.result.parameters.ProductName} has been sent to the Trading desk. You will be receiving a detailed  email shortly.`;
         return res.json({
@@ -453,8 +446,8 @@ app.post('/fulfillment', async function (req, res) {
                         response += "<br/>Current Price: " + currentPrice + "<br/>";
                         response += "Quantity: " + quantity + "<br/>";
                         response += "Market Value: " + marketvalue + "<br/>";
-                        responses = response.replace("<br/>","\n");
-                        await query.saveTransactionDetails({CustomerID:clientId,ProductID:productID,Quantity:quantity,Price:currentPrice,Action:"Sell",Date:moment().format("DD-MMM-YY")});
+                        responses = response.replace("<br/>", "\n");
+                        await query.saveTransactionDetails({ CustomerID: clientId, ProductID: productID, Quantity: quantity, Price: currentPrice, Action: "Sell", Date: moment().format("DD-MMM-YY") });
                         return res.json({
                             speech: response,
                             displayText: response,

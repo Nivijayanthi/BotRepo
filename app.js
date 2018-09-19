@@ -76,7 +76,7 @@ async function buildTargetProfileSelectResponse(currentProfile) {
         }
         console.log("Replies...........",replies);
     }
-    TargetProfileSelectResponse.payload.facebook.quick_replies = replies;
+    TargetProfileSelectResponse.messages[0].payload.facebook.quick_replies = replies;
   
 
     /*

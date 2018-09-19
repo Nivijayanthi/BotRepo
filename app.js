@@ -17,10 +17,11 @@ var http = require("http");
 
 async function showListOfFunds(clientId, riskProfile, transactType) {
     console.log("I am inside show method");
+    console.log("REsposne request 11111111", clientId ,riskProfile);
     let funds = [];
     if (transactType == null) {
         await query.giveFundDetails(clientId, riskProfile).then(async function (data) {
-            console.log("The response from DB join..............", JSON.stringify(data));
+            console.log("The response from DB join give fund..............", JSON.stringify(data));
             await data.forEach(async function (arrayItem) {
                 if (arrayItem.ProductIDStatus == true) {
                     await funds.push(arrayItem.Name);
@@ -29,7 +30,7 @@ async function showListOfFunds(clientId, riskProfile, transactType) {
         });
     } else {
         await query.getFundDetailsByType(clientId, riskProfile, transactType).then(async function (data) {
-            console.log("The response from DB join..............", JSON.stringify(data));
+            console.log("The response from DB join. get fund.............", JSON.stringify(data));
             await data.forEach(async function (arrayItem) {
                 if (arrayItem.ProductIDStatus == true) {
                     await funds.push(arrayItem.Name);

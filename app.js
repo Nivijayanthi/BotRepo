@@ -47,6 +47,9 @@ async function showListOfFunds(clientId, riskProfile, transactType) {
 
 async function buildTargetProfileSelectResponse(currentProfile) {
       var TargetProfileSelectResponse = {
+        speech: "hello",
+        messages: [
+    {
         "type": 4,
         "platform": "facebook",
         payload: {
@@ -65,7 +68,8 @@ async function buildTargetProfileSelectResponse(currentProfile) {
                 } 
             ]
         }
-        }
+    }
+    }]
     };
     // let replies = [];
     // var objArr = new template.quickReplyResponse;

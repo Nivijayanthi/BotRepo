@@ -16,6 +16,7 @@ const template = require('./template');
 var http = require("http");
     var datetime = new Date();
     console.log("datetime" ,datetime);
+    //moment(incidentstatusArr[count].sys_updated_on).format('LLL');
 
 async function showListOfFunds(clientId, riskProfile, transactType) {
     console.log("I am inside show method");
@@ -208,7 +209,8 @@ app.post('/fulfillment', async function (req, res) {
         var objList = new template.QuickReplyTemplate;
         var showMore = new template.showMore;
         updateObject.RiskCategory = targetProfile;
-        updateObject.From = datetime.moment.format("Do-MMM-YY");
+        updateObject.From = moment(datetime).format("Do-MMM-YY");
+        console.log("timevvvvvvvvvvvvvvvv", moment(datetime).format("Do-MMM-YY"));
         if (listOfFunds.length > 0) {
             listOfFunds.forEach(async function (value) {
                 objList.title = value;

@@ -447,6 +447,7 @@ app.post('/fulfillment', async function (req, res) {
         });
     }
     if (req.body.result.metadata.intentName == 'EXIT-FUND-OPTION') {
+        console.log("Dialog flow", req.body.result);
         var fundname = req.body.result.parameters.fund_name;
         await query.ProductGet({ Name: fundname, Type: 'ETF' }).then(function (funddetails) {
 
@@ -485,9 +486,15 @@ app.post('/fulfillment', async function (req, res) {
         })
     }
     if (req.body.result.metadata.intentName == 'EXIT-FUND') {
-
+        var fundName = req.body.result.parameters.FundName;
         var clientId = req.body.result.parameters.clientid ? req.body.result.parameters.clientid : req.body.sessionId.slice(-6);
         console.log(clientId);
+        if(fundname){
+            template.ExitEventCall.name = exit-fund-option ;
+            template.ExitEventCall.data.clientId = clientId;
+            template.ExitEventCall.data.fundName = fundName;
+            return res.json(template.ExitEventCall);
+        }else{
         await query.getLowPerformingFund(clientId).then(async function (data) {
             quickreplies = [];
             await data.forEach(function (value) {
@@ -522,6 +529,7 @@ app.post('/fulfillment', async function (req, res) {
                 });
             }
         })
+        }
 
     }
 })

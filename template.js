@@ -77,6 +77,16 @@ data: {
 } 
 }
 
+module.exports.ExitEventCall ={
+    followupEvent : {
+        name : null,
+        data : {
+            ClientId : null,
+            fundName : null
+        }
+    }
+};
+
 module.exports.TargetProfileSelectResponse = function(){
     TargetProfileSelectResponse = {
         speech: "hello",

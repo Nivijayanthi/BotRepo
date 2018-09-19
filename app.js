@@ -22,22 +22,18 @@ async function showListOfFunds(clientId, riskProfile, transactType) {
         await query.giveFundDetails(clientId, riskProfile).then(async function (data) {
             console.log("The response from DB join..............", JSON.stringify(data));
             await data.forEach(async function (arrayItem) {
-                console.log("%%%%%%%%%%", JSON.stringify(arrayItem));
                 if (arrayItem.ProductIDStatus == true) {
                     await funds.push(arrayItem.Name);
                 }
-                console.log("&&&&&&&&&&", JSON.stringify(funds));
             });
         });
     } else {
         await query.getFundDetailsByType(clientId, riskProfile, transactType).then(async function (data) {
             console.log("The response from DB join..............", JSON.stringify(data));
             await data.forEach(async function (arrayItem) {
-                console.log("%%%%%%%%%%", JSON.stringify(arrayItem));
                 if (arrayItem.ProductIDStatus == true) {
                     await funds.push(arrayItem.Name);
                 }
-                console.log("&&&&&&&&&&", JSON.stringify(funds));
             });
         });
     }
@@ -46,49 +42,15 @@ async function showListOfFunds(clientId, riskProfile, transactType) {
 }
 
 async function buildTargetProfileSelectResponse(currentProfile) {
-      var TargetProfileSelectResponse = {
-        speech: "hello",
-        messages: [
-    {
-        "type": 4,
-        "platform": "facebook",
-        payload: {
-            facebook: {
-                "text": "Please choose the target risk category",
-                quick_replies: []
-        }
-    }
-    }]
-    };
-    let replies = [];
+    var TargetProfileSelectResponse = new template.TargetProfileSelectResponse;    
     var objArr = new template.quickReplyResponse;
-    var objList = new template.QuickReplyTemplate;
-
-    // let processingArray = [];
-    // for (var i = 0; i < objArr.length; i++) {
-    //     processingArray = objArr[i];
-    //     if (processingArray.title != currentProfile) {
-    //         console.log("reply.title", processingArray.title);
-    //         console.log(processingArray);
-    //         objList.title = processingArray.title;
-    //         objList.payload = processingArray.payload;
-    //         replies.push(JSON.parse(JSON.stringify(objList)));
-    //     }
-    //     console.log("Replies...........",replies);
-    // }
-    // TargetProfileSelectResponse.messages[0].payload.facebook.quick_replies = replies;
-   
-         await objArr.forEach(async function (reply) {
-                   console.log("((((((((((((((((", JSON.stringify(reply));
-                   console.log("current", JSON.stringify(currentProfile));
-                   if (reply.title != currentProfile) {
-                       console.log("reply.title", reply.title);
-                       console.log(reply);
-                       TargetProfileSelectResponse.messages[0].payload.facebook.quick_replies.push(reply);                    
-                   }
-               // console.log("&&&&&&&&&&", replies);
-               // console.log("Str", JSON.stringify(replies));
-           });
+    await objArr.forEach(async function (reply) {
+        if (reply.title != currentProfile) {
+            console.log("reply.title", reply.title);
+            console.log(reply);
+            TargetProfileSelectResponse.messages[0].payload.facebook.quick_replies.push(reply);
+        }
+    });
 
 
 

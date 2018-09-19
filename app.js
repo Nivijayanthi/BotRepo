@@ -17,7 +17,7 @@ var http = require("http");
 
 async function showListOfFunds(clientId, riskProfile, transactType) {
     console.log("I am inside show method");
-    console.log("REsposne request 11111111", clientId ,riskProfile);
+    console.log("REsposne request 11111111", clientId, riskProfile);
     let funds = [];
     if (transactType == null) {
         await query.giveFundDetails(clientId, riskProfile).then(async function (data) {
@@ -43,7 +43,7 @@ async function showListOfFunds(clientId, riskProfile, transactType) {
 }
 
 async function buildTargetProfileSelectResponse(currentProfile) {
-    var TargetProfileSelectResponse = new template.TargetProfileSelectResponse;    
+    var TargetProfileSelectResponse = new template.TargetProfileSelectResponse;
     var objArr = new template.quickReplyResponse;
     await objArr.forEach(async function (reply) {
         if (reply.title != currentProfile) {
@@ -126,8 +126,8 @@ app.post('/fulfillment', async function (req, res) {
         console.log("I am inisde change", JSON.stringify(req.body.result));
         var currentProfile;
         var targetProfile;
-        var clientId = 'C10112';
-        //var clientId = req.body.result.parameters.ClientId ? req.body.result.parameters.ClientId : req.body.sessionId.slice(-6);
+        //var clientId = 'C10112';
+        var clientId = req.body.result.parameters.ClientId ? req.body.result.parameters.ClientId : req.body.sessionId.slice(-6);
         if (!req.body.result.parameters.CurrentProfile) {
             console.log("Current Profile not avaialable trying to get it from DB");
             await query.ClientRiskProfileGet({ ClientID: clientId, Active: 'Y' }).then(function (data) {
@@ -193,10 +193,20 @@ app.post('/fulfillment', async function (req, res) {
     }
     if (req.body.result.metadata.intentName == 'CRP-TARGET-SELECT-YES') {
         var contextLength = req.body.result.contexts.length;
+        var updateObject = {
+            RiskCategory: null,
+            From: null,
+            To: null,
+            Active: "Y"
+        };
         console.log('I am inside Target select', JSON.stringify(req.body.result));
-        listOfFunds = await showListOfFunds('C10112', req.body.result.contexts[contextLength - 2].parameters.TargetProfile, null);
+        var clientId = req.body.result.contexts[contextLength - 1].parameters.ClientId ? req.body.result.contexts[contextLength - 1].parameters.ClientId : req.body.sessionId.slice(-6);
+        var targetProfile = result.contexts[contextLength - 2].parameters.TargetProfile;
+        listOfFunds = await showListOfFunds(clientId, targetProfile, null);
         var objList = new template.QuickReplyTemplate;
         var showMore = new template.showMore;
+        updateObject.RiskCategory = targetProfile;
+        updateObject.From = moment.format("Do-MMM-YY");
         if (listOfFunds.length > 0) {
             listOfFunds.forEach(async function (value) {
                 objList.title = value;
@@ -204,10 +214,24 @@ app.post('/fulfillment', async function (req, res) {
                 await msgList.push(JSON.parse(JSON.stringify(objList)));
             });
             await msgList.push(showMore);
-            msg.payload.facebook.text = `The risk category has been updated to ${req.body.result.contexts[contextLength - 1].parameters.TargetProfile}. Please find the list of products avaialable for the risk category`;
-            msg.payload.facebook.quick_replies = msgList;
-            await dialogFlowResponse.messages.push(msg);
-            return res.json(dialogFlowResponse);
+            query.clientRiskProfileUpdate(clientId, updateObject).then(function (err) {
+                if (err) {
+                    console.log("Error updating DB");
+                    response = "Transaction Failure";
+                    return res.json({
+                        speech: response,
+                        displayText: response,
+                        source: 'portal',
+                    });
+                } else {
+                    msg.payload.facebook.text = `The risk category has been updated to ${req.body.result.contexts[contextLength - 1].parameters.TargetProfile}. Please find the list of products avaialable for the risk category`;
+                    msg.payload.facebook.quick_replies = msgList;
+                    await dialogFlowResponse.messages.push(msg);
+                    return res.json(dialogFlowResponse);
+                }
+            });
+
+
         } else {
             response = "Sorry!!There are no products available under the new risk category";
             return res.json({

@@ -209,8 +209,8 @@ app.post('/fulfillment', async function (req, res) {
         var objList = new template.QuickReplyTemplate;
         var showMore = new template.showMore;
         updateObject.RiskCategory = targetProfile;
-        updateObject.From = moment(datetime).format("Do-MMM-YY");
-        console.log("timevvvvvvvvvvvvvvvv", moment(datetime).format("Do-MMM-YY"));
+        updateObject.From = moment(datetime).format("DD-MMM-YY");
+        console.log("timevvvvvvvvvvvvvvvv", moment(datetime).format("DD-MMM-YY"));
         if (listOfFunds.length > 0) {
             listOfFunds.forEach(async function (value) {
                 objList.title = value;

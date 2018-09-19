@@ -14,9 +14,9 @@ app.use(express.static(__dirname));
 const query = require('./query');
 const template = require('./template');
 var http = require("http");
-    var datetime = new Date();
-    console.log("datetime" ,datetime);
-    //moment(incidentstatusArr[count].sys_updated_on).format('LLL');
+var datetime = new Date();
+console.log("datetime", datetime);
+//moment(incidentstatusArr[count].sys_updated_on).format('LLL');
 
 async function showListOfFunds(clientId, riskProfile, transactType) {
     console.log("I am inside show method");
@@ -196,21 +196,21 @@ app.post('/fulfillment', async function (req, res) {
     }
     if (req.body.result.metadata.intentName == 'CRP-TARGET-SELECT-YES') {
         var contextLength = req.body.result.contexts.length;
-        var updateObject = {
-            RiskCategory: null,
-            From: null,
-            To: null,
-            Active: "Y"
-        };
+        // var updateObject = {
+        //     RiskCategory: null,
+        //     From: null,
+        //     To: null,
+        //     Active: "Y"
+        // };
         console.log('I am inside Target select', JSON.stringify(req.body.result));
         var clientId = req.body.result.contexts[contextLength - 1].parameters.ClientId ? req.body.result.contexts[contextLength - 1].parameters.ClientId : req.body.sessionId.slice(-6);
         var targetProfile = req.body.result.contexts[contextLength - 2].parameters.TargetProfile;
         listOfFunds = await showListOfFunds(clientId, targetProfile, null);
         var objList = new template.QuickReplyTemplate;
         var showMore = new template.showMore;
-        updateObject.RiskCategory = targetProfile;
-        updateObject.From = moment(datetime).format("DD-MMM-YY");
-        console.log("timevvvvvvvvvvvvvvvv", moment(datetime).format("DD-MMM-YY"));
+        //updateObject.RiskCategory = targetProfile;
+        //updateObject.From = moment(datetime).format("DD-MMM-YY");
+       // console.log("timevvvvvvvvvvvvvvvv", moment(datetime).format("DD-MMM-YY"));
         if (listOfFunds.length > 0) {
             listOfFunds.forEach(async function (value) {
                 objList.title = value;
@@ -218,24 +218,11 @@ app.post('/fulfillment', async function (req, res) {
                 await msgList.push(JSON.parse(JSON.stringify(objList)));
             });
             await msgList.push(showMore);
-            query.clientRiskProfileUpdate(clientId, updateObject).then(async function (err) {
-                if (err) {
-                    console.log("Error updating DB", err);
-                    response = "Transaction Failure";
-                    return res.json({
-                        speech: response,
-                        displayText: response,
-                        source: 'portal',
-                    });
-                } else {
-                    msg.payload.facebook.text = `The risk category has been updated to ${req.body.result.contexts[contextLength - 1].parameters.TargetProfile}. Please find the list of products avaialable for the risk category`;
-                    msg.payload.facebook.quick_replies = msgList;
-                    await dialogFlowResponse.messages.push(msg);
-                    return res.json(dialogFlowResponse);
-                }
-            });
-
-
+            //query.clientRiskProfileUpdate(clientId, updateObject);
+            msg.payload.facebook.text = `The risk category has been updated to ${req.body.result.contexts[contextLength - 1].parameters.TargetProfile}. Please find the list of products avaialable for the risk category`;
+            msg.payload.facebook.quick_replies = msgList;
+            await dialogFlowResponse.messages.push(msg);
+            return res.json(dialogFlowResponse);
         } else {
             response = "Sorry!!There are no products available under the new risk category";
             return res.json({

@@ -214,7 +214,7 @@ app.post('/fulfillment', async function (req, res) {
                 await msgList.push(JSON.parse(JSON.stringify(objList)));
             });
             await msgList.push(showMore);
-            query.clientRiskProfileUpdate(clientId, updateObject).then(function (err) {
+            query.clientRiskProfileUpdate(clientId, updateObject).then(async function (err) {
                 if (err) {
                     console.log("Error updating DB");
                     response = "Transaction Failure";

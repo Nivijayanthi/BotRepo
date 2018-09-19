@@ -102,7 +102,7 @@ async function sendMail(content) {
 
 app.post('/fulfillment', async function (req, res) {
 
-    var clientId = req.body.sessionId.slice(-6);
+    var sessionClientId = req.body.sessionId.slice(-6);
 
     var dialogFlowResponse = {
         speech: "hello",
@@ -197,6 +197,7 @@ app.post('/fulfillment', async function (req, res) {
         var contextLength = req.body.result.contexts.length;
         console.log('I am inside Target select', JSON.stringify(req.body.result));
         console.log('req.body.result.contexts[contextLength - 1].parameters.ClientId',req.body.result.contexts[contextLength - 1].parameters.ClientId)
+        console.log("sessionClientId", sessionClientId);
         listOfFunds = await showListOfFunds(req.body.result.contexts[contextLength - 1].parameters.ClientId, req.body.result.contexts[contextLength - 2].parameters.TargetProfile, null);
         var objList = new template.QuickReplyTemplate;
         var showMore = new template.showMore;

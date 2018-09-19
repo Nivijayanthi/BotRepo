@@ -398,6 +398,13 @@ app.post('/fulfillment', async function (req, res) {
         //var clientId = req.body.sessionId.slice(-6);
         var clientId = 'C10112';
         var val;
+         var updateObject = {
+            RiskCategory: "Growth",
+            From: moment(datetime).format("DD-MMM-YY"),
+            To: null,
+            Active: "Y"
+        };
+        query.clientRiskProfileUpdate(clientId,updateObject);
         await query.ClientRiskProfileGet({ ClientID: clientId, Active: 'Y' }).then(function (data) {
             console.log("The response from DB risk profile..............", JSON.stringify(data));
             val = data[0].RiskCategory;

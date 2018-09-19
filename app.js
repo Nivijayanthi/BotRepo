@@ -201,7 +201,7 @@ app.post('/fulfillment', async function (req, res) {
         };
         console.log('I am inside Target select', JSON.stringify(req.body.result));
         var clientId = req.body.result.contexts[contextLength - 1].parameters.ClientId ? req.body.result.contexts[contextLength - 1].parameters.ClientId : req.body.sessionId.slice(-6);
-        var targetProfile = result.contexts[contextLength - 2].parameters.TargetProfile;
+        var targetProfile = req.body.result.contexts[contextLength - 2].parameters.TargetProfile;
         listOfFunds = await showListOfFunds(clientId, targetProfile, null);
         var objList = new template.QuickReplyTemplate;
         var showMore = new template.showMore;
@@ -216,7 +216,7 @@ app.post('/fulfillment', async function (req, res) {
             await msgList.push(showMore);
             query.clientRiskProfileUpdate(clientId, updateObject).then(async function (err) {
                 if (err) {
-                    console.log("Error updating DB");
+                    console.log("Error updating DB", err);
                     response = "Transaction Failure";
                     return res.json({
                         speech: response,

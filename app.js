@@ -102,7 +102,7 @@ async function buildTargetProfileSelectResponse(currentProfile) {
 
 
 
-    console.log("TargetProfileSelectResponse", TargetProfileSelectResponse)
+    console.log("TargetProfileSelectResponse", JSON.stringify(TargetProfileSelectResponse));
     return TargetProfileSelectResponse;
 
 };

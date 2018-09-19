@@ -126,8 +126,8 @@ app.post('/fulfillment', async function (req, res) {
         console.log("I am inisde change", JSON.stringify(req.body.result));
         var currentProfile;
         var targetProfile;
-        //var clientId = 'C10112';
-        var clientId = req.body.result.parameters.ClientId ? req.body.result.parameters.ClientId : req.body.sessionId.slice(-6);
+        var clientId = 'C10112';
+        //var clientId = req.body.result.parameters.ClientId ? req.body.result.parameters.ClientId : req.body.sessionId.slice(-6);
         if (!req.body.result.parameters.CurrentProfile) {
             console.log("Current Profile not avaialable trying to get it from DB");
             await query.ClientRiskProfileGet({ ClientID: clientId, Active: 'Y' }).then(function (data) {

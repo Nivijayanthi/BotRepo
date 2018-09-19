@@ -52,9 +52,6 @@ async function buildTargetProfileSelectResponse(currentProfile) {
             TargetProfileSelectResponse.messages[0].payload.facebook.quick_replies.push(reply);
         }
     });
-
-
-
     console.log("TargetProfileSelectResponse", JSON.stringify(TargetProfileSelectResponse));
     return TargetProfileSelectResponse;
 
@@ -197,7 +194,7 @@ app.post('/fulfillment', async function (req, res) {
     if (req.body.result.metadata.intentName == 'CRP-TARGET-SELECT-YES') {
         var contextLength = req.body.result.contexts.length;
         console.log('I am inside Target select', JSON.stringify(req.body.result));
-        listOfFunds = await showListOfFunds(sessionClientId, req.body.result.contexts[contextLength - 2].parameters.TargetProfile, null);
+        listOfFunds = await showListOfFunds('C10112', req.body.result.contexts[contextLength - 2].parameters.TargetProfile, null);
         var objList = new template.QuickReplyTemplate;
         var showMore = new template.showMore;
         if (listOfFunds.length > 0) {

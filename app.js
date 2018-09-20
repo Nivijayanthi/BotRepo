@@ -262,9 +262,9 @@ app.post('/fulfillment', async function (req, res) {
                             "payload": "No"
                         },
                         {
-                            "content_type": "text",
+                            "content_type": "link",
                             "title": "Show fund Details",
-                            "payload": "Show fund Details"
+                            "payload": "www.google.com"
                         }]
                     }
                 }

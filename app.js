@@ -526,8 +526,7 @@ app.post('/fulfillment', async function (req, res) {
                         "platform": "facebook",
                         "payload": {
                             "facebook": {
-                                "text": `Please Select the low peforming fund to exit`,
-                                "quick_replies": quickreplies
+                                "text": `Please enter your fund names to exit`
                             }
                         }
                     }]

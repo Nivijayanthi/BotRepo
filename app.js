@@ -135,7 +135,7 @@ app.post('/fulfillment', async function (req, res) {
         //var clientId = 'C10112';
         var clientId = req.body.result.parameters.ClientId ? req.body.result.parameters.ClientId : req.body.sessionId.slice(-6);
         if (!req.body.result.parameters.CurrentProfile) {
-            console.log("Current Profile not avaialable trying to get it from DB");
+            console.log("Current Profile not available trying to get it from DB");
             await query.ClientRiskProfileGet({ ClientID: clientId, Active: 'Y' }).then(function (data) {
                 console.log("The response from DB risk profile..............", JSON.stringify(data));
                 if (data) {
@@ -169,7 +169,7 @@ app.post('/fulfillment', async function (req, res) {
                     await msgList.push(JSON.parse(JSON.stringify(objList)));
                 });
                 //console.log("masssssssssssssss",JSON.stringify(msgList));
-                msg.payload.facebook.text = "Please find the list of funds avaialable for the risk category";
+                msg.payload.facebook.text = "Please find the list of funds available for the risk category";
                 msg.payload.facebook.quick_replies = msgList;
                 await dialogFlowResponse.messages.push(msg);
                 console.log("Final msgggggggggggggggggg", JSON.stringify(dialogFlowResponse));
@@ -222,7 +222,7 @@ app.post('/fulfillment', async function (req, res) {
             });
             await msgList.push(showMore);
             //query.clientRiskProfileUpdate(clientId, updateObject);
-            msg.payload.facebook.text = `The risk category has been updated to ${req.body.result.contexts[contextLength - 1].parameters.TargetProfile}. Please find the list of products avaialable for the risk category`;
+            msg.payload.facebook.text = `The risk category has been updated to ${req.body.result.contexts[contextLength - 1].parameters.TargetProfile}. Please find the list of products available for the risk category`;
             msg.payload.facebook.quick_replies = msgList;
             await dialogFlowResponse.messages.push(msg);
             return res.json(dialogFlowResponse);
@@ -303,7 +303,7 @@ app.post('/fulfillment', async function (req, res) {
                 objList.payload = value;
                 await msgList.push(JSON.parse(JSON.stringify(objList)));
             });
-            msg.payload.facebook.text = "Please find the list of products avaialable for the risk category";
+            msg.payload.facebook.text = "Please find the list of products available for the risk category";
             msg.payload.facebook.quick_replies = msgList;
             await dialogFlowResponse.messages.push(msg);
             return res.json(dialogFlowResponse);
@@ -336,7 +336,7 @@ app.post('/fulfillment', async function (req, res) {
                 objList.payload = value;
                 await msgList.push(JSON.parse(JSON.stringify(objList)));
             });
-            msg.payload.facebook.text = "Please find the list of funds avaialable for the risk category";
+            msg.payload.facebook.text = "Please find the list of funds available for the risk category";
             msg.payload.facebook.quick_replies = msgList;
             await dialogFlowResponse.messages.push(msg);
             return res.json(dialogFlowResponse);

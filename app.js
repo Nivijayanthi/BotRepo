@@ -488,7 +488,7 @@ app.post('/fulfillment', async function (req, res) {
     if (req.body.result.metadata.intentName == 'EXIT-FUND') {
         //var fundName = req.body.result.parameters.FundName;
         var clientId = req.body.result.parameters.clientId ? req.body.result.parameters.clientId : req.body.sessionId.slice(-6);
-        console.log("Nivetha............",clientId);
+        console.log("Nivetha............",clientId , sessionClientId);
        
         await query.getLowPerformingFund(clientId).then(async function (data) {
             quickreplies = [];

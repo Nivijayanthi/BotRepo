@@ -89,7 +89,7 @@ module.exports.ExitEventCall ={
 
 module.exports.TargetProfileSelectResponse = function(){
     TargetProfileSelectResponse = {
-        speech: "",
+        speech: "Hello",
         messages: [
             {
                 "type": 4,

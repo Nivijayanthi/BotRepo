@@ -55,7 +55,7 @@ async function buildTargetProfileSelectResponse(currentProfile) {
             TargetProfileSelectResponse.messages[0].payload.facebook.quick_replies.push(reply);
         }
     });
-    console.log("TargetProfileSelectResponse", JSON.stringify(TargetProfileSelectResponse));
+    console.log("TargetProfileSelectResponse function", JSON.stringify(TargetProfileSelectResponse));
     return TargetProfileSelectResponse;
 
 };

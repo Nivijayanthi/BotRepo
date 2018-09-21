@@ -504,7 +504,7 @@ app.post('/fulfillment', async function (req, res) {
         })
     }
     if (req.body.result.metadata.intentName == 'EXIT-FUND') {
-        
+
         var clientId = req.body.result.parameters.clientid ? req.body.result.parameters.clientid : req.body.sessionId.slice(-6);
         console.log(clientId);
         await query.getLowPerformingFund(clientId).then(async function (data) {
@@ -526,7 +526,8 @@ app.post('/fulfillment', async function (req, res) {
                         "platform": "facebook",
                         "payload": {
                             "facebook": {
-                                "text": `Please enter your fund names to exit`
+                                "text": `Please Select the low peforming fund to exit`,
+                                "quick_replies": quickreplies
                             }
                         }
                     }]

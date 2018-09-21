@@ -395,8 +395,8 @@ app.post('/fulfillment', async function (req, res) {
     }
     if (req.body.result.metadata.intentName == 'CURRENT-RISK-PROFILE') {
 
-        //var clientId = req.body.sessionId.slice(-6);
-        var clientId = 'C10112';
+        var clientId = req.body.sessionId.slice(-6);
+        //var clientId = 'C10112';
         var val;
          var updateObject = {
             RiskCategory: "Growth",

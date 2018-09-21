@@ -76,3 +76,31 @@ data: {
 }
 } 
 }
+
+module.exports.ExitEventCall ={
+    followupEvent : {
+        name : null,
+        data : {
+            ClientId : null,
+            fundName : null
+        }
+    }
+};
+
+module.exports.TargetProfileSelectResponse = function(){
+    TargetProfileSelectResponse = {
+        speech: "hello",
+        messages: [
+            {
+                "type": 4,
+                "platform": "facebook",
+                payload: {
+                    facebook: {
+                        "text": "Please choose the target risk category",
+                        quick_replies: []
+                    }
+                }
+            }]
+    };
+return TargetProfileSelectResponse;
+}

@@ -6,7 +6,7 @@ var moment = require('moment');
 var express = require('express');
 var bodyParser = require('body-parser');
 var app = express();
-var port = process.env.PORT || 4000;
+var port = process.env.PORT || 5000;
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(express.static(__dirname));
@@ -14,30 +14,30 @@ app.use(express.static(__dirname));
 const query = require('./query');
 const template = require('./template');
 var http = require("http");
+var datetime = new Date();
+console.log("datetime", datetime);
+//moment(incidentstatusArr[count].sys_updated_on).format('LLL');
 
 async function showListOfFunds(clientId, riskProfile, transactType) {
     console.log("I am inside show method");
+    console.log("REsposne request 11111111", clientId, riskProfile);
     let funds = [];
     if (transactType == null) {
         await query.giveFundDetails(clientId, riskProfile).then(async function (data) {
-            console.log("The response from DB join..............", JSON.stringify(data));
+            console.log("The response from DB join give fund..............", JSON.stringify(data));
             await data.forEach(async function (arrayItem) {
-                console.log("%%%%%%%%%%", JSON.stringify(arrayItem));
                 if (arrayItem.ProductIDStatus == true) {
                     await funds.push(arrayItem.Name);
                 }
-                console.log("&&&&&&&&&&", JSON.stringify(funds));
             });
         });
     } else {
         await query.getFundDetailsByType(clientId, riskProfile, transactType).then(async function (data) {
-            console.log("The response from DB join..............", JSON.stringify(data));
+            console.log("The response from DB join. get fund.............", JSON.stringify(data));
             await data.forEach(async function (arrayItem) {
-                console.log("%%%%%%%%%%", JSON.stringify(arrayItem));
                 if (arrayItem.ProductIDStatus == true) {
                     await funds.push(arrayItem.Name);
                 }
-                console.log("&&&&&&&&&&", JSON.stringify(funds));
             });
         });
     }
@@ -45,59 +45,18 @@ async function showListOfFunds(clientId, riskProfile, transactType) {
     return funds;
 }
 
-async function buildTargetProfileSelectResponse(currentProfile){
-    
-let replies = [];
-
-var objArr = new template.quickReplyResponse;
-
-//JSONArray replies = new JSONArray();
-
-let processingArray = [];
-for (var i = 0; i < objArr.length; i++) {
-    processingArray = objArr[i];
-     if (processingArray.title != currentProfile) {
-         console.log("reply.title", processingArray.title);
-         console.log(processingArray);
-         replies.push({ 'content_type': processingArray.content_type,
-            "title": processingArray.title,
-            "payload": processingArray.payload 
-        });
-         
-     }
- }
-
-                  
- 
-var TargetProfileSelectResponse = {
-        "type": 4,
-        "platform": "facebook",
-        "payload":{
-            "facebook": {
-        "text": "Please choose the target risk category",
-        "quick_replies": replies
-    }
+async function buildTargetProfileSelectResponse(currentProfile) {
+    var TargetProfileSelectResponse = new template.TargetProfileSelectResponse;
+    var objArr = new template.quickReplyResponse;
+    await objArr.forEach(async function (reply) {
+        if (reply.title != currentProfile) {
+            console.log("reply.title", reply.title);
+            console.log(reply);
+            TargetProfileSelectResponse.messages[0].payload.facebook.quick_replies.push(reply);
         }
-};
-
- /*
-
-      await objArr.forEach(async function (reply) {
-                console.log("((((((((((((((((", JSON.stringify(reply));
-                console.log("current", JSON.stringify(currentProfile));
-                if (reply.title != currentProfile) {
-                    console.log("reply.title", reply.title);
-                    console.log(reply);
-                    TargetProfileSelectResponse.payload.facebook.quick_replies.push(reply);                    
-                }
-            // console.log("&&&&&&&&&&", replies);
-            // console.log("Str", JSON.stringify(replies));
-        });*/
-        
-
-
-            console.log("TargetProfileSelectResponse",TargetProfileSelectResponse)
-    return JSON.parse(JSON.stringify(TargetProfileSelectResponse));
+    });
+    console.log("TargetProfileSelectResponse", JSON.stringify(TargetProfileSelectResponse));
+    return TargetProfileSelectResponse;
 
 };
 const mailContent = {
@@ -141,10 +100,13 @@ async function sendMail(content) {
     req.end();
 }
 
+app.get("/test", function(req,res){
+    res.send("My name is Rat!");
+});
 
 app.post('/fulfillment', async function (req, res) {
 
-    var clientId = req.body.sessionId.slice(-6);
+    var sessionClientId = req.body.sessionId.slice(-6);
 
     var dialogFlowResponse = {
         speech: "hello",
@@ -170,8 +132,8 @@ app.post('/fulfillment', async function (req, res) {
         console.log("I am inisde change", JSON.stringify(req.body.result));
         var currentProfile;
         var targetProfile;
-        var clientId = 'C10112';
-        //var clientId = req.body.result.parameters.ClientId ? req.body.result.parameters.ClientId : req.body.sessionId.slice(-6);
+        //var clientId = 'C10112';
+        var clientId = req.body.result.parameters.ClientId ? req.body.result.parameters.ClientId : req.body.sessionId.slice(-6);
         if (!req.body.result.parameters.CurrentProfile) {
             console.log("Current Profile not avaialable trying to get it from DB");
             await query.ClientRiskProfileGet({ ClientID: clientId, Active: 'Y' }).then(function (data) {
@@ -228,19 +190,30 @@ app.post('/fulfillment', async function (req, res) {
         }
 
     }
-    if(req.body.result.metadata.intentName == 'CHANGE-RISK-PROFILE-TARGET'){
+    if (req.body.result.metadata.intentName == 'CHANGE-RISK-PROFILE-TARGET') {
         console.log("I am inside target opt", JSON.stringify(req.body.result));
         console.log("Current Profile", req.body.result.contexts[0].parameters.CurrentProfile);
         var TargetResponse = await buildTargetProfileSelectResponse(req.body.result.contexts[0].parameters.CurrentProfile);
-        console.log("TargetResponse",TargetResponse); 
+        console.log("TargetResponse", TargetResponse);
         return res.json(TargetResponse);
     }
-    if(req.body.result.metadata.intentName == 'CRP-TARGET-SELECT-YES'){
-         var contextLength = req.body.result.contexts.length;
+    if (req.body.result.metadata.intentName == 'CRP-TARGET-SELECT-YES') {
+        var contextLength = req.body.result.contexts.length;
+        // var updateObject = {
+        //     RiskCategory: null,
+        //     From: null,
+        //     To: null,
+        //     Active: "Y"
+        // };
         console.log('I am inside Target select', JSON.stringify(req.body.result));
-        listOfFunds = await showListOfFunds(req.body.result.contexts[contextLength-1].parameters.ClientId, req.body.result.contexts[contextLength-2].parameters.TargetProfile, null);
+        var clientId = req.body.result.contexts[contextLength - 1].parameters.ClientId ? req.body.result.contexts[contextLength - 1].parameters.ClientId : req.body.sessionId.slice(-6);
+        var targetProfile = req.body.result.contexts[contextLength - 2].parameters.TargetProfile;
+        listOfFunds = await showListOfFunds(clientId, targetProfile, null);
         var objList = new template.QuickReplyTemplate;
         var showMore = new template.showMore;
+        //updateObject.RiskCategory = targetProfile;
+        //updateObject.From = moment(datetime).format("DD-MMM-YY");
+       // console.log("timevvvvvvvvvvvvvvvv", moment(datetime).format("DD-MMM-YY"));
         if (listOfFunds.length > 0) {
             listOfFunds.forEach(async function (value) {
                 objList.title = value;
@@ -248,7 +221,8 @@ app.post('/fulfillment', async function (req, res) {
                 await msgList.push(JSON.parse(JSON.stringify(objList)));
             });
             await msgList.push(showMore);
-            msg.payload.facebook.text = `The risk category has been updated to ${req.body.result.contexts[contextLength-1].parameters.TargetProfile}. Please find the list of products avaialable for the risk category`;
+            //query.clientRiskProfileUpdate(clientId, updateObject);
+            msg.payload.facebook.text = `The risk category has been updated to ${req.body.result.contexts[contextLength - 1].parameters.TargetProfile}. Please find the list of products avaialable for the risk category`;
             msg.payload.facebook.quick_replies = msgList;
             await dialogFlowResponse.messages.push(msg);
             return res.json(dialogFlowResponse);
@@ -261,41 +235,41 @@ app.post('/fulfillment', async function (req, res) {
             });
         }
     }
-    if(req.body.result.metadata.intentName == 'CRP-TARGET-SELECT-NO'){
+    if (req.body.result.metadata.intentName == 'CRP-TARGET-SELECT-NO') {
         template.CommonEventCall.followupEvent.name = "thankYou ";
         console.log("I am inside no intent", template.CommonEventCall);
-            return res.json(template.CommonEventCall);
+        return res.json(template.CommonEventCall);
     }
 
-    if(req.body.result.metadata.intentName == 'CRP-TARGET-SELECT-YES-BUY'){
+    if (req.body.result.metadata.intentName == 'CRP-TARGET-SELECT-YES-BUY') {
         console.log("resp from dialog flow", JSON.stringify(req.body.result.contexts[0].parameters.ProductName));
         var yesOrNo = {
-                    "speech": "",
-                    "displayText": "",
-                    "messages": [{
-                        "type": 4,
-                        "platform": "facebook",
-                        "payload": {
-                            "facebook": {
-                                "text": `Do you want to buy ` + req.body.result.contexts[0].parameters.ProductName,
-                                "quick_replies": [{
-                                    "content_type": "text",
-                                    "title": "Yes",
-                                    "payload": "Yes"
-                                }, {
-                                    "content_type": "text",
-                                    "title": "No",
-                                    "payload": "No"
-                                },
-                                {
-                                    "content_type": "text",
-                                    "title": "Show fund Details",
-                                    "payload": "Show fund Details"
-                                }]
-                            }
-                        }
-                    }]
-                };
+            "speech": "",
+            "displayText": "",
+            "messages": [{
+                "type": 4,
+                "platform": "facebook",
+                "payload": {
+                    "facebook": {
+                        "text": `Do you want to buy ` + req.body.result.contexts[0].parameters.ProductName,
+                        "quick_replies": [{
+                            "content_type": "text",
+                            "title": "Yes",
+                            "payload": "Yes"
+                        }, {
+                            "content_type": "text",
+                            "title": "No",
+                            "payload": "No"
+                        },
+                        {
+                            "content_type": "link",
+                            "title": "Show fund Details",
+                            "payload": "www.google.com"
+                        }]
+                    }
+                }
+            }]
+        };
         return res.json(yesOrNo);
     }
     if (req.body.result.metadata.intentName == 'CRP-TARGET-SELECT-YES-BUY-YES') {
@@ -378,7 +352,7 @@ app.post('/fulfillment', async function (req, res) {
 
     }
 
-    if(req.body.result.metadata.intentName == 'ADD-FUND-SEND'){
+    if (req.body.result.metadata.intentName == 'ADD-FUND-SEND') {
         console.log("I am inside add fund send ", JSON.stringify(req.body.result));
         response = `The request to add ${req.body.result.parameters.ProductName} has been sent to the Trading desk. You will be receiving a detailed  email shortly.`;
         return res.json({
@@ -424,6 +398,13 @@ app.post('/fulfillment', async function (req, res) {
         //var clientId = req.body.sessionId.slice(-6);
         var clientId = 'C10112';
         var val;
+         var updateObject = {
+            RiskCategory: "Growth",
+            From: moment(datetime).format("DD-MMM-YY"),
+            To: null,
+            Active: "Y"
+        };
+        query.clientRiskProfileUpdate(clientId,updateObject);
         await query.ClientRiskProfileGet({ ClientID: clientId, Active: 'Y' }).then(function (data) {
             console.log("The response from DB risk profile..............", JSON.stringify(data));
             val = data[0].RiskCategory;
@@ -453,8 +434,8 @@ app.post('/fulfillment', async function (req, res) {
                         response += "<br/>Current Price: " + currentPrice + "<br/>";
                         response += "Quantity: " + quantity + "<br/>";
                         response += "Market Value: " + marketvalue + "<br/>";
-                        responses = response.replace("<br/>","\n");
-                        await query.saveTransactionDetails({CustomerID:clientId,ProductID:productID,Quantity:quantity,Price:currentPrice,Action:"Sell",Date:moment().format("DD-MMM-YY")});
+                        responses = response.replace("<br/>", "\n");
+                        await query.saveTransactionDetails({ CustomerID: clientId, ProductID: productID, Quantity: quantity, Price: currentPrice, Action: "Sell", Date: moment().format("DD-MMM-YY") });
                         return res.json({
                             speech: response,
                             displayText: response,
@@ -466,6 +447,7 @@ app.post('/fulfillment', async function (req, res) {
         });
     }
     if (req.body.result.metadata.intentName == 'EXIT-FUND-OPTION') {
+        console.log("Dialog flow", req.body.result);
         var fundname = req.body.result.parameters.fund_name;
         await query.ProductGet({ Name: fundname, Type: 'ETF' }).then(function (funddetails) {
 
@@ -504,9 +486,15 @@ app.post('/fulfillment', async function (req, res) {
         })
     }
     if (req.body.result.metadata.intentName == 'EXIT-FUND') {
-
+        var fundName = req.body.result.parameters.FundName;
         var clientId = req.body.result.parameters.clientid ? req.body.result.parameters.clientid : req.body.sessionId.slice(-6);
         console.log(clientId);
+        if(fundname){
+            template.ExitEventCall.name = exit-fund-option ;
+            template.ExitEventCall.data.clientId = clientId;
+            template.ExitEventCall.data.fundName = fundName;
+            return res.json(template.ExitEventCall);
+        }else{
         await query.getLowPerformingFund(clientId).then(async function (data) {
             quickreplies = [];
             await data.forEach(function (value) {
@@ -540,6 +528,7 @@ app.post('/fulfillment', async function (req, res) {
                 });
             }
         })
+        }
 
     }
 })

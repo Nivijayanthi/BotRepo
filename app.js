@@ -127,6 +127,17 @@ app.post('/fulfillment', async function (req, res) {
     let msgList = [];
     let listOfFunds = [];
     //console.log("request from dialogflow", JSON.stringify(req.body));
+    
+     if (req.body.result.metadata.intentName == 'CREATE_AMRN') {
+        console.log("I am inisde create", JSON.stringify(req.body.result));
+          response = "Sorry!!There are no funds available under the new risk category";
+                return res.json({
+                    speech: response,
+                    displayText: response,
+                    source: 'portal',
+                });
+         
+     }
 
     if (req.body.result.metadata.intentName == 'CHANGE-RISK-PROFILE') {
         console.log("I am inisde change", JSON.stringify(req.body.result));
